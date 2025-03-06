@@ -1,4 +1,4 @@
-package com.example.examplemod;
+package net.f708.examplemod;
 
 import java.util.List;
 import java.util.Set;
