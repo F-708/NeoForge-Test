@@ -37,7 +37,32 @@ public class ModItems {
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> POLISHEDEMERALD = ITEMS.register("polished_emerald",
             () -> new Item(new Item.Properties()));
-
+    public static final DeferredItem<Item> SMITHINGHAMMER = ITEMS.register("smithing_hammer",
+            () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> STONESMITHINGHAMMER = ITEMS.register("stone_smithing_hammer",
+            () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> WOODSMITHINGHAMMER = ITEMS.register("wood_smithing_hammer",
+            () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> WHEATBRUSH = ITEMS.register("wheat_brush",
+            () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> TONGS = ITEMS.register("tongs",
+            () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> TWOSTICKS = ITEMS.register("two_sticks",
+            () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> BARSHAPEDMOLD = ITEMS.register("bar_shaped_mold",
+            () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> PAN = ITEMS.register("pan",
+            () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> BIGPAN = ITEMS.register("big_pan",
+            () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> WOODPESTLE = ITEMS.register("wood_pestle",
+            () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> CARVINGHAMMER = ITEMS.register("carving_hammer",
+            () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> POINTCHISEL = ITEMS.register("point_chisel",
+            () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> SANDPAPER = ITEMS.register("sandpaper",
+            () -> new Item(new Item.Properties()));
 
 
 
