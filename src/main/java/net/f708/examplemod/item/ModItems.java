@@ -15,6 +15,8 @@ public class ModItems {
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> RAWIRONNUGGET = ITEMS.register("raw_iron_nugget",
             () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> CLEANEDRAWIRONNUGGET = ITEMS.register("cleaned_raw_iron_nugget",
+            () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> HOTRAWIRONNUGGET = ITEMS.register("hot_raw_iron_nugget",
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> PURERAWGOLDORE = ITEMS.register("pure_raw_gold_ore",

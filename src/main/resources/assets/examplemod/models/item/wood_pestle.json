@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "examplemod:item/tongs"
+    "layer0": "examplemod:item/wood_pestle"
   }
 }

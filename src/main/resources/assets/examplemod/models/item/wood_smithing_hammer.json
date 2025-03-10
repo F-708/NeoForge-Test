@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "examplemod:item/stone_smithing_hammer"
+    "layer0": "examplemod:item/wood_smithing_hammer"
   }
 }

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "examplemod:carved_diamond_ore",
+    "examplemod:carved_diamond_ore2",
+    "examplemod:carved_emerald_ore",
+    "examplemod:carved_emerald_ore2"
+  ]
+}

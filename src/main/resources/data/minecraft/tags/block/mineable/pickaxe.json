@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "examplemod:carved_diamond_ore",
+    "examplemod:carved_diamond_ore2",
+    "examplemod:carved_emerald_ore",
+    "examplemod:carved_emerald_ore2",
+    "examplemod:carved_diamond_deepslate",
+    "examplemod:carved_diamond_deepslate2",
+    "examplemod:carved_emerald_deepslate",
+    "examplemod:carved_emerald_deepslate2"
+  ]
+}
