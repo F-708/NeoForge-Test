@@ -1,6 +1,8 @@
 package net.f708.examplemod.item;
 
 import net.f708.examplemod.ExampleMod;
+import net.f708.examplemod.item.custom.HotItem;
+import net.f708.examplemod.item.custom.TongsItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -10,15 +12,16 @@ public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ExampleMod.MODID);
 
     public static final DeferredItem<Item> HOTRAWIRONORE = ITEMS.register("hot_raw_iron_ore",
-            () -> new Item(new Item.Properties()));
+            () -> new HotItem(new Item.Properties()
+                    .stacksTo(1)));
     public static final DeferredItem<Item> RAWCLEANEDIRONORE = ITEMS.register("cleaned_raw_iron_ore",
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> RAWIRONNUGGET = ITEMS.register("raw_iron_nugget",
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> CLEANEDRAWIRONNUGGET = ITEMS.register("cleaned_raw_iron_nugget",
             () -> new Item(new Item.Properties()));
-    public static final DeferredItem<Item> HOTRAWIRONNUGGET = ITEMS.register("hot_raw_iron_nugget",
-            () -> new Item(new Item.Properties()));
+//    public static final DeferredItem<Item> HOTRAWIRONNUGGET = ITEMS.register("hot_raw_iron_nugget",
+//            () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> PURERAWGOLDORE = ITEMS.register("pure_raw_gold_ore",
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> COPPERDUST = ITEMS.register("copper_dust",
