@@ -12,15 +12,15 @@ public class HotItem extends Item {
         super(properties);
     }
 
-    @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        if (entity instanceof Player player) {
-            if (isSelected) {
-                player.hurt(player.damageSources().onFire(), 3f);
-            }
-            else{
-                player.hurt(player.damageSources().onFire(), 1f);
-            }
-        }
-    }
+//    @Override
+//    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+//        if (entity instanceof Player player) {
+//            if (isSelected) {
+//                player.hurt(player.damageSources().onFire(), 3f);
+//            }
+//            else{
+//                player.hurt(player.damageSources().onFire(), 1f);
+//            }
+//        }
+//    }
 }
