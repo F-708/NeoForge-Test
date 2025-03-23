@@ -51,8 +51,8 @@ public class ModItems {
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> CLEANEDRAWIRONNUGGET = ITEMS.register("cleaned_raw_iron_nugget",
             () -> new Item(new Item.Properties()));
-//    public static final DeferredItem<Item> HOTRAWIRONNUGGET = ITEMS.register("hot_raw_iron_nugget",
-//            () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> HOTRAWIRONNUGGET = ITEMS.register("hot_raw_iron_nugget",
+            () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> PURERAWGOLDORE = ITEMS.register("pure_raw_gold_ore",
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> COPPERDUST = ITEMS.register("copper_dust",
@@ -75,13 +75,16 @@ public class ModItems {
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> SMITHINGHAMMER = ITEMS.register("smithing_hammer",
             () -> new Item(new Item.Properties()
-                    .stacksTo(1)));
+                    .stacksTo(1)
+                    .durability(260)));
     public static final DeferredItem<Item> STONESMITHINGHAMMER = ITEMS.register("stone_smithing_hammer",
             () -> new Item(new Item.Properties()
-                    .stacksTo(1)));
+                    .stacksTo(1)
+                    .durability(90)));
     public static final DeferredItem<Item> WOODSMITHINGHAMMER = ITEMS.register("wood_smithing_hammer",
             () -> new Item(new Item.Properties()
-                    .stacksTo(1)));
+                    .stacksTo(1)
+                    .durability(20)));
     public static final DeferredItem<Item> WHEATBRUSH = ITEMS.register("wheat_brush",
             () -> new Item(new Item.Properties()
                     .stacksTo(1)));

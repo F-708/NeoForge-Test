@@ -7,5 +7,7 @@
   "item.minecraft.raw_iron_nugget": "Raw Dusty Iron Nugget",
   "item.minecraft.hot_raw_iron_nugget": "Raw Dusty Iron Nugget",
   "item.examplemod.pure_raw_gold_ore": "Pure Raw Gold Ore",
-  "item.examplemod.copper_dust": "Copper Dust"
+  "item.examplemod.copper_dust": "Copper Dust",
+
+  "tooltip.examplemod.hot": "This thing is so HOT!"
 }

@@ -19,6 +19,8 @@ group = mod_group_id
 
 repositories {
     mavenLocal()
+    maven { url 'https://maven.kosmx.dev/' }
+    maven { url "https://maven.shedaniel.me/" }
 }
 
 base {
@@ -48,6 +50,8 @@ neoForge {
 
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            systemProperty 'mixin.env.remapRefMap', 'true'
+            systemProperty 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
         }
 
         server {
@@ -113,6 +117,9 @@ configurations {
 }
 
 dependencies {
+
+    implementation("dev.kosmx.player-anim:player-animation-lib-forge:${project.player_anim_version}")
+    implementation("me.shedaniel.cloth:cloth-config-neoforge:${project.cloth_config_version}")
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
@@ -173,6 +180,9 @@ publishing {
     repositories {
         maven {
             url "file://${project.projectDir}/repo"
+        }
+        maven {
+            url 'https://maven.kosmx.dev/'
         }
     }
 }
