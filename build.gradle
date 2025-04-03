@@ -120,6 +120,10 @@ dependencies {
 
     implementation("dev.kosmx.player-anim:player-animation-lib-forge:${project.player_anim_version}")
     implementation("me.shedaniel.cloth:cloth-config-neoforge:${project.cloth_config_version}")
+
+
+
+
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"

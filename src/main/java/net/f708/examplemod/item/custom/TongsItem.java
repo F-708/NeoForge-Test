@@ -50,6 +50,7 @@ public class TongsItem extends Item {
                     ItemStack item = inventory.getItem(slot);
                     int ore = inventory.findSlotMatchingItem(new ItemStack(ModItems.HOTRAWIRONORE.get()));
                     inventory.setItem(ore, new ItemStack(Items.AIR));
+                    player.getAbilities().getWalkingSpeed();
                 }
             }
         }

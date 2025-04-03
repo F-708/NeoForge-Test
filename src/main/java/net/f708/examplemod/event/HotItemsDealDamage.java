@@ -19,18 +19,21 @@ public class HotItemsDealDamage {
 public HotItemsDealDamage(PlayerTickEvent.Post event) {
     Player player = event.getEntity();
     if (tickCounter++ % 20 == 0) {
-        Inventory inventory = player.getInventory();
-        int total = inventory.items.stream()
-                .filter(stack -> stack.is(ModTags.Items.HOT_ITEM))
-                .mapToInt(ItemStack::getCount)
-                .sum();
-        if (inventory.contains(ModTags.Items.VERY_HOT_ITEM)) {
-            player.hurt(player.damageSources().onFire(), 4f);
-            tickCounter = 0;
-        } else if (inventory.contains(ModTags.Items.HOT_ITEM) && total >= 3) {
-            player.hurt(player.damageSources().onFire(), 2f);
-            tickCounter = 0;
+        if (player.getAbilities().getWalkingSpeed() >= 0){
+            Inventory inventory = player.getInventory();
+            int total = inventory.items.stream()
+                    .filter(stack -> stack.is(ModTags.Items.HOT_ITEM))
+                    .mapToInt(ItemStack::getCount)
+                    .sum();
+            if (inventory.contains(ModTags.Items.VERY_HOT_ITEM)) {
+                player.hurt(player.damageSources().onFire(), 4f);
+                tickCounter = 0;
+            } else if (inventory.contains(ModTags.Items.HOT_ITEM) && total >= 3) {
+                player.hurt(player.damageSources().onFire(), 2f);
+                tickCounter = 0;
+            }
         }
+
 
     }
 }
