@@ -1,0 +1,10 @@
+{
+  "type": "examplemod:growth_chamber",
+  "ingredient": {
+    "item": "examplemod:picked_hot_raw_iron1"
+  },
+  "result": {
+    "id": "examplemod:picked_hot_raw_iron2"
+  }
+
+}

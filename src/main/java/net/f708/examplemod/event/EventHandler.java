@@ -2,13 +2,9 @@ package net.f708.examplemod.event;
 
 import com.mojang.logging.LogUtils;
 import net.f708.examplemod.ExampleMod;
-import net.f708.examplemod.TEST.ModDataComponents;
 import net.f708.examplemod.TEST.StageEnum;
 import net.f708.examplemod.item.ModItems;
-import net.f708.examplemod.utils.AnimationHelper;
-import net.f708.examplemod.utils.ForgingProcess;
-import net.f708.examplemod.utils.TickScheduler;
-import net.f708.examplemod.utils.TongsPickup;
+import net.f708.examplemod.utils.*;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
@@ -69,45 +65,45 @@ public class EventHandler {
         HotItemsDealDamage hotItemsDealDamage = new HotItemsDealDamage(event);
     }
 
+    @SubscribeEvent
+    public static void useWithHammer(PlayerInteractEvent.RightClickBlock event){
+        ForgingProcedure.useWithHammer(event);
+    }
+
     //    @SubscribeEvent
 //    public static void useOnAnvil(PlayerInteractEvent.RightClickBlock event){
 //        ForgingProcess.useOnAnvil(event);
 //    }
 
-    @SubscribeEvent
-    public static void test(PlayerInteractEvent.RightClickBlock event) {
-        ItemStack stack = event.getItemStack();
-        ModDataComponents.applyModDataComponent(stack, StageEnum.RAW.toString());
-    }
 
 
-    @SubscribeEvent
-    public static void useOnAnvil(PlayerInteractEvent.RightClickBlock event) {
-        Player player = event.getEntity();
-        Level level = event.getLevel();
-        Block block = level.getBlockState(event.getPos()).getBlock();
-        Item mainHandItem = player.getMainHandItem().getItem();
-        Item offHandItem = player.getOffhandItem().getItem();
-        if (block instanceof AnvilBlock) {
-            if (FORGING_MAP.containsKey(offHandItem) && mainHandItem == ModItems.SMITHINGHAMMER.get()
-                    ||
-                    FORGING_MAP.containsKey(mainHandItem) && offHandItem == ModItems.SMITHINGHAMMER.get()
-            ) {
-                if (player.getCooldowns().isOnCooldown(ModItems.SMITHINGHAMMER.get())) {
-                    event.setCanceled(true);
-                    return;
-                }
-                player.getCooldowns().addCooldown(ModItems.SMITHINGHAMMER.get(), 22);
-                player.getCooldowns().addCooldown(offHandItem, 22);
-                AnimationHelper.playAnimation(level, player, "ore_hit_right");
-                TickScheduler.schedule(() -> {ForgingProcess.useOnAnvil(event);}, 8);
-                event.setCanceled(true);
-
-            }
-
-        }
-
-    }
+//    @SubscribeEvent
+//    public static void useOnAnvil(PlayerInteractEvent.RightClickBlock event) {
+//        Player player = event.getEntity();
+//        Level level = event.getLevel();
+//        Block block = level.getBlockState(event.getPos()).getBlock();
+//        Item mainHandItem = player.getMainHandItem().getItem();
+//        Item offHandItem = player.getOffhandItem().getItem();
+//        if (block instanceof AnvilBlock) {
+//            if (FORGING_MAP.containsKey(offHandItem) && mainHandItem == ModItems.SMITHINGHAMMER.get()
+//                    ||
+//                    FORGING_MAP.containsKey(mainHandItem) && offHandItem == ModItems.SMITHINGHAMMER.get()
+//            ) {
+//                if (player.getCooldowns().isOnCooldown(ModItems.SMITHINGHAMMER.get())) {
+//                    event.setCanceled(true);
+//                    return;
+//                }
+//                player.getCooldowns().addCooldown(ModItems.SMITHINGHAMMER.get(), 22);
+//                player.getCooldowns().addCooldown(offHandItem, 22);
+//                AnimationHelper.playAnimation(level, player, "ore_hit_right");
+//                TickScheduler.schedule(() -> {ForgingProcess.useOnAnvil(event);}, 8);
+//                event.setCanceled(true);
+//
+//            }
+//
+//        }
+//
+//    }
 }
 
 
