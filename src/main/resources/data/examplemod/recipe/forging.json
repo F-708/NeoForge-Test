@@ -1,10 +1,10 @@
 {
-  "type": "examplemod:growth_chamber",
-  "ingredient": {
-    "item": "examplemod:picked_hot_raw_iron1"
-  },
-  "result": {
-    "id": "examplemod:picked_hot_raw_iron2"
-  }
-
+  "type": "examplemod:forging",
+      "ingredient": {
+        "item": "examplemod:picked_hot_raw_iron1"
+      },
+      "result": {
+        "id": "examplemod:picked_hot_raw_iron2"
+      },
+      "max_stage": 5
 }

@@ -3,7 +3,7 @@ package net.f708.examplemod.recipe;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeInput;
 
-public record GrowthChamberRecipeInput(ItemStack input) implements RecipeInput {
+public record CleaningRecipeInput(ItemStack input) implements RecipeInput {
     @Override
     public ItemStack getItem(int index) {
         return input;
@@ -13,6 +13,4 @@ public record GrowthChamberRecipeInput(ItemStack input) implements RecipeInput {
     public int size() {
         return 1;
     }
-
-
 }

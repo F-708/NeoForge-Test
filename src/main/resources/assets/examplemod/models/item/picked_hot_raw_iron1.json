@@ -2,5 +2,31 @@
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "examplemod:item/picked_hot_raw_iron1"
-  }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "examplemod:state": 0.1
+      },
+      "model": "examplemod:item/picked_hot_raw_iron2"
+    },
+    {
+      "predicate": {
+        "examplemod:state": 0.2
+      },
+      "model": "examplemod:item/picked_hot_raw_iron3"
+    },
+    {
+      "predicate": {
+        "examplemod:state": 0.3
+      },
+      "model": "examplemod:item/picked_hot_raw_iron4"
+    },
+    {
+      "predicate": {
+        "examplemod:state": 0.4
+      },
+      "model": "examplemod:item/picked_hot_raw_iron5"
+    }
+  ]
 }
