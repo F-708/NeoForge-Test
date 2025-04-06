@@ -16,13 +16,23 @@ public class ModRecipes {
             DeferredRegister.create(Registries.RECIPE_TYPE, ExampleMod.MODID);
 
 
-    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<GrowthChamberRecipe>> GROWTH_CHAMBER_SERIALIZER =
-            SERIALIZERS.register("growth_chamber", GrowthChamberRecipe.Serializer::new);
-    public static final DeferredHolder<RecipeType<?>, RecipeType<GrowthChamberRecipe>> GROWTH_CHAMBER_TYPE =
-            TYPES.register("growth_chamber", ()-> new RecipeType<GrowthChamberRecipe>() {
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ForgingRecipe>> FORGING_SERIALIZER =
+            SERIALIZERS.register("forging", ForgingRecipe.Serializer::new);
+    public static final DeferredHolder<RecipeType<?>, RecipeType<ForgingRecipe>> FORGING_TYPE =
+            TYPES.register("forging", ()-> new RecipeType<ForgingRecipe>() {
                 @Override
                 public String toString() {
-                    return "growth_chamber";
+                    return "forging";
+                }
+            });
+
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<CleaningRecipe>> CLEANING_SERIALIZER =
+            SERIALIZERS.register("cleaning", CleaningRecipe.Serializer::new);
+    public static final DeferredHolder<RecipeType<?>, RecipeType<CleaningRecipe>> CLEANING_TYPE =
+            TYPES.register("cleaning", ()-> new RecipeType<CleaningRecipe>() {
+                @Override
+                public String toString() {
+                    return "cleaning";
                 }
             });
 

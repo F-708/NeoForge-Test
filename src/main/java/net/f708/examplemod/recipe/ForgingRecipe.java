@@ -13,7 +13,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
-public record GrowthChamberRecipe(Ingredient inputItem, ItemStack output) implements Recipe<GrowthChamberRecipeInput> {
+public record ForgingRecipe(Ingredient inputItem, ItemStack output) implements Recipe<ForgingRecipeInput> {
 
     @Override
     public NonNullList<Ingredient> getIngredients() {
@@ -23,7 +23,7 @@ public record GrowthChamberRecipe(Ingredient inputItem, ItemStack output) implem
     }
 
     @Override
-    public boolean matches(GrowthChamberRecipeInput growthChamberRecipeInput, Level level) {
+    public boolean matches(ForgingRecipeInput growthChamberRecipeInput, Level level) {
         if (level.isClientSide) {
             return false;
         }
@@ -32,7 +32,7 @@ public record GrowthChamberRecipe(Ingredient inputItem, ItemStack output) implem
     }
 
     @Override
-    public ItemStack assemble(GrowthChamberRecipeInput input, HolderLookup.Provider registries) {
+    public ItemStack assemble(ForgingRecipeInput input, HolderLookup.Provider registries) {
         return output.copy();
     }
 
@@ -48,35 +48,35 @@ public record GrowthChamberRecipe(Ingredient inputItem, ItemStack output) implem
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.GROWTH_CHAMBER_SERIALIZER.get();
+        return ModRecipes.FORGING_SERIALIZER.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return ModRecipes.GROWTH_CHAMBER_TYPE.get();
+        return ModRecipes.FORGING_TYPE.get();
     }
 
-    public static class Serializer implements RecipeSerializer<GrowthChamberRecipe> {
+    public static class Serializer implements RecipeSerializer<ForgingRecipe> {
 
-        public static final MapCodec<GrowthChamberRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(GrowthChamberRecipe::inputItem),
-                ItemStack.CODEC.fieldOf("result").forGetter(GrowthChamberRecipe::output)
-        ).apply(inst, GrowthChamberRecipe::new));
+        public static final MapCodec<ForgingRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(ForgingRecipe::inputItem),
+                ItemStack.CODEC.fieldOf("result").forGetter(ForgingRecipe::output)
+        ).apply(inst, ForgingRecipe::new));
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, GrowthChamberRecipe> STREAM_CODEC =
+        public static final StreamCodec<RegistryFriendlyByteBuf, ForgingRecipe> STREAM_CODEC =
                 StreamCodec.composite(
-                        Ingredient.CONTENTS_STREAM_CODEC, GrowthChamberRecipe::inputItem,
-                        ItemStack.STREAM_CODEC, GrowthChamberRecipe::output,
-                        GrowthChamberRecipe::new
+                        Ingredient.CONTENTS_STREAM_CODEC, ForgingRecipe::inputItem,
+                        ItemStack.STREAM_CODEC, ForgingRecipe::output,
+                        ForgingRecipe::new
                 );
 
         @Override
-        public MapCodec<GrowthChamberRecipe> codec() {
+        public MapCodec<ForgingRecipe> codec() {
             return CODEC;
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, GrowthChamberRecipe> streamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, ForgingRecipe> streamCodec() {
             return STREAM_CODEC;
         }
     }

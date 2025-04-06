@@ -23,6 +23,8 @@ public class ModTags {
         // If more than 2 in inventory - damage
         public static final TagKey<Item> HOT_ITEM = createTag("hot_item");
 
+        public static final TagKey<Item> HAMMER_ITEM = createTag("hammer_item");
+
 
             private static TagKey<Item> createTag (String name){
                 return ItemTags.create(ResourceLocation.fromNamespaceAndPath(ExampleMod.MODID, name));

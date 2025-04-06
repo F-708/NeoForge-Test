@@ -1,8 +1,10 @@
 package net.f708.examplemod;
 
 import net.f708.examplemod.block.ModBlocks;
+import net.f708.examplemod.component.ModDataComponents;
 import net.f708.examplemod.item.ModCreativeModeTabs;
 import net.f708.examplemod.item.ModItems;
+import net.f708.examplemod.recipe.ModRecipes;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -37,6 +39,8 @@ public class ExampleMod
         ModCreativeModeTabs.register(modEventBus);
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
+        ModRecipes.register(modEventBus);
+        ModDataComponents.register(modEventBus);
         // Register ourselves for server and other game events we are interested in.
         // Note that this is necessary if and only if we want *this* class (ExampleMod) to respond directly to events.
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
