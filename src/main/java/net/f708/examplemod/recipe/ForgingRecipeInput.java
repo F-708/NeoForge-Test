@@ -3,7 +3,7 @@ package net.f708.examplemod.recipe;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeInput;
 
-public record ForgingRecipeInput(ItemStack input, Integer forgeState) implements RecipeInput {
+public record ForgingRecipeInput(ItemStack input) implements RecipeInput {
     @Override
     public ItemStack getItem(int index) {
         return input;

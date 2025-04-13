@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "examplemod:item/picked_hot_raw_iron1"
+    "layer0": "examplemod:item/picked_hot_raw_iron"
   },
   "overrides": [
     {
@@ -21,12 +21,6 @@
         "examplemod:state": 0.3
       },
       "model": "examplemod:item/picked_hot_raw_iron4"
-    },
-    {
-      "predicate": {
-        "examplemod:state": 0.4
-      },
-      "model": "examplemod:item/picked_hot_raw_iron5"
     }
   ]
 }

@@ -1,9 +1,16 @@
 package net.f708.examplemod.event;
 
+import net.f708.examplemod.attributes.ModAttributes;
 import net.f708.examplemod.item.ModItems;
 import net.f708.examplemod.modProcedures.CleaningProcedure;
 import net.f708.examplemod.modProcedures.ForgingProcedure;
+import net.f708.examplemod.modProcedures.HotItemsProcedure;
+import net.f708.examplemod.modProcedures.PickingProcedure;
 import net.f708.examplemod.utils.*;
+import net.minecraft.data.models.blockstates.VariantProperties;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -12,8 +19,12 @@ import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+
+import java.util.Objects;
 
 @EventBusSubscriber(modid = "examplemod")
 public class EventHandler {
@@ -21,34 +32,14 @@ public class EventHandler {
 
     @SubscribeEvent
     public static void getHotItemFromFurnace(PlayerInteractEvent.RightClickBlock event) {
-        Level level = event.getLevel();
-        Player player = event.getEntity();
-        if (event.getLevel().getBlockState(event.getPos()).is(Blocks.FURNACE)
-                ||
-                (event.getLevel().getBlockState(event.getPos()).is(Blocks.BLAST_FURNACE))) {
-            BlockEntity blockEntity = event.getLevel().getBlockEntity(event.getPos());
-            if (blockEntity instanceof AbstractFurnaceBlockEntity furnace) {
-                ItemStack MainHeldItem = event.getItemStack();
-                ItemStack OffHeldItem = player.getOffhandItem();
-                if (MainHeldItem.is(ModItems.TONGS) && furnace.getItem(2).is(ModItems.HOTRAWIRONORE)
-                        ||
-                        OffHeldItem.is(ModItems.TONGS) && furnace.getItem(2).is(ModItems.HOTRAWIRONORE)) {
-                    AnimationHelper.playAnimation(level, player, "get_hot_ore_right");
-                    TickScheduler.schedule(() -> {TongsPickup tongsPickup = new TongsPickup(event);}, 4);
-                    event.setCanceled(true);
-                    }
-                }
-
-
-        }
-
-
+        PickingProcedure.pickHotItemTongs(event);
     }
 
     @SubscribeEvent
     public static void hotItemsInInventory(PlayerTickEvent.Post event) {
-        HotItemsDealDamage hotItemsDealDamage = new HotItemsDealDamage(event);
+        HotItemsProcedure hotItemsDealDamage = new HotItemsProcedure(event);
     }
+
     @SubscribeEvent
     public static void cleaningItem(PlayerInteractEvent.RightClickItem event) {
         CleaningProcedure.cleanItem(event);
@@ -56,23 +47,10 @@ public class EventHandler {
 
     @SubscribeEvent
     public static void useWithHammer(PlayerInteractEvent.RightClickBlock event) {
-        Player player = event.getEntity();
-        Level level = event.getLevel();
-        ItemStack heldItem = player.getMainHandItem().is(ModTags.Items.HAMMER_ITEM)
-                ? player.getMainHandItem()
-                : player.getOffhandItem();
-            if (heldItem.is(ModTags.Items.HAMMER_ITEM)) {
-                if (!event.getEntity().getCooldowns().isOnCooldown(heldItem.getItem())) {
-                player.getCooldowns().addCooldown(heldItem.getItem(), 20);
-                ForgingProcedure.useWithHammer(event);
-                AnimationHelper.playAnimation(event.getLevel(), player, "hammer_flip");
-                event.setCanceled(true);
-                }
-
-            event.setCanceled(true);
-        }
-
+        ForgingProcedure.accept(event);
     }
+
+}
 
     //    @SubscribeEvent
 //    public static void useOnAnvil(PlayerInteractEvent.RightClickBlock event){
@@ -108,7 +86,7 @@ public class EventHandler {
 //        }
 //
 //    }
-}
+//}
 
 
     

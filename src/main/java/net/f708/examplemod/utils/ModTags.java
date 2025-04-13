@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.Block;
 public class ModTags {
     public static class Blocks{
 
-
+        public static final TagKey<Block> FORGEABLE_BLOCK = createTag("forgeable_block");
 
             private static TagKey<Block> createTag (String name) {
                 return BlockTags.create(ResourceLocation.fromNamespaceAndPath(ExampleMod.MODID, name));
@@ -26,8 +26,8 @@ public class ModTags {
         public static final TagKey<Item> HAMMER_ITEM = createTag("hammer_item");
 
 
-            private static TagKey<Item> createTag (String name){
-                return ItemTags.create(ResourceLocation.fromNamespaceAndPath(ExampleMod.MODID, name));
-            }
+        private static TagKey<Item> createTag (String name){
+            return ItemTags.create(ResourceLocation.fromNamespaceAndPath(ExampleMod.MODID, name));
+        }
     }
 }

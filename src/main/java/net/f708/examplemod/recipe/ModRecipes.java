@@ -2,6 +2,7 @@ package net.f708.examplemod.recipe;
 
 import net.f708.examplemod.ExampleMod;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.bus.api.IEventBus;
@@ -33,6 +34,16 @@ public class ModRecipes {
                 @Override
                 public String toString() {
                     return "cleaning";
+                }
+            });
+
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<PickingRecipe>> PICKING_SERIALIZER =
+            SERIALIZERS.register("picking", PickingRecipe.Serializer::new);
+    public static final DeferredHolder<RecipeType<?>, RecipeType<PickingRecipe>> PICKING_TYPE =
+            TYPES.register("picking", () -> new RecipeType<PickingRecipe>() {
+                @Override
+                public String toString() {
+                    return "picking";
                 }
             });
 

@@ -1,10 +1,10 @@
 {
   "type": "examplemod:forging",
       "ingredient": {
-        "item": "examplemod:picked_hot_raw_iron1"
+        "item": "examplemod:picked_hot_raw_iron"
       },
       "result": {
-        "id": "examplemod:picked_hot_raw_iron2"
+        "id": "examplemod:picked_hot_iron_ingot"
       },
-      "max_stage": 5
+      "max_stage": 4
 }

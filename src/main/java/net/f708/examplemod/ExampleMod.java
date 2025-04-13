@@ -1,14 +1,14 @@
 package net.f708.examplemod;
 
+import net.f708.examplemod.attributes.ModAttributes;
 import net.f708.examplemod.block.ModBlocks;
 import net.f708.examplemod.component.ModDataComponents;
 import net.f708.examplemod.item.ModCreativeModeTabs;
 import net.f708.examplemod.item.ModItems;
-import net.f708.examplemod.modProcedures.ForgingProcedure;
 import net.f708.examplemod.recipe.ModRecipes;
 import net.f708.examplemod.utils.ModItemProperties;
-import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -30,6 +30,7 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 @Mod(ExampleMod.MODID)
 public class ExampleMod
 {
+
     // Define mod id in a common place for everything to reference
     public static final String MODID = "examplemod";
     // Directly reference a slf4j logger
@@ -45,11 +46,12 @@ public class ExampleMod
         ModBlocks.register(modEventBus);
         ModRecipes.register(modEventBus);
         ModDataComponents.register(modEventBus);
+        ModAttributes.register(modEventBus);
         // Register ourselves for server and other game events we are interested in.
         // Note that this is necessary if and only if we want *this* class (ExampleMod) to respond directly to events.
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
+        modEventBus.addListener(this::commonSetup);
         NeoForge.EVENT_BUS.register(this);
-
 
 
         // Register the item to a creative tab

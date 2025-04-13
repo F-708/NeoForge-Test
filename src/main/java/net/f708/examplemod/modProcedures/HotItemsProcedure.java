@@ -1,4 +1,4 @@
-package net.f708.examplemod.event;
+package net.f708.examplemod.modProcedures;
 
 import net.f708.examplemod.utils.ModTags;
 import net.minecraft.world.entity.player.Inventory;
@@ -6,7 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-public class HotItemsDealDamage {
+public class HotItemsProcedure {
 
 
     private static int tickCounter = 0;
@@ -16,7 +16,7 @@ public class HotItemsDealDamage {
     private static boolean hot_item(ItemStack itemStack) {
         return itemStack.is(ModTags.Items.HOT_ITEM);
     }
-public HotItemsDealDamage(PlayerTickEvent.Post event) {
+public HotItemsProcedure(PlayerTickEvent.Post event) {
     Player player = event.getEntity();
     if (tickCounter++ % 20 == 0) {
         Inventory inventory = player.getInventory();

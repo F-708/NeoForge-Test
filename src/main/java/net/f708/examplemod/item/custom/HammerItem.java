@@ -8,9 +8,4 @@ public class HammerItem extends Item {
     public HammerItem(Properties properties) {
         super(properties);
     }
-
-    @Override
-    public int getUseDuration(ItemStack stack, LivingEntity entity) {
-        return 72000;
-    }
 }

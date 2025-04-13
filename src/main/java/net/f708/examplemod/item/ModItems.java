@@ -19,28 +19,28 @@ public class ModItems {
             () -> new HotItem(new Item.Properties()
                     .stacksTo(1)));
     public static final DeferredItem<Item> PICKEDHOTIRONINGOT = ITEMS.register("picked_hot_iron_ingot",
-            () -> new PickedItem(new Item.Properties()
+            () -> new Item(new Item.Properties()
                     .stacksTo(1)));
     public static final DeferredItem<Item> PICKEDIRONINGOT = ITEMS.register("picked_iron_ingot",
-            () -> new PickedItem(new Item.Properties()
+            () -> new Item(new Item.Properties()
                     .stacksTo(1)));
-    public static final DeferredItem<Item> PICKEDHOTRAWIRON1 = ITEMS.register("picked_hot_raw_iron1",
-            () -> new PickedItem(new Item.Properties()
+    public static final DeferredItem<Item> PICKEDHOTRAWIRON = ITEMS.register("picked_hot_raw_iron",
+            () -> new Item(new Item.Properties()
                     .stacksTo(1)));
     public static final DeferredItem<Item> PICKEDHOTRAWIRON2 = ITEMS.register("picked_hot_raw_iron2",
-            () -> new PickedItem(new Item.Properties()
+            () -> new Item(new Item.Properties()
                     .stacksTo(1)));
     public static final DeferredItem<Item> PICKEDHOTRAWIRON3 = ITEMS.register("picked_hot_raw_iron3",
-            () -> new PickedItem(new Item.Properties()
+            () -> new Item(new Item.Properties()
                     .stacksTo(1)));
     public static final DeferredItem<Item> PICKEDHOTRAWIRON4 = ITEMS.register("picked_hot_raw_iron4",
-            () -> new PickedItem(new Item.Properties()
+            () -> new Item(new Item.Properties()
                     .stacksTo(1)));
     public static final DeferredItem<Item> PICKEDHOTRAWIRON5 = ITEMS.register("picked_hot_raw_iron5",
-            () -> new PickedItem(new Item.Properties()
+            () -> new Item(new Item.Properties()
                     .stacksTo(1)));
     public static final DeferredItem<Item> PICKEDHOTRAWIRON6 = ITEMS.register("picked_hot_raw_iron6",
-            () -> new PickedItem(new Item.Properties()
+            () -> new Item(new Item.Properties()
                     .stacksTo(1)));
    public static final DeferredItem<Item> PICKEDHOTIRONSHEET = ITEMS.register("picked_hot_iron_sheet",
             () -> new PickedItem(new Item.Properties()
