@@ -1,7 +1,7 @@
 {
   "type": "examplemod:forging",
       "ingredient": {
-        "item": "examplemod:picked_hot_raw_iron"
+        "item": "examplemod:tongs_picked_hot_iron"
       },
       "result": {
         "id": "examplemod:picked_hot_iron_ingot"

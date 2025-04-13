@@ -1,26 +1,26 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "examplemod:item/picked_hot_raw_iron"
+    "layer0": "examplemod:item/tongs_picked_hot_iron"
   },
   "overrides": [
     {
       "predicate": {
         "examplemod:state": 0.1
       },
-      "model": "examplemod:item/picked_hot_raw_iron2"
+      "model": "examplemod:item/tongs_picked_hot_iron2"
     },
     {
       "predicate": {
         "examplemod:state": 0.2
       },
-      "model": "examplemod:item/picked_hot_raw_iron3"
+      "model": "examplemod:item/tongs_picked_hot_iron3"
     },
     {
       "predicate": {
         "examplemod:state": 0.3
       },
-      "model": "examplemod:item/picked_hot_raw_iron4"
+      "model": "examplemod:item/tongs_picked_hot_iron4"
     }
   ]
 }
