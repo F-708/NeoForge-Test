@@ -1,0 +1,9 @@
+{
+  "type": "examplemod:picking",
+      "ingredient": {
+        "item": "examplemod:hot_raw_iron_ore"
+      },
+      "result": {
+        "id": "examplemod:picked_hot_raw_iron1"
+      }
+}
