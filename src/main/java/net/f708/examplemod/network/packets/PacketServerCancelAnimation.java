@@ -2,12 +2,14 @@ package net.f708.examplemod.network.packets;
 
 import net.f708.examplemod.ExampleMod;
 import net.f708.examplemod.network.NetworkHandler;
-import net.f708.examplemod.utils.AnimationHelper;
+import net.f708.examplemod.utils.animations.AnimationHelper;
+import net.f708.examplemod.utils.animations.PlayerAnimator;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -28,7 +30,7 @@ public record PacketServerCancelAnimation() implements CustomPacketPayload {
         if (context.flow().isServerbound()) {
             context.enqueueWork(() -> {
                 if (!context.player().level().isClientSide()) {
-                    AnimationHelper.cancelAnimation(context.player().level(), context.player());                }
+                    PlayerAnimator.cancelAnimation(context.player().level(), context.player());                }
             }).exceptionally(e -> {
                 context.connection().disconnect(Component.literal(e.getMessage()));
                 return null;

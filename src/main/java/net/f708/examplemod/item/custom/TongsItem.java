@@ -46,7 +46,7 @@ public class TongsItem extends Item {
                 if (player.getInventory().contains(new ItemStack(ModItems.HOTRAWIRONORE.get()))) {
                     Inventory inventory = player.getInventory();
                     int slot = inventory.selected;
-                    inventory.setItem(slot, new ItemStack(ModItems.PICKEDHOTIRONINGOT.get()));
+                    inventory.setItem(slot, new ItemStack(ModItems.TONGSHOTIRON.get()));
                     ItemStack item = inventory.getItem(slot);
                     int ore = inventory.findSlotMatchingItem(new ItemStack(ModItems.HOTRAWIRONORE.get()));
                     inventory.setItem(ore, new ItemStack(Items.AIR));

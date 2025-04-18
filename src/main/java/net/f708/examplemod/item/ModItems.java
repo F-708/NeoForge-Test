@@ -18,16 +18,19 @@ public class ModItems {
     public static final DeferredItem<Item> HOTRAWIRONORE = ITEMS.register("hot_raw_iron_ore",
             () -> new HotItem(new Item.Properties()
                     .stacksTo(1)));
-    public static final DeferredItem<Item> PICKEDHOTIRONINGOT = ITEMS.register("picked_hot_iron_ingot",
+    public static final DeferredItem<Item> TONGSIRONINGOT = ITEMS.register("tongs_iron_ingot",
             () -> new Item(new Item.Properties()
                     .stacksTo(1)));
-    public static final DeferredItem<Item> PICKEDIRONINGOT = ITEMS.register("picked_iron_ingot",
-            () -> new Item(new Item.Properties()
+    public static final DeferredItem<Item> TONGSHOTIRONINGOT = ITEMS.register("tongs_hot_iron_ingot",
+            () -> new PickedItem(new Item.Properties()
                     .stacksTo(1)));
-    public static final DeferredItem<Item> PICKEDHOTRAWIRON = ITEMS.register("tongs_picked_hot_iron",
-            () -> new Item(new Item.Properties()
+    public static final DeferredItem<Item> TONGSHOTIRON = ITEMS.register("tongs_hot_iron",
+            () -> new PickedItem(new Item.Properties()
                     .stacksTo(1)));
-   public static final DeferredItem<Item> PICKEDHOTIRONSHEET = ITEMS.register("picked_hot_iron_sheet",
+    public static final DeferredItem<Item> STICKSHOTIRON = ITEMS.register("sticks_hot_iron",
+            () -> new PickedItem(new Item.Properties()
+                    .stacksTo(1)));
+    public static final DeferredItem<Item> STICKSHOTIRONINGOT = ITEMS.register("sticks_hot_iron_ingot",
             () -> new PickedItem(new Item.Properties()
                     .stacksTo(1)));
     public static final DeferredItem<Item> RAWCLEANEDIRONORE = ITEMS.register("cleaned_raw_iron_ore",
@@ -39,8 +42,6 @@ public class ModItems {
     public static final DeferredItem<Item> HOTRAWIRONNUGGET = ITEMS.register("hot_raw_iron_nugget",
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> PURERAWGOLDORE = ITEMS.register("pure_raw_gold_ore",
-            () -> new Item(new Item.Properties()));
-    public static final DeferredItem<Item> COPPERDUST = ITEMS.register("copper_dust",
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> ROUGHDIAMOND = ITEMS.register("rough_diamond",
             () -> new Item(new Item.Properties()));
@@ -91,9 +92,6 @@ public class ModItems {
             () -> new Item(new Item.Properties()
                     .stacksTo(1)));
     public static final DeferredItem<Item> POINTCHISEL = ITEMS.register("point_chisel",
-            () -> new Item(new Item.Properties()
-                    .stacksTo(1)));
-    public static final DeferredItem<Item> SANDPAPER = ITEMS.register("sandpaper",
             () -> new Item(new Item.Properties()
                     .stacksTo(1)));
 

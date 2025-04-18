@@ -1,0 +1,10 @@
+{
+  "type": "examplemod:forging",
+      "ingredient": {
+        "item": "examplemod:sticks_hot_iron"
+      },
+      "result": {
+        "id": "examplemod:sticks_hot_iron_ingot"
+      },
+      "max_stage": 4
+}

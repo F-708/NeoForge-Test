@@ -2,7 +2,6 @@ package net.f708.examplemod.recipe;
 
 import net.f708.examplemod.ExampleMod;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.bus.api.IEventBus;
@@ -37,13 +36,33 @@ public class ModRecipes {
                 }
             });
 
-    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<PickingRecipe>> PICKING_SERIALIZER =
-            SERIALIZERS.register("picking", PickingRecipe.Serializer::new);
-    public static final DeferredHolder<RecipeType<?>, RecipeType<PickingRecipe>> PICKING_TYPE =
-            TYPES.register("picking", () -> new RecipeType<PickingRecipe>() {
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<SticksPickingRecipe>> STICKS_PICKING_SERIALIZER =
+            SERIALIZERS.register("sticks_picking", SticksPickingRecipe.Serializer::new);
+    public static final DeferredHolder<RecipeType<?>, RecipeType<SticksPickingRecipe>> STICKS_PICKING_TYPE =
+            TYPES.register("sticks_picking", () -> new RecipeType<SticksPickingRecipe>() {
                 @Override
                 public String toString() {
-                    return "picking";
+                    return "sticks_picking";
+                }
+            });
+
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TongsPickingRecipe>> TONGS_PICKING_SERIALIZER =
+            SERIALIZERS.register("tongs_picking", TongsPickingRecipe.Serializer::new);
+    public static final DeferredHolder<RecipeType<?>, RecipeType<TongsPickingRecipe>> TONGS_PICKING_TYPE =
+            TYPES.register("tongs_picking", () -> new RecipeType<TongsPickingRecipe>() {
+                @Override
+                public String toString() {
+                    return "tongs_picking";
+                }
+            });
+
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<CoolingRecipe>> COOLING_SERIALIZER =
+            SERIALIZERS.register("cooling", CoolingRecipe.Serializer::new);
+    public static final DeferredHolder<RecipeType<?>, RecipeType<CoolingRecipe>> COOLING_TYPE =
+            TYPES.register("cooling", () -> new RecipeType<CoolingRecipe>() {
+                @Override
+                public String toString() {
+                    return "cooling";
                 }
             });
 

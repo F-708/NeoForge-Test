@@ -2,7 +2,8 @@ package net.f708.examplemod.network.packets;
 
 import net.f708.examplemod.ExampleMod;
 import net.f708.examplemod.network.NetworkHandler;
-import net.f708.examplemod.utils.AnimationHelper;
+import net.f708.examplemod.utils.animations.AnimationHelper;
+import net.f708.examplemod.utils.animations.PlayerAnimator;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
@@ -24,18 +25,21 @@ public record PacketServerPlayAnimation(String animationName) implements CustomP
             StreamCodec.of((RegistryFriendlyByteBuf buffer, PacketServerPlayAnimation message) ->
                     buffer.writeUtf(message.animationName()), (RegistryFriendlyByteBuf buffer) -> new PacketServerPlayAnimation(buffer.readUtf()));
 
-    public static void handleData(final PacketServerPlayAnimation message, final IPayloadContext context){
-        if (context.flow().isServerbound()){
+
+    public static void handleData(final PacketServerPlayAnimation message, final IPayloadContext context) {
+        if (context.flow().isServerbound()) {
             context.enqueueWork(() -> {
-                if (!context.player().level().isClientSide()){
-                    AnimationHelper.playAnimation(context.player().level(), context.player(), message.animationName());
+                if (!context.player().level().isClientSide()) {
+                    PlayerAnimator.playAnimation(context.player().level(), context.player(), message.animationName());
                 }
             }).exceptionally(e -> {
                 context.connection().disconnect(Component.literal(e.getMessage()));
                 return null;
             });
+
         }
     }
+
     @SubscribeEvent
     public static void registerMessage(FMLCommonSetupEvent event) {
         NetworkHandler.addNetworkMessage(
@@ -49,4 +53,6 @@ public record PacketServerPlayAnimation(String animationName) implements CustomP
     public @NotNull Type<PacketServerPlayAnimation> type() {
         return TYPE;
     }
+
+
 }

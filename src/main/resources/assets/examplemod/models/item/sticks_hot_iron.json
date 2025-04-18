@@ -1,0 +1,26 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "examplemod:item/sticks_hot_iron"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "examplemod:state": 0.1
+      },
+      "model": "examplemod:item/sticks_hot_iron2"
+    },
+    {
+      "predicate": {
+        "examplemod:state": 0.2
+      },
+      "model": "examplemod:item/sticks_hot_iron3"
+    },
+    {
+      "predicate": {
+        "examplemod:state": 0.3
+      },
+      "model": "examplemod:item/sticks_hot_iron4"
+    }
+  ]
+}

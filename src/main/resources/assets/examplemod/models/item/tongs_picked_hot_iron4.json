@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "examplemod:item/tongs_picked_hot_iron4"
-  }
-}

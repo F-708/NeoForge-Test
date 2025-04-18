@@ -37,7 +37,7 @@ public class TongsPickup {
                     Inventory inventory = player.getInventory();
                     int slot = inventory.selected;
                     event.setCanceled(true);
-                        inventory.setItem(slot, new ItemStack(ModItems.PICKEDHOTRAWIRON.get()));
+                        inventory.setItem(slot, new ItemStack(ModItems.TONGSHOTIRON.get()));
                         furnace.setItem(2, ItemStack.EMPTY);
                         level.playSound((Player) null, player.getX(), player.getY(), player.getZ(), SoundEvents.LAVA_POP, SoundSource.PLAYERS, 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) * 0.5F);
                         Random random = new Random();

@@ -1,0 +1,16 @@
+{
+  "forging": {
+    "sounds": [
+         "examplemod:forging1",
+      "examplemod:forging2",
+      "examplemod:forging3",
+      "examplemod:forging4",
+      "examplemod:forging5",
+      "examplemod:forging6",
+      "examplemod:forging7",
+      "examplemod:forging8",
+      "examplemod:forging9",
+      "examplemod:forging10"
+    ]
+  }
+}
