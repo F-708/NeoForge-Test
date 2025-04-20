@@ -37,8 +37,13 @@ public class EventHandler {
     }
 
     @SubscribeEvent
-    public static void cleaningItem(PlayerInteractEvent.RightClickBlock event) {
-        ProcedureHandler.CoolingProcedure(event);
+    public static void coolingItem(PlayerInteractEvent.RightClickBlock event) {
+        ProcedureHandler.CoolingProcedure(event.getLevel(), event.getEntity(), event.getPos());
+    }
+
+    @SubscribeEvent
+    public static void coolingItem(PlayerInteractEvent.RightClickItem event) {
+        ProcedureHandler.CoolingProcedure(event.getLevel(), event.getEntity(), event.getPos());
     }
 
     @SubscribeEvent

@@ -8,6 +8,7 @@ import net.f708.examplemod.utils.ModTags;
 import net.f708.examplemod.utils.TickScheduler;
 import net.f708.examplemod.utils.ConditionsHelper;
 import net.f708.examplemod.utils.Utils;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
@@ -17,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -26,11 +28,13 @@ import java.util.Optional;
 public class ProcedureHandler {
 
     public static void ForgingProcedure(PlayerInteractEvent.RightClickBlock event) {
-        if (ConditionsHelper.isMetForgingConditions(event)) {
-            Player player = event.getEntity();
+        Level level = event.getLevel();
+        Player player = event.getEntity();
+        if (ConditionsHelper.isMetForgingConditions(level, player, event.getPos())) {
+
             AttributeMap attributeMap = player.getAttributes();
             Inventory inventory = player.getInventory();
-            Level level = event.getLevel();
+
             int slotWithForgeable;
             RecipeManager recipeManager = event.getLevel().getRecipeManager();
             Optional<RecipeHolder<ForgingRecipe>> recipeOptional;
@@ -68,39 +72,77 @@ public class ProcedureHandler {
                 AnimationHandler.playForgingAnimation(hand);
                 player.getCooldowns().addCooldown(Hammer.getItem(), 45);
                 event.setCanceled(true);
+                BlockPos pos = event.getPos();
                 Utils.slowDownPlayer(attributeMap, player, 45);
                 Hammer.hurtAndBreak(1, player, Hammer.getEquipmentSlot());
                 TickScheduler.schedule(() -> {
-                    Utils.playForgingSound(event);
-                    Utils.sendForgingParticles(event);
+                    Utils.playForgingSound(level, pos);
+                    Utils.sendForgingParticles((ServerLevel) level, pos);
                 }, 11);
                 TickScheduler.schedule(() -> {
-                    Utils.playForgingSound(event);
-                    Utils.sendForgingParticles(event);
+                    Utils.playForgingSound(level, pos);
+                    Utils.sendForgingParticles((ServerLevel) level, pos);
                 }, 25);
                 TickScheduler.schedule(() -> {
-                    Utils.playForgingSound(event);
-                    Utils.sendForgingParticles(event);
+                    Utils.playForgingSound(level, pos);
+                    Utils.sendForgingParticles((ServerLevel) level, pos);
                 }, 39);
-                if (currentStage >= maxStage) {
-                    inventory.setItem(slotWithForgeable, result);
-                }
+
                 TickScheduler.schedule(() -> {
                     if (currentStage < maxStage) {
-                        inventory.getItem(slotWithForgeable).set(ModDataComponents.FORGE_STATE, currentStage + 1);
+                        if (player.getOffhandItem().is(ModTags.Items.HAMMER_ITEM)) {
+                            int slotWithForgeableMain = inventory.selected;
+                            Optional<RecipeHolder<ForgingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
+                                    ModRecipes.FORGING_TYPE.get(),
+                                    new ForgingRecipeInput(player.getMainHandItem()),
+                                    event.getLevel());
+                            if (recipeOptionalMain.isPresent()) {
+                                inventory.getItem(slotWithForgeableMain).set(ModDataComponents.FORGE_STATE, currentStage + 1);
+                            }
+                        } else if (player.getMainHandItem().is(ModTags.Items.HAMMER_ITEM)){
+                            int slotWithForgeableOff = 40;
+                            Optional<RecipeHolder<ForgingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
+                                    ModRecipes.FORGING_TYPE.get(),
+                                    new ForgingRecipeInput(player.getOffhandItem()),
+                                    event.getLevel());
+                            if (recipeOptionalOff.isPresent()){
+                                inventory.getItem(slotWithForgeableOff).set(ModDataComponents.FORGE_STATE, currentStage + 1);
+                            }
+                        }
+                    } else {
+                        if (player.getOffhandItem().is(ModTags.Items.HAMMER_ITEM)) {
+                            int slotWithForgeableMain = inventory.selected;
+                            Optional<RecipeHolder<ForgingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
+                                    ModRecipes.FORGING_TYPE.get(),
+                                    new ForgingRecipeInput(player.getMainHandItem()),
+                                    event.getLevel());
+                            if (recipeOptionalMain.isPresent()){
+                                inventory.setItem(slotWithForgeableMain, result);
+                            }
+                        }
+                        else if (player.getMainHandItem().is(ModTags.Items.HAMMER_ITEM)){
+                            int slotWithForgeableOff = 40;
+                            Optional<RecipeHolder<ForgingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
+                                    ModRecipes.FORGING_TYPE.get(),
+                                    new ForgingRecipeInput(player.getOffhandItem()),
+                                    event.getLevel());
+                            if (recipeOptionalOff.isPresent()){
+                                inventory.setItem(slotWithForgeableOff, result);
+                            }
+                        }
                     }
                 }, 45);
 
             }
-        } else if (ConditionsHelper.isHoldingHammer(event) && ConditionsHelper.isForgeableBlock(event)){
+        } else if (ConditionsHelper.isHoldingHammer(player) && ConditionsHelper.isForgeableBlock(level, event.getPos())){
             event.setCanceled(true);
         }
     }
 
     public static void PickingProcedure(PlayerInteractEvent.RightClickBlock event){
-        if (ConditionsHelper.isMetPickingConditions(event)) {
-            Player player = event.getEntity();
-            Level level = event.getLevel();
+        Player player = event.getEntity();
+        Level level = event.getLevel();
+        if (ConditionsHelper.isMetPickingConditions(level, player, event.getPos())) {
             Inventory inventory = player.getInventory();
             AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity) level.getBlockEntity(event.getPos());
             int slotWithHolder;
@@ -112,7 +154,7 @@ public class ProcedureHandler {
             RecipeHolder<SticksPickingRecipe> sticksRecipeHolder;
             RecipeHolder<TongsPickingRecipe> tongsRecipeHolder;
 
-            if (ConditionsHelper.isHoldingTongs(event)) {
+            if (ConditionsHelper.isHoldingTongs(player)) {
                 Holder = ModItems.TONGS.toStack();
             } else {
                 Holder = ModItems.TWOSTICKS.toStack();
@@ -157,8 +199,21 @@ public class ProcedureHandler {
                 ItemStack result = tongsRecipeHolder.value().assemble(new TongsPickingRecipeInput(Holder), level.registryAccess());
                 AnimationHandler.playPickingAnimation(hand);
                 event.setCanceled(true);
+                TickScheduler.schedule(()->{
+                    Utils.playPickingSound(level, event.getPos());
+                }, 4);
                 TickScheduler.schedule(() -> {
-                        inventory.setItem(slotWithHolder, result);
+                    if (ConditionsHelper.isHoldingTongs(player)){
+                        Utils.sendPickingParticles((ServerLevel) level, event.getPos());
+                        int slot;
+                        if (player.getMainHandItem().is(ModItems.TONGS)){
+                            slot = inventory.selected;
+                        } else {
+                            slot = 40;
+                        }
+                        inventory.setItem(slot, result);
+                    }
+
                 }, 8);
                 } else if (sticksRecipeOptional.isPresent()) {
                 furnace.setItem(2, ItemStack.EMPTY);
@@ -166,49 +221,81 @@ public class ProcedureHandler {
                 ItemStack result = sticksRecipeHolder.value().getResultItem(level.registryAccess());
                 AnimationHandler.playPickingAnimation(hand);
                 event.setCanceled(true);
+                TickScheduler.schedule(()->{
+                    Utils.playPickingSound(level, event.getPos());
+                }, 4);
                 TickScheduler.schedule(() -> {
-                    inventory.setItem(slotWithHolder, result);
+                    if (ConditionsHelper.isHoldingSticks(player)) {
+                        int slot;
+                        if (player.getMainHandItem().is(ModItems.TWOSTICKS)) {
+                            slot = inventory.selected;
+                        } else {
+                            slot = 40;
+                        }
+                        inventory.setItem(slot, result);
+                    }
                 }, 8);
             }
 
-        } else if (ConditionsHelper.isHoldingTongs(event) || ConditionsHelper.isHoldingSticks(event)){
+        } else if (ConditionsHelper.isHoldingTongs(player) || ConditionsHelper.isHoldingSticks(player)){
             event.setCanceled(true);
         }
     }
 
-    public static void CoolingProcedure (PlayerInteractEvent.RightClickBlock event){
-        ExampleMod.LOGGER.debug("cooling procedure started");
-        if (ConditionsHelper.isMetCoolingConditions(event)) {
-            ExampleMod.LOGGER.debug("cooling procedure conditions met");
+    public static void CoolingProcedure (Level level, Player player, BlockPos pos){
+        Inventory inventory = player.getInventory();
+        if (ConditionsHelper.isMetCoolingConditions(player, level)) {
+            if (ConditionsHelper.isMetMicsConditions(player)) {
+                if (ConditionsHelper.isWaterCauldron(level.getBlockState(pos).getBlock()) || ConditionsHelper.isPlayerInWater(player)) {
+                    RecipeManager recipeManager = level.getRecipeManager();
 
-            Player player = event.getEntity();
-            Level level = event.getLevel();
-            Inventory inventory = player.getInventory();
+                    Optional<RecipeHolder<CoolingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
+                            ModRecipes.COOLING_TYPE.get(),
+                            new CoolingRecipeInput(player.getOffhandItem()),
+                            level);
+                    Optional<RecipeHolder<CoolingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
+                            ModRecipes.COOLING_TYPE.get(),
+                            new CoolingRecipeInput(player.getMainHandItem()),
+                            level);
 
-            RecipeManager recipeManager = event.getLevel().getRecipeManager();
+                    if (recipeOptionalOff.isPresent()) {
+                        AnimationHandler.playCoolingAnimation(InteractionHand.OFF_HAND);
+                        ItemStack result = recipeOptionalOff.get().value().assemble(new CoolingRecipeInput(player.getOffhandItem()), level.registryAccess());
 
-            Optional<RecipeHolder<CoolingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
-                    ModRecipes.COOLING_TYPE.get(),
-                    new CoolingRecipeInput(player.getOffhandItem()),
-                    level);
-            Optional<RecipeHolder<CoolingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
-                    ModRecipes.COOLING_TYPE.get(),
-                    new CoolingRecipeInput(player.getMainHandItem()),
-                    level);
+                        TickScheduler.schedule(() -> {
+                            Utils.sendCoolingParticles((ServerLevel) level, pos);
+                            Utils.playCoolingSound(level, pos);
+                        }, 10);
+                        TickScheduler.schedule(() -> {
+                            if (ConditionsHelper.isMetCoolingConditions(player, level)) {
+                                inventory.setItem(40, result);
 
-            if (recipeOptionalOff.isPresent()) {
-                AnimationHandler.playCoolingAnimation(InteractionHand.OFF_HAND);
-                ItemStack result = recipeOptionalOff.get().value().assemble(new CoolingRecipeInput(player.getOffhandItem()), level.registryAccess());
-                TickScheduler.schedule(()->
-                        inventory.setItem(40, result), 16);
+                            }
+                        }, 16);
 
-            } else if (recipeOptionalMain.isPresent()) {
-                AnimationHandler.playCoolingAnimation(InteractionHand.MAIN_HAND);
-                ItemStack result = recipeOptionalMain.get().value().assemble(new CoolingRecipeInput(player.getMainHandItem()), level.registryAccess());
-                TickScheduler.schedule(()->
-                        inventory.setItem(inventory.selected, result), 16);
+                    } else if (recipeOptionalMain.isPresent()) {
+                        AnimationHandler.playCoolingAnimation(InteractionHand.MAIN_HAND);
+                        ItemStack result = recipeOptionalMain.get().value().assemble(new CoolingRecipeInput(player.getMainHandItem()), level.registryAccess());
+
+                        TickScheduler.schedule(() -> {
+                            Utils.sendCoolingParticles((ServerLevel) level, pos);
+                            Utils.playCoolingSound(level, pos);
+                        }, 10);
+                        TickScheduler.schedule(() -> {
+                            if (ConditionsHelper.isMetCoolingConditions(player, level)) {
+                                inventory.setItem(inventory.selected, result);
+                            }
+
+                        }, 16);
+                    }
+                }
             }
         }
     }
+
+    public static void CleaningProcedure (PlayerInteractEvent.RightClickItem event){
+
+    }
+
 
 }

@@ -17,7 +17,7 @@ public class ModModifiers {
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath("examplemod", "block_range");
         return new AttributeModifier(
                 id,
-                -0.7,
+                -0.65,
                 AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
         );
     }

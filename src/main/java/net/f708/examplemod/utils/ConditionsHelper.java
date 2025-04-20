@@ -23,28 +23,28 @@ import java.util.Optional;
 
 public class ConditionsHelper {
 
-    public static boolean isHoldingHammer(PlayerInteractEvent.RightClickBlock event) {
-        return event.getEntity().getMainHandItem().is(ModTags.Items.HAMMER_ITEM) || (event.getEntity().getOffhandItem().is(ModTags.Items.HAMMER_ITEM));
+    public static boolean isHoldingHammer(Player player) {
+        return player.getMainHandItem().is(ModTags.Items.HAMMER_ITEM) || (player.getOffhandItem().is(ModTags.Items.HAMMER_ITEM));
     }
 
-    public static boolean isHoldingForgeableItem(PlayerInteractEvent.RightClickBlock event) {
+    public static boolean isHoldingForgeableItem(Player player, Level level) {
         boolean result = false;
-        if (isHoldingHammer(event)) {
+        if (isHoldingHammer(player)) {
 
-            RecipeManager recipeManager = event.getLevel().getRecipeManager();
-            if (event.getEntity().getMainHandItem().is(ModTags.Items.HAMMER_ITEM)) {
+            RecipeManager recipeManager = level.getRecipeManager();
+            if (player.getMainHandItem().is(ModTags.Items.HAMMER_ITEM)) {
                 Optional<RecipeHolder<ForgingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
                         ModRecipes.FORGING_TYPE.get(),
-                        new ForgingRecipeInput(event.getEntity().getOffhandItem()),
-                        event.getLevel());
+                        new ForgingRecipeInput(player.getOffhandItem()),
+                        level);
                 if (recipeOptionalOff.isPresent()) {
                     result = true;
                 }
             } else {
                 Optional<RecipeHolder<ForgingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
                         ModRecipes.FORGING_TYPE.get(),
-                        new ForgingRecipeInput(event.getEntity().getMainHandItem()),
-                        event.getLevel());
+                        new ForgingRecipeInput(player.getMainHandItem()),
+                        level);
                 if (recipeOptionalMain.isPresent()) {
                     result = true;
                 }
@@ -54,29 +54,66 @@ public class ConditionsHelper {
         return result;
     }
 
-    public static boolean isHoldingTongs(PlayerInteractEvent.RightClickBlock event) {
-        Player player = event.getEntity();
+    public static boolean isHoldingTongs(Player player) {
         return player.getMainHandItem().is(ModItems.TONGS) || (player.getOffhandItem().is(ModItems.TONGS));
     }
 
-    public static boolean isHoldingSticks(PlayerInteractEvent.RightClickBlock event) {
-        Player player = event.getEntity();
+    public static boolean isHoldingSticks(Player player) {
         return player.getMainHandItem().is(ModItems.TWOSTICKS) || (player.getOffhandItem().is(ModItems.TWOSTICKS));
     }
 
-    private static boolean isFurnaceGotRecipeItem(PlayerInteractEvent.RightClickBlock event){
-        Level level = event.getLevel();
+    private static boolean isHoldingHotItemAbleToCool(Player player, Level level){
+
+        boolean result = false;
+        RecipeManager recipeManager = level.getRecipeManager();
+
+        Optional<RecipeHolder<CoolingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
+                ModRecipes.COOLING_TYPE.get(),
+                new CoolingRecipeInput(player.getOffhandItem()),
+                level);
+        Optional<RecipeHolder<CoolingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
+                ModRecipes.COOLING_TYPE.get(),
+                new CoolingRecipeInput(player.getMainHandItem()),
+                level);
+        if (recipeOptionalOff.isPresent() || recipeOptionalMain.isPresent()) {
+            result = true;
+
+        }
+        return result;
+    }
+
+    public static boolean isHoldingCleanableItem(Player player, Level level){
+        boolean result = false;
+        RecipeManager recipeManager = level.getRecipeManager();
+
+        Optional<RecipeHolder<CleaningRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
+                ModRecipes.CLEANING_TYPE.get(),
+                new CleaningRecipeInput(player.getOffhandItem()),
+                level);
+        Optional<RecipeHolder<CleaningRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
+                ModRecipes.CLEANING_TYPE.get(),
+                new CleaningRecipeInput(player.getMainHandItem()),
+                level);
+        if (recipeOptionalOff.isPresent() || recipeOptionalMain.isPresent()) {
+            result = true;
+
+        }
+        return result;
+    }
+
+
+    private static boolean isFurnaceGotRecipeItem(Level level, BlockPos pos){
         boolean result = false;
         Optional<RecipeHolder<TongsPickingRecipe>> tongsRecipeOptional;
         Optional<RecipeHolder<SticksPickingRecipe>> sticksRecipeOptional;
-        if (isAbstractFurnaceBlockEntity(event)){
-            AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity) level.getBlockEntity(event.getPos());
-            tongsRecipeOptional = event.getLevel().getRecipeManager().getRecipeFor(
+        if (isAbstractFurnaceBlockEntity(level, pos)){
+            AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity) level.getBlockEntity(pos);
+            tongsRecipeOptional = level.getRecipeManager().getRecipeFor(
                     ModRecipes.TONGS_PICKING_TYPE.get(),
                     new TongsPickingRecipeInput(furnace.getItem(2)),
                     level
             );
-            sticksRecipeOptional = event.getLevel().getRecipeManager().getRecipeFor(
+            sticksRecipeOptional = level.getRecipeManager().getRecipeFor(
                     ModRecipes.STICKS_PICKING_TYPE.get(),
                     new SticksPickingRecipeInput(furnace.getItem(2)),
                     level
@@ -88,88 +125,58 @@ public class ConditionsHelper {
         return result;
     }
 
-    private static boolean isHoldingHotItemAbleToCool(PlayerInteractEvent.RightClickBlock event){
 
-        boolean result = false;
-        RecipeManager recipeManager = event.getLevel().getRecipeManager();
-
-        Optional<RecipeHolder<CoolingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
-                ModRecipes.COOLING_TYPE.get(),
-                new CoolingRecipeInput(event.getEntity().getOffhandItem()),
-                event.getLevel());
-        Optional<RecipeHolder<CoolingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
-                ModRecipes.COOLING_TYPE.get(),
-                new CoolingRecipeInput(event.getEntity().getMainHandItem()),
-                event.getLevel());
-        if (recipeOptionalOff.isPresent() || recipeOptionalMain.isPresent()) {
-            result = true;
-
-        }
+    public static boolean isWaterCauldron(Block block) {
+        boolean result = block == Blocks.WATER_CAULDRON;
         return result;
     }
 
-
-
-    private static boolean isWaterBlockInstance(PlayerInteractEvent.RightClickBlock event) {
-        Player player = event.getEntity();
-        Level level = event.getLevel();
-        BlockPos pos = event.getPos();
-        Block block = level.getBlockState(pos).getBlock();
-
-        boolean result = false;
-
-        if (player.isInWaterOrBubble()) {
-            result = true;
-        }
-            if(block == Blocks.WATER_CAULDRON){
-                result = true;
-            }
-        return result;
+    public static boolean isPlayerInWater(Player player){
+        return player.isInWaterOrBubble();
     }
 
-    public static boolean isForgeableBlock(PlayerInteractEvent.RightClickBlock event) {
-        return event.getLevel().getBlockState(event.getPos()).is(ModTags.Blocks.FORGEABLE_BLOCK);
+    public static boolean isForgeableBlock(Level level, BlockPos pos) {
+        return level.getBlockState(pos).is(ModTags.Blocks.FORGEABLE_BLOCK);
     }
 
-    private static boolean isAbstractFurnaceBlockEntity(PlayerInteractEvent.RightClickBlock event){
-        return event.getLevel().getBlockEntity(event.getPos()) instanceof AbstractFurnaceBlockEntity;
+    private static boolean isAbstractFurnaceBlockEntity(Level level, BlockPos pos){
+        return level.getBlockEntity(pos) instanceof AbstractFurnaceBlockEntity;
     }
 
 
-    private static boolean isInAir(PlayerInteractEvent.RightClickBlock event) {
-        return !event.getEntity().isFallFlying();
+    private static boolean isInAir(Player player) {
+        return !player.isFallFlying();
     }
 
-    private static boolean isSleeping(PlayerInteractEvent.RightClickBlock event) {
-        return !event.getEntity().isSleeping();
+    private static boolean isSleeping(Player player) {
+        return !player.isSleeping();
     }
 
-    private static boolean isPassenger(PlayerInteractEvent.RightClickBlock event) {
-        return !event.getEntity().isPassenger();
+    private static boolean isPassenger(Player player) {
+        return !player.isPassenger();
     }
 
-    private static boolean isSprinting(PlayerInteractEvent.RightClickBlock event) {
-        return !event.getEntity().isSprinting();
+    private static boolean isSprinting(Player player) {
+        return !player.isSprinting();
     }
 
-
-    public static boolean isMetForgingConditions(PlayerInteractEvent.RightClickBlock event){
-        return isHoldingHammer(event)
-                && isHoldingForgeableItem(event)
-                && isForgeableBlock(event) && isInAir(event) && isSleeping(event) && isPassenger(event) && isSprinting(event);
+    public static boolean isMetMicsConditions(Player player){
+        return isInAir(player) && isSleeping(player) && isPassenger(player) && isSprinting(player);
     }
 
-    public static boolean isMetPickingConditions(PlayerInteractEvent.RightClickBlock event){
-        return isHoldingTongs(event) || isHoldingSticks(event) && isAbstractFurnaceBlockEntity(event) && isFurnaceGotRecipeItem(event) && isInAir(event) && isSleeping(event) && isPassenger(event) && isSprinting(event);
+    public static boolean isMetForgingConditions(Level level, Player player, BlockPos pos){
+        return isHoldingHammer(player)
+                && isHoldingForgeableItem(player, level)
+                && isForgeableBlock(level, pos);
     }
 
-    public static boolean isMetCoolingConditions(PlayerInteractEvent.RightClickBlock event){
+    public static boolean isMetPickingConditions(Level level, Player player, BlockPos pos){
+        return isHoldingTongs(player) || isHoldingSticks(player) && isAbstractFurnaceBlockEntity(level, pos) && isFurnaceGotRecipeItem(level, pos);
+    }
+
+    public static boolean isMetCoolingConditions(Player player, Level level){
         return
-//                isHoldingHotItemAbleToCool(event)
-//                        &&
-                isWaterBlockInstance(event)
-                &&
-        isSleeping(event) && isPassenger(event) && isSprinting(event);
+                isHoldingHotItemAbleToCool(player, level);
     }
 
 
