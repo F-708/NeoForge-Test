@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "realisticforging:carved_diamond_ore"
+        }
+      ],
+      "rolls": 0.8
+    }
+  ],
+  "random_sequence": "realisticforging:blocks/carved_diamond_ore"
+}

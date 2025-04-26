@@ -1,0 +1,9 @@
+{
+  "type": "realisticforging:tongsget",
+      "ingredient": {
+        "item": "realisticforging:tongs_iron_ingot"
+      },
+      "result": {
+        "id": "minecraft:iron_ingot"
+      }
+}

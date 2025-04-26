@@ -1,0 +1,10 @@
+{
+  "type": "realisticforging:forging",
+      "ingredient": {
+        "item": "realisticforging:tongs_hot_iron"
+      },
+      "result": {
+        "id": "realisticforging:tongs_hot_iron_ingot"
+      },
+      "max_stage": 4
+}

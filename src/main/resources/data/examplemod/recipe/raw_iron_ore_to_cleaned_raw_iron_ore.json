@@ -1,9 +1,0 @@
-{
-  "type": "examplemod:cleaning",
-      "ingredient": {
-        "item": "minecraft:raw_iron"
-      },
-      "result": {
-        "id": "examplemod:cleaned_raw_iron_ore"
-      }
-}

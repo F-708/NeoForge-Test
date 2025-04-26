@@ -1,9 +1,0 @@
-{
-  "type": "examplemod:cooling",
-      "ingredient": {
-        "item": "examplemod:tongs_hot_iron_ingot"
-      },
-      "result": {
-        "id": "examplemod:tongs_iron_ingot"
-      }
-}

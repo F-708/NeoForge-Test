@@ -1,0 +1,26 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "realisticforging:item/sticks_hot_iron"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "realisticforging:state": 0.1
+      },
+      "model": "realisticforging:item/sticks_hot_iron2"
+    },
+    {
+      "predicate": {
+        "realisticforging:state": 0.2
+      },
+      "model": "realisticforging:item/sticks_hot_iron3"
+    },
+    {
+      "predicate": {
+        "realisticforging:state": 0.3
+      },
+      "model": "realisticforging:item/sticks_hot_iron4"
+    }
+  ]
+}

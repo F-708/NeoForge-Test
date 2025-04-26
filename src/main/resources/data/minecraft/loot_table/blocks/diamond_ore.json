@@ -41,7 +41,7 @@
                   "function": "minecraft:explosion_decay"
                 }
               ],
-              "name": "examplemod:carved_diamond_ore"
+              "name": "realisticforging:carved_diamond_ore"
             }
           ]
         }
@@ -49,5 +49,5 @@
       "rolls": 1.0
     }
   ],
-  "random_sequence": "examplemod:blocks/carved_diamond_ore"
+  "random_sequence": "realisticforging:blocks/carved_diamond_ore"
 }

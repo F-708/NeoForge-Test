@@ -1,0 +1,9 @@
+{
+  "type": "realisticforging:cleaning",
+      "ingredient": {
+        "item": "minecraft:raw_iron"
+      },
+      "result": {
+        "id": "realisticforging:cleaned_raw_iron_ore"
+      }
+}

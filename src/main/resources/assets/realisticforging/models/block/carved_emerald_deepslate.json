@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "realisticforging:block/carved_emerald_deepslate"
+  }
+}

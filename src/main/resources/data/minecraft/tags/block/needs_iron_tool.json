@@ -1,9 +1,9 @@
 {
   "replace": false,
   "values": [
-    "examplemod:carved_diamond_ore",
-    "examplemod:carved_diamond_ore2",
-    "examplemod:carved_emerald_ore",
-    "examplemod:carved_emerald_ore2"
+    "realisticforging:carved_diamond_ore",
+    "realisticforging:carved_diamond_ore2",
+    "realisticforging:carved_emerald_ore",
+    "realisticforging:carved_emerald_ore2"
   ]
 }

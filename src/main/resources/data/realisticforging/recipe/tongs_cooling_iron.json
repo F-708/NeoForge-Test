@@ -1,0 +1,9 @@
+{
+  "type": "realisticforging:cooling",
+      "ingredient": {
+        "item": "realisticforging:tongs_hot_iron_ingot"
+      },
+      "result": {
+        "id": "realisticforging:tongs_iron_ingot"
+      }
+}

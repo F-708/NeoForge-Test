@@ -1,0 +1,9 @@
+{
+  "type": "realisticforging:sticks_picking",
+      "ingredient": {
+        "item": "realisticforging:hot_raw_iron_ore"
+      },
+      "result": {
+        "id": "realisticforging:sticks_hot_iron"
+      }
+}

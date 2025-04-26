@@ -1,9 +1,9 @@
 {
   "replace": false,
   "values": [
-    "examplemod:carved_diamond_deepslate",
-    "examplemod:carverd_diamond_deepslate2",
-    "examplemod:carved_emerald_deepslate",
-    "examplemod:carved_emerald_deepslate2"
+    "realisticforging:carved_diamond_deepslate",
+    "realisticforging:carverd_diamond_deepslate2",
+    "realisticforging:carved_emerald_deepslate",
+    "realisticforging:carved_emerald_deepslate2"
   ]
 }

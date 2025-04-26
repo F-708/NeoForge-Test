@@ -1,0 +1,9 @@
+{
+  "type": "realisticforging:tongs_picking",
+      "ingredient": {
+        "item": "realisticforging:hot_raw_iron_ore"
+      },
+      "result": {
+        "id": "realisticforging:tongs_hot_iron"
+      }
+}

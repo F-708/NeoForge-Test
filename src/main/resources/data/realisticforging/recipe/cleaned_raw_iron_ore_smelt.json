@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.7,
+  "group": "iron_ingot",
+  "ingredient": {
+    "item": "realisticforging:cleaned_raw_iron_ore"
+  },
+  "result": {
+    "id": "realisticforging:hot_raw_iron_ore"
+  }
+}

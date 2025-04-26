@@ -1,9 +1,0 @@
-{
-  "type": "examplemod:tongs_picking",
-      "ingredient": {
-        "item": "examplemod:hot_raw_iron_ore"
-      },
-      "result": {
-        "id": "examplemod:tongs_hot_iron"
-      }
-}
