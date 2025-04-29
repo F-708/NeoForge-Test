@@ -9,6 +9,7 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.GrindstoneBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -116,6 +117,25 @@ public class ConditionsHelper {
         return result;
     }
 
+    public static boolean isHoldingGrindableItem(Player player, Level level){
+        boolean result = false;
+        RecipeManager recipeManager = level.getRecipeManager();
+
+        Optional<RecipeHolder<GrindRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
+                ModRecipes.GRIND_TYPE.get(),
+                new GrindRecipeInput(player.getOffhandItem()),
+                level);
+        Optional<RecipeHolder<GrindRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
+                ModRecipes.GRIND_TYPE.get(),
+                new GrindRecipeInput(player.getMainHandItem()),
+                level);
+        if (recipeOptionalOff.isPresent() || recipeOptionalMain.isPresent()) {
+            result = true;
+
+        }
+        return result;
+    }
+
 
     private static boolean isFurnaceGotRecipeItem(Level level, BlockPos pos){
         boolean result = false;
@@ -140,6 +160,10 @@ public class ConditionsHelper {
         return result;
     }
 
+
+    public static boolean isGrindStone(Block block){
+        return block instanceof GrindstoneBlock;
+    }
 
     public static boolean isWaterCauldron(Block block) {
         boolean result = block == Blocks.WATER_CAULDRON;
@@ -196,6 +220,10 @@ public class ConditionsHelper {
 
     public static boolean isMetCleaningConditions(Player player, Level level){
         return isHoldingCleanableItem(player, level);
+    }
+
+    public static boolean isMetGrindingConditions(Player player, Level level, Block block){
+        return  isHoldingGrindableItem(player, level) && isGrindStone(block);
     }
 
     public static boolean isMetSticksTongsGetterConditions(Player player, Level level){

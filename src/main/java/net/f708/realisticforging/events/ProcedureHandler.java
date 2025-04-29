@@ -26,6 +26,7 @@ import java.util.Optional;
 
 public class ProcedureHandler {
 
+
     public static void ForgingProcedure(PlayerInteractEvent.RightClickBlock event) {
         Level level = event.getLevel();
         Player player = event.getEntity();
@@ -67,7 +68,6 @@ public class ProcedureHandler {
                 recipeHolder = recipeOptional.get();
                 int maxStage = recipeHolder.value().getMaxStage();
                 result = recipeHolder.value().assemble(new ForgingRecipeInput(inventory.getItem(slotWithForgeable)), level.registryAccess());
-
                 AnimationHelper.playForgingAnimation(hand);
                 player.getCooldowns().addCooldown(Hammer.getItem(), 45);
                 event.setCanceled(true);
@@ -86,6 +86,8 @@ public class ProcedureHandler {
                     Utils.playForgingSound(level, pos);
                     Utils.sendForgingParticles((ServerLevel) level, pos);
                 }, 39);
+
+
 
                 TickScheduler.schedule(() -> {
                     if (!ConditionsHelper.isMetForgingConditions(level, player, pos)) {return;}
@@ -352,6 +354,27 @@ public class ProcedureHandler {
 
     }
 
+    public static void GrindingProcedure(Level level, Player player, BlockPos pos){
+        if (ConditionsHelper.isMetGrindingConditions(player, level, level.getBlockState(pos).getBlock())){
+            if (ConditionsHelper.isMetMicsConditions(player)){
+                InteractionHand hand = InteractionHand.OFF_HAND;
+                int slot = 40;
+                Inventory inventory = player.getInventory();
+                RecipeManager recipeManager = level.getRecipeManager();
+
+                Optional<RecipeHolder<GrindRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
+                        ModRecipes.GRIND_TYPE.get(),
+                        new GrindRecipeInput(player.getMainHandItem()),
+                        level);
+
+                Optional<RecipeHolder<GrindRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
+                        ModRecipes.GRIND_TYPE.get(),
+                        new GrindRecipeInput(player.getOffhandItem()),
+                        level);
+            }
+        }
+    }
+
     public static void SticksTongsGetterProcedure(Level level, Player player){
         if (ConditionsHelper.isMetSticksTongsGetterConditions(player, level)){
             if (ConditionsHelper.isMetMicsConditions(player)){
@@ -382,10 +405,6 @@ public class ProcedureHandler {
                 AnimationHelper.playSticksTongsGettingAnimation(hand);
                 }
         }
-
-
-
-
 
             }
         }

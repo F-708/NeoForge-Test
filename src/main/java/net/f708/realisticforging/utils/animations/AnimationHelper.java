@@ -25,9 +25,9 @@ public class AnimationHelper {
 
     public static void playForgingAnimation(InteractionHand hand) {
         Player player = Minecraft.getInstance().player;
-        PlayerAnimator.cancelAnimation(Minecraft.getInstance().level, player);
+//        PlayerAnimator.cancelAnimation(Minecraft.getInstance().level, player);
         if (hand == InteractionHand.MAIN_HAND) {
-            AnimationHelper.playAnimation(player, "forging_ore_right");
+            playAnimation(player, "forging_ore_right");
         }
         else {
             AnimationHelper.playAnimation(player, "forging_ore_left");
