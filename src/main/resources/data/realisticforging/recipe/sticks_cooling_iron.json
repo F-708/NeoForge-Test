@@ -1,0 +1,9 @@
+{
+  "type": "realisticforging:cooling",
+      "ingredient": {
+        "item": "realisticforging:sticks_hot_iron_ingot"
+      },
+      "result": {
+        "id": "minecraft:iron_ingot"
+      }
+}

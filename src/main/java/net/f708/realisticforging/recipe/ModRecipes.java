@@ -2,8 +2,10 @@ package net.f708.realisticforging.recipe;
 
 import net.f708.realisticforging.RealisticForging;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SimpleCookingSerializer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -86,6 +88,7 @@ public class ModRecipes {
                     return "grind";
                 }
             });
+
 
 
     public static void register(IEventBus eventBus) {

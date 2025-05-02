@@ -2,6 +2,8 @@ package net.f708.realisticforging.events;
 
 import net.f708.realisticforging.component.ModDataComponents;
 import net.f708.realisticforging.item.ModItems;
+import net.f708.realisticforging.network.packets.PacketPPPAnimation;
+import net.f708.realisticforging.network.packets.PacketPlayAnimationAtPlayer;
 import net.f708.realisticforging.recipe.*;
 import net.f708.realisticforging.utils.ModTags;
 import net.f708.realisticforging.utils.TickScheduler;
@@ -10,6 +12,7 @@ import net.f708.realisticforging.utils.Utils;
 import net.f708.realisticforging.utils.animations.AnimationHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.player.Inventory;
@@ -20,6 +23,7 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -31,7 +35,6 @@ public class ProcedureHandler {
         Level level = event.getLevel();
         Player player = event.getEntity();
         if (ConditionsHelper.isMetForgingConditions(level, player, event.getPos())) {
-
             AttributeMap attributeMap = player.getAttributes();
             Inventory inventory = player.getInventory();
 
@@ -68,7 +71,10 @@ public class ProcedureHandler {
                 recipeHolder = recipeOptional.get();
                 int maxStage = recipeHolder.value().getMaxStage();
                 result = recipeHolder.value().assemble(new ForgingRecipeInput(inventory.getItem(slotWithForgeable)), level.registryAccess());
-                AnimationHelper.playForgingAnimation(hand);
+//                AnimationHelper.playForgingAnimation(hand);
+                if (player instanceof ServerPlayer serverPlayer) {
+                    PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(), new PacketPPPAnimation(event.getEntity().getId(), hand));
+                }
                 player.getCooldowns().addCooldown(Hammer.getItem(), 45);
                 event.setCanceled(true);
                 BlockPos pos = event.getPos();

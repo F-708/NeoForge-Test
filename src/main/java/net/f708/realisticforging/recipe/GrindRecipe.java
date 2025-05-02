@@ -1,9 +1,11 @@
 package net.f708.realisticforging.recipe;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -13,7 +15,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
 
-public record GrindRecipe(Ingredient inputItem, ItemStack output) implements Recipe<GrindRecipeInput> {
+public record GrindRecipe(Ingredient inputItem, ItemStack output, Integer maxStage) implements Recipe<GrindRecipeInput> {
 
 
     @Override
@@ -55,13 +57,15 @@ public record GrindRecipe(Ingredient inputItem, ItemStack output) implements Rec
 
         public static final MapCodec<GrindRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
                 Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(GrindRecipe::inputItem),
-                ItemStack.CODEC.fieldOf("result").forGetter(GrindRecipe::output)
+                ItemStack.CODEC.fieldOf("result").forGetter(GrindRecipe::output),
+                Codec.INT.fieldOf("max_stage").forGetter(GrindRecipe::maxStage)
         ).apply(inst, GrindRecipe::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, GrindRecipe> STREAM_CODEC =
                 StreamCodec.composite(
                         Ingredient.CONTENTS_STREAM_CODEC, GrindRecipe::inputItem,
                         ItemStack.STREAM_CODEC, GrindRecipe::output,
+                        ByteBufCodecs.INT, GrindRecipe::maxStage,
                         GrindRecipe::new
                 );
 

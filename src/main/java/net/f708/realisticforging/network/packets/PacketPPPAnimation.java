@@ -9,6 +9,8 @@ import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.network.NetworkHandler;
+import net.f708.realisticforging.utils.animations.AnimationHelper;
+import net.f708.realisticforging.utils.animations.PlayerAnimator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -17,19 +19,21 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.Objects;
 
 // Packet Please Play Player Animation
-
-public record PacketPPPAnimation (String animationName, Integer entityId, boolean override) implements CustomPacketPayload {
+@EventBusSubscriber(modid = RealisticForging.MODID, bus = EventBusSubscriber.Bus.MOD)
+public record PacketPPPAnimation (Integer entityId, InteractionHand hand) implements CustomPacketPayload {
 
 
     public static final CustomPacketPayload.Type<PacketPPPAnimation> TYPE =
@@ -37,10 +41,9 @@ public record PacketPPPAnimation (String animationName, Integer entityId, boolea
 
     public static final StreamCodec<RegistryFriendlyByteBuf, PacketPPPAnimation> STREAM_CODEC =
             StreamCodec.of((RegistryFriendlyByteBuf buffer, PacketPPPAnimation message) -> {
-                buffer.writeUtf(message.animationName);
                 buffer.writeInt(message.entityId);
-                buffer.writeBoolean(message.override);
-            }, (RegistryFriendlyByteBuf buffer) -> new PacketPPPAnimation(buffer.readUtf(), buffer.readInt(), buffer.readBoolean()));
+                buffer.writeEnum(message.hand);
+            }, (RegistryFriendlyByteBuf buffer) -> new PacketPPPAnimation(buffer.readInt(), buffer.readEnum(InteractionHand.class)));
 
     public static void handleData(final PacketPPPAnimation message, final IPayloadContext context) {
         if (context.flow().isClientbound()) {
@@ -55,27 +58,18 @@ public record PacketPPPAnimation (String animationName, Integer entityId, boolea
     @OnlyIn(Dist.CLIENT)
     private static void handleClientData(PacketPPPAnimation message) {
         Level level = Minecraft.getInstance().level;
+
         if (Minecraft.getInstance().player == null || level == null) return;
+//        AnimationHelper.playForgingAnimation(message.hand);
         if (level.getEntity(message.entityId()) != null) {
+
             Player player = (Player) level.getEntity(message.entityId());
             if (player == Minecraft.getInstance().player) return;
             if (player instanceof AbstractClientPlayer clientPlayer) {
-                Object associatedData = PlayerAnimationAccess.getPlayerAssociatedData(clientPlayer).get(ResourceLocation
-                        .fromNamespaceAndPath(RealisticForging.MODID, "player_animations"));
-                if (associatedData instanceof ModifierLayer<?> modifierLayer) {
-                    @SuppressWarnings("unchecked")
-                    var animation = (ModifierLayer<IAnimation>) modifierLayer;
-                    animation.replaceAnimationWithFade(
-                            AbstractFadeModifier.functionalFadeIn(20, (modelName, type, value) -> value),
-                            Objects.requireNonNull(PlayerAnimationRegistry.getAnimation(ResourceLocation.fromNamespaceAndPath
-                                            (RealisticForging.MODID, message.animationName())))
-                                    .playAnimation()
-                                    .setFirstPersonMode(FirstPersonMode.THIRD_PERSON_MODEL)
-                                    .setFirstPersonConfiguration(new FirstPersonConfiguration().setShowRightArm(false).setShowLeftItem(true)));
+                AnimationHelper.playAnimation(clientPlayer, "forging_ore_right");
                 }
             }
         }
-    }
 
 
     @SubscribeEvent
