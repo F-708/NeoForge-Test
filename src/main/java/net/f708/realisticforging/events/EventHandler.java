@@ -61,6 +61,11 @@ public class EventHandler {
         ProcedureHandler.SticksTongsGetterProcedure(event.getLevel(), event.getEntity());
     }
 
+    @SubscribeEvent
+    public static void GrindItem(PlayerInteractEvent.RightClickBlock event){
+        ProcedureHandler.GrindingProcedure(event);
+    }
+
 }
 
 

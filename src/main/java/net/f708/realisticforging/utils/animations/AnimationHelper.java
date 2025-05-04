@@ -71,5 +71,15 @@ public class AnimationHelper {
         player.swing(hand);
     }
 
+    public static void playGrindingAnimation(InteractionHand hand) {
+        Player player = Minecraft.getInstance().player;
+        AnimationHelper.cancelAnimation(player);
+        if (hand == InteractionHand.MAIN_HAND) {
+            AnimationHelper.playAnimation(player, "grinding_right");
+        } else {
+            AnimationHelper.playAnimation(player, "grinding_left");
+        }
+    }
+
 
 }

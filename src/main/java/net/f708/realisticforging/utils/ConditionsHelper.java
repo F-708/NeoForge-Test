@@ -222,8 +222,8 @@ public class ConditionsHelper {
         return isHoldingCleanableItem(player, level);
     }
 
-    public static boolean isMetGrindingConditions(Player player, Level level, Block block){
-        return  isHoldingGrindableItem(player, level) && isGrindStone(block);
+    public static boolean isMetGrindingConditions(Player player, Level level, BlockPos pos){
+        return  isHoldingGrindableItem(player, level) && isGrindStone(level.getBlockState(pos).getBlock());
     }
 
     public static boolean isMetSticksTongsGetterConditions(Player player, Level level){

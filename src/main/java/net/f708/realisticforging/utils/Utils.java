@@ -155,4 +155,9 @@ public class Utils {
             level.playSound(null, player, SoundEvents.BRUSH_GENERIC, SoundSource.PLAYERS, 1f, 1f );
         }, 28);
     }
+
+    public static void playGrindingSound(ServerLevel level, Player player){
+            level.playSound(null, player, SoundEvents.GRINDSTONE_USE, SoundSource.PLAYERS, 1f, 1f );
+
+    }
 }

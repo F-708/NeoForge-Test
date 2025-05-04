@@ -80,9 +80,9 @@ public class ModRecipes {
             });
 
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<GrindRecipe>> GRIND_RECIPE_SERIALIZER =
-            SERIALIZERS.register("grind", GrindRecipe.Serializer::new);
+            SERIALIZERS.register("grinding", GrindRecipe.Serializer::new);
     public static final DeferredHolder<RecipeType<?>, RecipeType<GrindRecipe>> GRIND_TYPE =
-            TYPES.register("grind", () -> new RecipeType<GrindRecipe>() {
+            TYPES.register("grinding", () -> new RecipeType<GrindRecipe>() {
                 @Override
                 public String toString() {
                     return "grind";

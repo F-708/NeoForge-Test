@@ -9,6 +9,7 @@ import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.network.NetworkHandler;
+import net.f708.realisticforging.utils.Animation;
 import net.f708.realisticforging.utils.animations.AnimationHelper;
 import net.f708.realisticforging.utils.animations.PlayerAnimator;
 import net.minecraft.client.Minecraft;
@@ -33,7 +34,7 @@ import java.util.Objects;
 
 // Packet Please Play Player Animation
 @EventBusSubscriber(modid = RealisticForging.MODID, bus = EventBusSubscriber.Bus.MOD)
-public record PacketPPPAnimation (Integer entityId, InteractionHand hand) implements CustomPacketPayload {
+public record PacketPPPAnimation (Integer entityId, InteractionHand hand, Animation animation) implements CustomPacketPayload {
 
 
     public static final CustomPacketPayload.Type<PacketPPPAnimation> TYPE =
@@ -43,7 +44,8 @@ public record PacketPPPAnimation (Integer entityId, InteractionHand hand) implem
             StreamCodec.of((RegistryFriendlyByteBuf buffer, PacketPPPAnimation message) -> {
                 buffer.writeInt(message.entityId);
                 buffer.writeEnum(message.hand);
-            }, (RegistryFriendlyByteBuf buffer) -> new PacketPPPAnimation(buffer.readInt(), buffer.readEnum(InteractionHand.class)));
+                buffer.writeEnum(message.animation);
+            }, (RegistryFriendlyByteBuf buffer) -> new PacketPPPAnimation(buffer.readInt(), buffer.readEnum(InteractionHand.class), buffer.readEnum(Animation.class)));
 
     public static void handleData(final PacketPPPAnimation message, final IPayloadContext context) {
         if (context.flow().isClientbound()) {
@@ -58,15 +60,21 @@ public record PacketPPPAnimation (Integer entityId, InteractionHand hand) implem
     @OnlyIn(Dist.CLIENT)
     private static void handleClientData(PacketPPPAnimation message) {
         Level level = Minecraft.getInstance().level;
-
         if (Minecraft.getInstance().player == null || level == null) return;
-//        AnimationHelper.playForgingAnimation(message.hand);
         if (level.getEntity(message.entityId()) != null) {
-
             Player player = (Player) level.getEntity(message.entityId());
-            if (player == Minecraft.getInstance().player) return;
             if (player instanceof AbstractClientPlayer clientPlayer) {
-                AnimationHelper.playAnimation(clientPlayer, "forging_ore_right");
+                switch (message.animation){
+                    case FORGING -> AnimationHelper.playForgingAnimation(message.hand);
+                    case COOLING -> AnimationHelper.playCoolingAnimation(message.hand);
+                    case PICKING -> AnimationHelper.playPickingAnimation(message.hand);
+                    case CLEANING -> AnimationHelper.playCleaningAnimationBareHands(message.hand);
+                    case GRINDING -> AnimationHelper.playGrindingAnimation(message.hand);
+                    default -> {
+                        return;
+                    }
+
+                }
                 }
             }
         }

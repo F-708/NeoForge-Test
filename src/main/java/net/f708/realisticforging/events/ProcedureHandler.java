@@ -3,12 +3,8 @@ package net.f708.realisticforging.events;
 import net.f708.realisticforging.component.ModDataComponents;
 import net.f708.realisticforging.item.ModItems;
 import net.f708.realisticforging.network.packets.PacketPPPAnimation;
-import net.f708.realisticforging.network.packets.PacketPlayAnimationAtPlayer;
 import net.f708.realisticforging.recipe.*;
-import net.f708.realisticforging.utils.ModTags;
-import net.f708.realisticforging.utils.TickScheduler;
-import net.f708.realisticforging.utils.ConditionsHelper;
-import net.f708.realisticforging.utils.Utils;
+import net.f708.realisticforging.utils.*;
 import net.f708.realisticforging.utils.animations.AnimationHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -25,8 +21,8 @@ import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ProcedureHandler {
 
@@ -64,16 +60,15 @@ public class ProcedureHandler {
                         event.getLevel());
             }
             if (recipeOptional.isPresent()) {
-                if (player.getCooldowns().isOnCooldown(Hammer.getItem())){
+                if (player.getCooldowns().isOnCooldown(Hammer.getItem())) {
                     event.setCanceled(true);
                     return;
                 }
                 recipeHolder = recipeOptional.get();
                 int maxStage = recipeHolder.value().getMaxStage();
                 result = recipeHolder.value().assemble(new ForgingRecipeInput(inventory.getItem(slotWithForgeable)), level.registryAccess());
-//                AnimationHelper.playForgingAnimation(hand);
                 if (player instanceof ServerPlayer serverPlayer) {
-                    PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(), new PacketPPPAnimation(event.getEntity().getId(), hand));
+                    PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(), new PacketPPPAnimation(event.getEntity().getId(), hand, Animation.FORGING));
                 }
                 player.getCooldowns().addCooldown(Hammer.getItem(), 45);
                 event.setCanceled(true);
@@ -94,9 +89,10 @@ public class ProcedureHandler {
                 }, 39);
 
 
-
                 TickScheduler.schedule(() -> {
-                    if (!ConditionsHelper.isMetForgingConditions(level, player, pos)) {return;}
+                    if (!ConditionsHelper.isMetForgingConditions(level, player, pos)) {
+                        return;
+                    }
                     int slotWithForgeableItem;
                     if (player.getOffhandItem().is(ModTags.Items.HAMMER_ITEM)) {
                         slotWithForgeableItem = inventory.selected;
@@ -114,13 +110,13 @@ public class ProcedureHandler {
                             if (recipeOptionalMain.isPresent()) {
                                 inventory.getItem(slotWithForgeableMain).set(ModDataComponents.FORGE_STATE, inventory.getItem(slotWithForgeableMain).getOrDefault(ModDataComponents.FORGE_STATE, 1) + 1);
                             }
-                        } else if (player.getMainHandItem().is(ModTags.Items.HAMMER_ITEM)){
+                        } else if (player.getMainHandItem().is(ModTags.Items.HAMMER_ITEM)) {
                             int slotWithForgeableOff = 40;
                             Optional<RecipeHolder<ForgingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
                                     ModRecipes.FORGING_TYPE.get(),
                                     new ForgingRecipeInput(player.getOffhandItem()),
                                     event.getLevel());
-                            if (recipeOptionalOff.isPresent()){
+                            if (recipeOptionalOff.isPresent()) {
                                 inventory.getItem(slotWithForgeableOff).set(ModDataComponents.FORGE_STATE, inventory.getItem(slotWithForgeableOff).getOrDefault(ModDataComponents.FORGE_STATE, 1) + 1);
                             }
                         }
@@ -131,17 +127,16 @@ public class ProcedureHandler {
                                     ModRecipes.FORGING_TYPE.get(),
                                     new ForgingRecipeInput(player.getMainHandItem()),
                                     event.getLevel());
-                            if (recipeOptionalMain.isPresent()){
+                            if (recipeOptionalMain.isPresent()) {
                                 inventory.setItem(slotWithForgeableMain, result);
                             }
-                        }
-                        else if (player.getMainHandItem().is(ModTags.Items.HAMMER_ITEM)){
+                        } else if (player.getMainHandItem().is(ModTags.Items.HAMMER_ITEM)) {
                             int slotWithForgeableOff = 40;
                             Optional<RecipeHolder<ForgingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
                                     ModRecipes.FORGING_TYPE.get(),
                                     new ForgingRecipeInput(player.getOffhandItem()),
                                     event.getLevel());
-                            if (recipeOptionalOff.isPresent()){
+                            if (recipeOptionalOff.isPresent()) {
                                 inventory.setItem(slotWithForgeableOff, result);
                             }
                         }
@@ -149,12 +144,12 @@ public class ProcedureHandler {
                 }, 42);
 
             }
-        } else if (ConditionsHelper.isHoldingHammer(player) && ConditionsHelper.isForgeableBlock(level, event.getPos())){
+        } else if (ConditionsHelper.isHoldingHammer(player) && ConditionsHelper.isForgeableBlock(level, event.getPos())) {
             event.setCanceled(true);
         }
     }
 
-    public static void PickingProcedure(PlayerInteractEvent.RightClickBlock event){
+    public static void PickingProcedure(PlayerInteractEvent.RightClickBlock event) {
         Player player = event.getEntity();
         Level level = event.getLevel();
         if (ConditionsHelper.isMetPickingConditions(level, player, event.getPos())) {
@@ -165,7 +160,7 @@ public class ProcedureHandler {
             InteractionHand hand = null;
             RecipeManager recipeManager = event.getLevel().getRecipeManager();
             Optional<RecipeHolder<TongsPickingRecipe>> tongsRecipeOptional = Optional.empty();
-            Optional<RecipeHolder<SticksPickingRecipe >> sticksRecipeOptional = Optional.empty();
+            Optional<RecipeHolder<SticksPickingRecipe>> sticksRecipeOptional = Optional.empty();
             RecipeHolder<SticksPickingRecipe> sticksRecipeHolder;
             RecipeHolder<TongsPickingRecipe> tongsRecipeHolder;
 
@@ -183,7 +178,7 @@ public class ProcedureHandler {
                         ModRecipes.TONGS_PICKING_TYPE.get(),
                         new TongsPickingRecipeInput(furnace.getItem(2)),
                         event.getLevel());
-            } else if (player.getOffhandItem().is(ModItems.TONGS)){
+            } else if (player.getOffhandItem().is(ModItems.TONGS)) {
                 slotWithHolder = 40;
                 hand = InteractionHand.OFF_HAND;
                 assert furnace != null;
@@ -191,7 +186,7 @@ public class ProcedureHandler {
                         ModRecipes.TONGS_PICKING_TYPE.get(),
                         new TongsPickingRecipeInput(furnace.getItem(2)),
                         event.getLevel());
-            } else if (player.getMainHandItem().is(ModItems.TWOSTICKS)){
+            } else if (player.getMainHandItem().is(ModItems.TWOSTICKS)) {
                 slotWithHolder = inventory.selected;
                 hand = InteractionHand.MAIN_HAND;
                 assert furnace != null;
@@ -199,7 +194,7 @@ public class ProcedureHandler {
                         ModRecipes.STICKS_PICKING_TYPE.get(),
                         new SticksPickingRecipeInput(furnace.getItem(2)),
                         event.getLevel());
-            } else if (player.getOffhandItem().is(ModItems.TWOSTICKS)){
+            } else if (player.getOffhandItem().is(ModItems.TWOSTICKS)) {
                 slotWithHolder = 40;
                 hand = InteractionHand.OFF_HAND;
                 assert furnace != null;
@@ -216,16 +211,18 @@ public class ProcedureHandler {
                 furnace.setItem(2, ItemStack.EMPTY);
                 tongsRecipeHolder = tongsRecipeOptional.get();
                 ItemStack result = tongsRecipeHolder.value().assemble(new TongsPickingRecipeInput(Holder), level.registryAccess());
-                AnimationHelper.playPickingAnimation(hand);
+                if (player instanceof ServerPlayer serverPlayer) {
+                    PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(), new PacketPPPAnimation(event.getEntity().getId(), hand, Animation.PICKING));
+                }
                 event.setCanceled(true);
-                TickScheduler.schedule(()->{
+                TickScheduler.schedule(() -> {
                     Utils.playPickingSound(level, event.getPos());
                 }, 4);
                 TickScheduler.schedule(() -> {
-                    if (ConditionsHelper.isHoldingTongs(player)){
+                    if (ConditionsHelper.isHoldingTongs(player)) {
                         Utils.sendPickingParticles((ServerLevel) level, event.getPos());
                         int slot;
-                        if (player.getMainHandItem().is(ModItems.TONGS)){
+                        if (player.getMainHandItem().is(ModItems.TONGS)) {
                             slot = inventory.selected;
                         } else {
                             slot = 40;
@@ -238,9 +235,11 @@ public class ProcedureHandler {
                 furnace.setItem(2, ItemStack.EMPTY);
                 sticksRecipeHolder = sticksRecipeOptional.get();
                 ItemStack result = sticksRecipeHolder.value().assemble(new SticksPickingRecipeInput(Holder), level.registryAccess());
-                AnimationHelper.playPickingAnimation(hand);
+                if (player instanceof ServerPlayer serverPlayer) {
+                    PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(), new PacketPPPAnimation(event.getEntity().getId(), hand, Animation.PICKING));
+                }
                 event.setCanceled(true);
-                TickScheduler.schedule(()->{
+                TickScheduler.schedule(() -> {
                     Utils.playPickingSound(level, event.getPos());
                 }, 4);
                 TickScheduler.schedule(() -> {
@@ -256,12 +255,12 @@ public class ProcedureHandler {
                 }, 8);
             }
 
-        } else if (ConditionsHelper.isHoldingTongs(player) || ConditionsHelper.isHoldingSticks(player) && ConditionsHelper.isAbstractFurnaceBlockEntity(level, event.getPos())){
+        } else if ((ConditionsHelper.isHoldingTongs(player) || ConditionsHelper.isHoldingSticks(player)) && ConditionsHelper.isAbstractFurnaceBlockEntity(level, event.getPos())) {
             event.setCanceled(true);
         }
     }
 
-    public static void CoolingProcedure (Level level, Player player, BlockPos pos){
+    public static void CoolingProcedure(Level level, Player player, BlockPos pos) {
         Inventory inventory = player.getInventory();
         if (ConditionsHelper.isMetCoolingConditions(player, level)) {
             if (ConditionsHelper.isMetMicsConditions(player)) {
@@ -278,8 +277,12 @@ public class ProcedureHandler {
                             level);
 
                     if (recipeOptionalOff.isPresent()) {
-                        if (player.getCooldowns().isOnCooldown(player.getOffhandItem().getItem())) {return;}
-                        AnimationHelper.playCoolingAnimation(InteractionHand.OFF_HAND);
+                        if (player.getCooldowns().isOnCooldown(player.getOffhandItem().getItem())) {
+                            return;
+                        }
+                        if (player instanceof ServerPlayer serverPlayer) {
+                            PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), InteractionHand.OFF_HAND, Animation.COOLING));
+                        }
                         ItemStack result = recipeOptionalOff.get().value().assemble(new CoolingRecipeInput(player.getOffhandItem()), level.registryAccess());
                         player.getCooldowns().addCooldown(player.getOffhandItem().getItem(), 20);
                         TickScheduler.schedule(() -> {
@@ -294,8 +297,12 @@ public class ProcedureHandler {
                         }, 16);
 
                     } else if (recipeOptionalMain.isPresent()) {
-                        if (player.getCooldowns().isOnCooldown(player.getMainHandItem().getItem())) {return;}
-                        AnimationHelper.playCoolingAnimation(InteractionHand.MAIN_HAND);
+                        if (player.getCooldowns().isOnCooldown(player.getMainHandItem().getItem())) {
+                            return;
+                        }
+                        if (player instanceof ServerPlayer serverPlayer) {
+                            PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), InteractionHand.MAIN_HAND, Animation.COOLING));
+                        }
                         ItemStack result = recipeOptionalMain.get().value().assemble(new CoolingRecipeInput(player.getMainHandItem()), level.registryAccess());
                         player.getCooldowns().addCooldown(player.getMainHandItem().getItem(), 20);
                         TickScheduler.schedule(() -> {
@@ -314,9 +321,9 @@ public class ProcedureHandler {
         }
     }
 
-    public static void CleaningProcedure (Level level, Player player){
-        if (ConditionsHelper.isMetCleaningConditions(player, level)){
-            if (ConditionsHelper.isMetMicsConditions(player)){
+    public static void CleaningProcedure(Level level, Player player) {
+        if (ConditionsHelper.isMetCleaningConditions(player, level)) {
+            if (ConditionsHelper.isMetMicsConditions(player)) {
                 InteractionHand hand;
                 ItemStack recipeHolder;
                 RecipeManager recipeManager = level.getRecipeManager();
@@ -326,7 +333,7 @@ public class ProcedureHandler {
                         ModRecipes.CLEANING_TYPE.get(),
                         new CleaningRecipeInput(player.getMainHandItem()),
                         level);
-                if (recipeOptionalMain.isPresent()){
+                if (recipeOptionalMain.isPresent()) {
                     stack = player.getMainHandItem();
                     hand = InteractionHand.MAIN_HAND;
                     recipeHolder = recipeOptionalMain.get().value().assemble(new CleaningRecipeInput(player.getMainHandItem()), level.registryAccess());
@@ -341,8 +348,12 @@ public class ProcedureHandler {
                             level);
                     recipeHolder = recipeOptionalMain.get().value().assemble(new CleaningRecipeInput(player.getOffhandItem()), level.registryAccess());
                 }
-                if (player.getCooldowns().isOnCooldown(stack.getItem())) {return;}
-                AnimationHelper.playCleaningAnimationBareHands(hand);
+                if (player.getCooldowns().isOnCooldown(stack.getItem())) {
+                    return;
+                }
+                if (player instanceof ServerPlayer serverPlayer) {
+                    PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), hand, Animation.CLEANING));
+                }
                 player.getCooldowns().addCooldown(stack.getItem(), 40);
                 Utils.sendCleaningParticles((ServerLevel) level, player);
                 Utils.playCleaningSound((ServerLevel) level, player);
@@ -360,30 +371,10 @@ public class ProcedureHandler {
 
     }
 
-    public static void GrindingProcedure(Level level, Player player, BlockPos pos){
-        if (ConditionsHelper.isMetGrindingConditions(player, level, level.getBlockState(pos).getBlock())){
-            if (ConditionsHelper.isMetMicsConditions(player)){
-                InteractionHand hand = InteractionHand.OFF_HAND;
-                int slot = 40;
-                Inventory inventory = player.getInventory();
-                RecipeManager recipeManager = level.getRecipeManager();
 
-                Optional<RecipeHolder<GrindRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
-                        ModRecipes.GRIND_TYPE.get(),
-                        new GrindRecipeInput(player.getMainHandItem()),
-                        level);
-
-                Optional<RecipeHolder<GrindRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
-                        ModRecipes.GRIND_TYPE.get(),
-                        new GrindRecipeInput(player.getOffhandItem()),
-                        level);
-            }
-        }
-    }
-
-    public static void SticksTongsGetterProcedure(Level level, Player player){
-        if (ConditionsHelper.isMetSticksTongsGetterConditions(player, level)){
-            if (ConditionsHelper.isMetMicsConditions(player)){
+    public static void SticksTongsGetterProcedure(Level level, Player player) {
+        if (ConditionsHelper.isMetSticksTongsGetterConditions(player, level)) {
+            if (ConditionsHelper.isMetMicsConditions(player)) {
                 InteractionHand hand = InteractionHand.OFF_HAND;
                 int slot = 40;
                 Inventory inventory = player.getInventory();
@@ -400,18 +391,146 @@ public class ProcedureHandler {
                         new TongsGetterRecipeInput(player.getOffhandItem()),
                         level);
 
-                if (recipeOptionalTongsMain.isPresent()){
+                if (recipeOptionalTongsMain.isPresent()) {
                     hand = InteractionHand.MAIN_HAND;
                     inventory.add(recipeOptionalTongsMain.get().value().assemble(new TongsGetterRecipeInput(player.getMainHandItem()), level.registryAccess()));
                     inventory.setItem(inventory.selected, ModItems.TONGS.toStack());
-                } else if (recipeOptionalTongsOff.isPresent()){
-                        inventory.add(recipeOptionalTongsOff.get().value().assemble(new TongsGetterRecipeInput(player.getOffhandItem()), level.registryAccess()));
-                        inventory.setItem(40, ModItems.TONGS.toStack());
-                    }
-                AnimationHelper.playSticksTongsGettingAnimation(hand);
+                } else if (recipeOptionalTongsOff.isPresent()) {
+                    inventory.add(recipeOptionalTongsOff.get().value().assemble(new TongsGetterRecipeInput(player.getOffhandItem()), level.registryAccess()));
+                    inventory.setItem(40, ModItems.TONGS.toStack());
                 }
+                AnimationHelper.playSticksTongsGettingAnimation(hand);
+            }
         }
+
+    }
+
+    public static void GrindingProcedure(PlayerInteractEvent.RightClickBlock event) {
+        Player player = event.getEntity();
+        Level level = event.getLevel();
+        BlockPos pos = event.getPos();
+        if (ConditionsHelper.isMetGrindingConditions(player, level, pos)) {
+            if (ConditionsHelper.isMetMicsConditions(player)) {
+                InteractionHand hand = InteractionHand.OFF_HAND;
+                int slot = 40;
+                ItemStack result;
+                Optional<RecipeHolder<GrindRecipe>> recipeOptional;
+                Inventory inventory = player.getInventory();
+                RecipeManager recipeManager = level.getRecipeManager();
+                int maxStage;
+
+                Optional<RecipeHolder<GrindRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
+                        ModRecipes.GRIND_TYPE.get(),
+                        new GrindRecipeInput(player.getMainHandItem()),
+                        level);
+
+                Optional<RecipeHolder<GrindRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
+                        ModRecipes.GRIND_TYPE.get(),
+                        new GrindRecipeInput(player.getOffhandItem()),
+                        level);
+
+                if (recipeOptionalMain.isPresent()) {
+                    recipeOptional = recipeOptionalMain;
+                    hand = InteractionHand.MAIN_HAND;
+                    slot = inventory.selected;
+                    result = recipeOptionalMain.get().value().assemble(new GrindRecipeInput(player.getMainHandItem()), level.registryAccess());
+                } else {
+                    recipeOptional = recipeOptionalOff;
+                    result = recipeOptionalOff.get().value().assemble(new GrindRecipeInput(player.getOffhandItem()), level.registryAccess());
+                }
+
+                maxStage = recipeOptional.get().value().maxStage();
+                int currentStage = inventory.getItem(slot).getOrDefault(ModDataComponents.GRIND_STATE, 1);
+
+                if (player instanceof ServerPlayer serverPlayer) {
+                    PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), hand, Animation.GRINDING));
+                }
+                event.setCanceled(true);
+                Utils.playGrindingSound((ServerLevel) level, player);
+                AtomicBoolean finished = new AtomicBoolean(false);
+                TickScheduler.schedule(() -> {
+                    Utils.playGrindingSound((ServerLevel) level, player);
+                }, 11);
+                TickScheduler.schedule(() -> {
+                    Optional<RecipeHolder<GrindRecipe>> recipeOptionalCheck1;
+                    ItemStack resultCheck1 = null;
+                    int slotCheck1 = 0;
+                    if (currentStage < maxStage) {
+                        Optional<RecipeHolder<GrindRecipe>> recipeOptionalMainCheck1 = recipeManager.getRecipeFor(
+                                ModRecipes.GRIND_TYPE.get(),
+                                new GrindRecipeInput(player.getMainHandItem()),
+                                level);
+
+                        Optional<RecipeHolder<GrindRecipe>> recipeOptionalOffCheck1 = recipeManager.getRecipeFor(
+                                ModRecipes.GRIND_TYPE.get(),
+                                new GrindRecipeInput(player.getOffhandItem()),
+                                level);
+
+                        if (recipeOptionalMain.isPresent()) {
+                            recipeOptionalCheck1 = recipeOptionalMain;
+                            slotCheck1 = inventory.selected;
+                            resultCheck1 = recipeOptionalMain.get().value().assemble(new GrindRecipeInput(player.getMainHandItem()), level.registryAccess());
+                        } else {
+                            slotCheck1 = 40;
+                            recipeOptionalCheck1 = recipeOptionalOff;
+                            resultCheck1 = recipeOptionalOff.get().value().assemble(new GrindRecipeInput(player.getOffhandItem()), level.registryAccess());
+                        }
+                        inventory.getItem(slotCheck1).set(ModDataComponents.GRIND_STATE, inventory.getItem(slotCheck1).getOrDefault(ModDataComponents.GRIND_STATE, 1) + 1);
+                    } else {
+                        if (recipeOptionalMain.isPresent()) {
+                            resultCheck1 = recipeOptionalMain.get().value().assemble(new GrindRecipeInput(player.getMainHandItem()), level.registryAccess());
+                        } else {
+                            resultCheck1 = recipeOptionalOff.get().value().assemble(new GrindRecipeInput(player.getOffhandItem()), level.registryAccess());
+                        }
+                        inventory.add(resultCheck1);
+                        finished.set(true);
+                    }
+                }, 23);
+                if (!finished.get()) {
+                    TickScheduler.schedule(() -> {
+                        Utils.playGrindingSound((ServerLevel) level, player);
+                    }, 41);
+                    TickScheduler.schedule(() -> {
+                        Optional<RecipeHolder<GrindRecipe>> recipeOptionalCheck2;
+                        ItemStack resultCheck2 = null;
+                        int slotCheck2 = 0;
+                        if ((currentStage < maxStage) && !finished.get()) {
+                            Optional<RecipeHolder<GrindRecipe>> recipeOptionalMainCheck1 = recipeManager.getRecipeFor(
+                                    ModRecipes.GRIND_TYPE.get(),
+                                    new GrindRecipeInput(player.getMainHandItem()),
+                                    level);
+
+                            Optional<RecipeHolder<GrindRecipe>> recipeOptionalOffCheck1 = recipeManager.getRecipeFor(
+                                    ModRecipes.GRIND_TYPE.get(),
+                                    new GrindRecipeInput(player.getOffhandItem()),
+                                    level);
+
+                            if (recipeOptionalMain.isPresent()) {
+                                recipeOptionalCheck2 = recipeOptionalMain;
+                                slotCheck2 = inventory.selected;
+                                resultCheck2 = recipeOptionalMain.get().value().assemble(new GrindRecipeInput(player.getMainHandItem()), level.registryAccess());
+                            } else {
+                                slotCheck2 = 40;
+                                recipeOptionalCheck2 = recipeOptionalOff;
+                                resultCheck2 = recipeOptionalOff.get().value().assemble(new GrindRecipeInput(player.getOffhandItem()), level.registryAccess());
+                            }
+                            inventory.getItem(slotCheck2).set(ModDataComponents.GRIND_STATE, inventory.getItem(slotCheck2).getOrDefault(ModDataComponents.GRIND_STATE, 1) + 1);
+                        } else {
+                            if (recipeOptionalMain.isPresent()) {
+                                resultCheck2 = recipeOptionalMain.get().value().assemble(new GrindRecipeInput(player.getMainHandItem()), level.registryAccess());
+                            } else {
+                                resultCheck2 = recipeOptionalOff.get().value().assemble(new GrindRecipeInput(player.getOffhandItem()), level.registryAccess());
+                            }
+                            inventory.add(resultCheck2);
+                            finished.set(true);
+                        }
+                    }, 52);
+
+                }
+
 
             }
         }
+    }
+}
 

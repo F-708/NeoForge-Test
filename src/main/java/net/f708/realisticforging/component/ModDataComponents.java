@@ -18,10 +18,8 @@ public class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> FORGE_STATE = register("forge_state",
             builder -> builder.persistent(Codec.INT));
 
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemStack>> PAN_INGREDIENT_ITEM = register("pan_ingredient_item",
-            builder -> builder.persistent(ItemStack.CODEC));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> PAN_INGREDIENT_COUNT = register("pan_ingredient_count",
-            builder -> builder.persistent(Codec.INT));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> GRIND_STATE = register("grind_state",
+            integerBuilder -> integerBuilder.persistent(Codec.INT));
 
     private static <T>DeferredHolder<DataComponentType<?>, DataComponentType<T>> register(String name,
                                                                                           UnaryOperator<DataComponentType.Builder<T>> builderOperator){
