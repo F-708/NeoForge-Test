@@ -242,8 +242,6 @@ public class ProcedureHandler {
                 TickScheduler.schedule(() -> {
                     Utils.playPickingSound(level, event.getPos());
                 }, 4);
-                TickScheduler.schedule(() -> {
-                    if (ConditionsHelper.isHoldingSticks(player)) {
                         int slot;
                         if (player.getMainHandItem().is(ModItems.TWOSTICKS)) {
                             slot = inventory.selected;
@@ -251,8 +249,6 @@ public class ProcedureHandler {
                             slot = 40;
                         }
                         inventory.setItem(slot, result);
-                    }
-                }, 8);
             }
 
         } else if ((ConditionsHelper.isHoldingTongs(player) || ConditionsHelper.isHoldingSticks(player)) && ConditionsHelper.isAbstractFurnaceBlockEntity(level, event.getPos())) {
@@ -418,6 +414,7 @@ public class ProcedureHandler {
                 Inventory inventory = player.getInventory();
                 RecipeManager recipeManager = level.getRecipeManager();
                 int maxStage;
+                int itemAmount = 0;
 
                 Optional<RecipeHolder<GrindRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
                         ModRecipes.GRIND_TYPE.get(),
@@ -437,95 +434,38 @@ public class ProcedureHandler {
                 } else {
                     recipeOptional = recipeOptionalOff;
                     result = recipeOptionalOff.get().value().assemble(new GrindRecipeInput(player.getOffhandItem()), level.registryAccess());
+                    hand = InteractionHand.OFF_HAND;
                 }
 
                 maxStage = recipeOptional.get().value().maxStage();
+                ItemStack processingItem = inventory.getItem(slot);
+                ItemStack singleProcessingItem = processingItem.copy();
+
                 int currentStage = inventory.getItem(slot).getOrDefault(ModDataComponents.GRIND_STATE, 1);
-
-                if (player instanceof ServerPlayer serverPlayer) {
-                    PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), hand, Animation.GRINDING));
-                }
-                event.setCanceled(true);
-                Utils.playGrindingSound((ServerLevel) level, player);
-                AtomicBoolean finished = new AtomicBoolean(false);
-                TickScheduler.schedule(() -> {
-                    Utils.playGrindingSound((ServerLevel) level, player);
-                }, 11);
-                TickScheduler.schedule(() -> {
-                    Optional<RecipeHolder<GrindRecipe>> recipeOptionalCheck1;
-                    ItemStack resultCheck1 = null;
-                    int slotCheck1 = 0;
-                    if (currentStage < maxStage) {
-                        Optional<RecipeHolder<GrindRecipe>> recipeOptionalMainCheck1 = recipeManager.getRecipeFor(
-                                ModRecipes.GRIND_TYPE.get(),
-                                new GrindRecipeInput(player.getMainHandItem()),
-                                level);
-
-                        Optional<RecipeHolder<GrindRecipe>> recipeOptionalOffCheck1 = recipeManager.getRecipeFor(
-                                ModRecipes.GRIND_TYPE.get(),
-                                new GrindRecipeInput(player.getOffhandItem()),
-                                level);
-
-                        if (recipeOptionalMain.isPresent()) {
-                            recipeOptionalCheck1 = recipeOptionalMain;
-                            slotCheck1 = inventory.selected;
-                            resultCheck1 = recipeOptionalMain.get().value().assemble(new GrindRecipeInput(player.getMainHandItem()), level.registryAccess());
-                        } else {
-                            slotCheck1 = 40;
-                            recipeOptionalCheck1 = recipeOptionalOff;
-                            resultCheck1 = recipeOptionalOff.get().value().assemble(new GrindRecipeInput(player.getOffhandItem()), level.registryAccess());
-                        }
-                        inventory.getItem(slotCheck1).set(ModDataComponents.GRIND_STATE, inventory.getItem(slotCheck1).getOrDefault(ModDataComponents.GRIND_STATE, 1) + 1);
-                    } else {
-                        if (recipeOptionalMain.isPresent()) {
-                            resultCheck1 = recipeOptionalMain.get().value().assemble(new GrindRecipeInput(player.getMainHandItem()), level.registryAccess());
-                        } else {
-                            resultCheck1 = recipeOptionalOff.get().value().assemble(new GrindRecipeInput(player.getOffhandItem()), level.registryAccess());
-                        }
-                        inventory.add(resultCheck1);
-                        finished.set(true);
+                if (!player.getCooldowns().isOnCooldown(inventory.getItem(slot).getItem())) {
+                    if (player instanceof ServerPlayer serverPlayer) {
+                        PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), hand, Animation.GRINDING));
                     }
-                }, 23);
-                if (!finished.get()) {
-                    TickScheduler.schedule(() -> {
-                        Utils.playGrindingSound((ServerLevel) level, player);
-                    }, 41);
-                    TickScheduler.schedule(() -> {
-                        Optional<RecipeHolder<GrindRecipe>> recipeOptionalCheck2;
-                        ItemStack resultCheck2 = null;
-                        int slotCheck2 = 0;
-                        if ((currentStage < maxStage) && !finished.get()) {
-                            Optional<RecipeHolder<GrindRecipe>> recipeOptionalMainCheck1 = recipeManager.getRecipeFor(
-                                    ModRecipes.GRIND_TYPE.get(),
-                                    new GrindRecipeInput(player.getMainHandItem()),
-                                    level);
+                    event.setCanceled(true);
+                    Utils.playGrindingSound((ServerLevel) level, player);
 
-                            Optional<RecipeHolder<GrindRecipe>> recipeOptionalOffCheck1 = recipeManager.getRecipeFor(
-                                    ModRecipes.GRIND_TYPE.get(),
-                                    new GrindRecipeInput(player.getOffhandItem()),
-                                    level);
+                    if (currentStage < maxStage) {
+                        inventory.getItem(slot).set(ModDataComponents.GRIND_STATE, inventory.getItem(slot).getOrDefault(ModDataComponents.GRIND_STATE, 1) + 1);
+                        player.getCooldowns().addCooldown(inventory.getItem(slot).getItem(), 10);
+                        Utils.sendGrindingParticles((ServerLevel) level, event.getPos(), inventory.getItem(slot));
 
-                            if (recipeOptionalMain.isPresent()) {
-                                recipeOptionalCheck2 = recipeOptionalMain;
-                                slotCheck2 = inventory.selected;
-                                resultCheck2 = recipeOptionalMain.get().value().assemble(new GrindRecipeInput(player.getMainHandItem()), level.registryAccess());
-                            } else {
-                                slotCheck2 = 40;
-                                recipeOptionalCheck2 = recipeOptionalOff;
-                                resultCheck2 = recipeOptionalOff.get().value().assemble(new GrindRecipeInput(player.getOffhandItem()), level.registryAccess());
-                            }
-                            inventory.getItem(slotCheck2).set(ModDataComponents.GRIND_STATE, inventory.getItem(slotCheck2).getOrDefault(ModDataComponents.GRIND_STATE, 1) + 1);
-                        } else {
-                            if (recipeOptionalMain.isPresent()) {
-                                resultCheck2 = recipeOptionalMain.get().value().assemble(new GrindRecipeInput(player.getMainHandItem()), level.registryAccess());
-                            } else {
-                                resultCheck2 = recipeOptionalOff.get().value().assemble(new GrindRecipeInput(player.getOffhandItem()), level.registryAccess());
-                            }
-                            inventory.add(resultCheck2);
-                            finished.set(true);
+                    } else {
+                        if (processingItem.getCount() != itemAmount){
+                            processingItem.set(ModDataComponents.GRIND_STATE, 1);
                         }
-                    }, 52);
-
+                        player.getCooldowns().addCooldown(inventory.getItem(slot).getItem(), 20);
+                        Utils.sendGrindingParticles((ServerLevel) level, event.getPos(), inventory.getItem(slot));
+                        inventory.getItem(slot).set(ModDataComponents.GRIND_STATE, 1);
+                        inventory.removeItem(slot, 1);
+                        inventory.add(result);
+                    }
+                } else {
+                    event.setCanceled(true);
                 }
 
 

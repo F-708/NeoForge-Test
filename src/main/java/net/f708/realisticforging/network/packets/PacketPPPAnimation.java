@@ -67,9 +67,8 @@ public record PacketPPPAnimation (Integer entityId, InteractionHand hand, Animat
                 switch (message.animation){
                     case FORGING -> AnimationHelper.playForgingAnimation(message.hand);
                     case COOLING -> AnimationHelper.playCoolingAnimation(message.hand);
-                    case PICKING -> AnimationHelper.playPickingAnimation(message.hand);
+                    case PICKING, GRINDING -> AnimationHelper.playSwingAnimation(message.hand);
                     case CLEANING -> AnimationHelper.playCleaningAnimationBareHands(message.hand);
-                    case GRINDING -> AnimationHelper.playGrindingAnimation(message.hand);
                     default -> {
                         return;
                     }

@@ -23,6 +23,12 @@ public class AnimationHelper {
         PlayerAnimator.cancelAnimation(player.level(), player);
     }
 
+    public static void playSwingAnimation(InteractionHand hand) {
+        Player player = Minecraft.getInstance().player;
+        AnimationHelper.cancelAnimation(player);
+        player.swing(hand);
+    }
+
     public static void playForgingAnimation(InteractionHand hand) {
         Player player = Minecraft.getInstance().player;
         PlayerAnimator.cancelAnimation(Minecraft.getInstance().level, player);
@@ -34,16 +40,6 @@ public class AnimationHelper {
         }
     }
 
-    public static void playPickingAnimation(InteractionHand hand) {
-        Player player = Minecraft.getInstance().player;
-        AnimationHelper.cancelAnimation(player);
-        if (hand == InteractionHand.MAIN_HAND) {
-            AnimationHelper.playAnimation(player, "picking_item_right");
-        }
-        else {
-            AnimationHelper.playAnimation(player, "picking_item_left");
-        }
-    }
 
     public static void playCoolingAnimation(InteractionHand hand) {
         Player player = Minecraft.getInstance().player;
@@ -71,15 +67,6 @@ public class AnimationHelper {
         player.swing(hand);
     }
 
-    public static void playGrindingAnimation(InteractionHand hand) {
-        Player player = Minecraft.getInstance().player;
-        AnimationHelper.cancelAnimation(player);
-        if (hand == InteractionHand.MAIN_HAND) {
-            AnimationHelper.playAnimation(player, "grinding_right");
-        } else {
-            AnimationHelper.playAnimation(player, "grinding_left");
-        }
-    }
 
 
 }

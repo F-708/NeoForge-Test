@@ -6,6 +6,8 @@ import net.f708.realisticforging.recipe.CleaningRecipeInput;
 import net.f708.realisticforging.recipe.ModRecipes;
 import net.f708.realisticforging.sounds.ModSounds;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ItemParticleOption;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -14,6 +16,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -54,6 +57,7 @@ public class Utils {
     public static void returnInteractionRange(AttributeMap attributeMap, Player player){
         attributeMap.getInstance(Attributes.BLOCK_INTERACTION_RANGE).removeModifier(ModModifiers.getBlockRangeModifier());
     }
+
 
     public static void sendPickingParticles(ServerLevel level, BlockPos pos){
         Random random = new Random();
@@ -160,4 +164,11 @@ public class Utils {
             level.playSound(null, player, SoundEvents.GRINDSTONE_USE, SoundSource.PLAYERS, 1f, 1f );
 
     }
+
+    public static void sendGrindingParticles(ServerLevel level, BlockPos pos, ItemStack item){
+        Random random = new Random();
+        ParticleOptions particleOptions = new ItemParticleOption(ParticleTypes.ITEM, item);
+        level.sendParticles(particleOptions, pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5, random.nextInt(5, 10), 0.2, 0, 0.2, 0.15);
+    }
+
 }
