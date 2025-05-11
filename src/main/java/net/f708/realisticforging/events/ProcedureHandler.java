@@ -1,12 +1,17 @@
 package net.f708.realisticforging.events;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.f708.realisticforging.RealisticForging;
+import net.f708.realisticforging.block.ModBlocks;
 import net.f708.realisticforging.component.ModDataComponents;
 import net.f708.realisticforging.item.ModItems;
 import net.f708.realisticforging.network.packets.PacketPPPAnimation;
 import net.f708.realisticforging.recipe.*;
 import net.f708.realisticforging.utils.*;
 import net.f708.realisticforging.utils.animations.AnimationHelper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -16,16 +21,28 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.IArmPoseTransformer;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ProcedureHandler {
 
+    public static boolean CARVING_ACTION;
 
     public static void ForgingProcedure(PlayerInteractEvent.RightClickBlock event) {
         Level level = event.getLevel();
@@ -406,7 +423,7 @@ public class ProcedureHandler {
         Level level = event.getLevel();
         BlockPos pos = event.getPos();
         if (ConditionsHelper.isMetGrindingConditions(player, level, pos)) {
-            if (ConditionsHelper.isMetMicsConditions(player)) {
+            if (ConditionsHelper.isMetMicsConditions(player) && player.isShiftKeyDown()) {
                 InteractionHand hand = InteractionHand.OFF_HAND;
                 int slot = 40;
                 ItemStack result;
@@ -415,6 +432,7 @@ public class ProcedureHandler {
                 RecipeManager recipeManager = level.getRecipeManager();
                 int maxStage;
                 int itemAmount = 0;
+                int emptyslot = 0;
 
                 Optional<RecipeHolder<GrindRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
                         ModRecipes.GRIND_TYPE.get(),
@@ -427,48 +445,181 @@ public class ProcedureHandler {
                         level);
 
                 if (recipeOptionalMain.isPresent()) {
+                    if (player.getOffhandItem().isEmpty()){
+                        emptyslot = 40;
+                    }
                     recipeOptional = recipeOptionalMain;
                     hand = InteractionHand.MAIN_HAND;
                     slot = inventory.selected;
                     result = recipeOptionalMain.get().value().assemble(new GrindRecipeInput(player.getMainHandItem()), level.registryAccess());
                 } else {
+                    if (player.getMainHandItem().isEmpty()){
+                        emptyslot = inventory.selected;
+                    }
                     recipeOptional = recipeOptionalOff;
                     result = recipeOptionalOff.get().value().assemble(new GrindRecipeInput(player.getOffhandItem()), level.registryAccess());
                     hand = InteractionHand.OFF_HAND;
                 }
 
                 maxStage = recipeOptional.get().value().maxStage();
+
                 ItemStack processingItem = inventory.getItem(slot);
-                ItemStack singleProcessingItem = processingItem.copy();
+                ItemStack singleProcessingItem;
 
                 int currentStage = inventory.getItem(slot).getOrDefault(ModDataComponents.GRIND_STATE, 1);
                 if (!player.getCooldowns().isOnCooldown(inventory.getItem(slot).getItem())) {
                     if (player instanceof ServerPlayer serverPlayer) {
                         PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), hand, Animation.GRINDING));
                     }
-                    event.setCanceled(true);
-                    Utils.playGrindingSound((ServerLevel) level, player);
 
-                    if (currentStage < maxStage) {
-                        inventory.getItem(slot).set(ModDataComponents.GRIND_STATE, inventory.getItem(slot).getOrDefault(ModDataComponents.GRIND_STATE, 1) + 1);
-                        player.getCooldowns().addCooldown(inventory.getItem(slot).getItem(), 10);
-                        Utils.sendGrindingParticles((ServerLevel) level, event.getPos(), inventory.getItem(slot));
+                    if ((processingItem.getCount() > 1)){
+                        currentStage = processingItem.getOrDefault(ModDataComponents.GRIND_STATE, 1);
+                        singleProcessingItem = processingItem.copyWithCount(1);
+                        singleProcessingItem.set(ModDataComponents.GRIND_STATE, processingItem.getOrDefault(ModDataComponents.GRIND_STATE, 1) + 1);
+                        int currentSingleStage = singleProcessingItem.getOrDefault(ModDataComponents.GRIND_STATE, 1);
+                        if (currentSingleStage <= maxStage){
+                            inventory.add(singleProcessingItem);
+                            processingItem.shrink(1);
+                            player.getCooldowns().addCooldown(processingItem.getItem(), 10);
+                            Utils.playGrindingSound((ServerLevel) level, player);
+                            Utils.sendGrindingParticles((ServerLevel) level, event.getPos(), inventory.getItem(slot));
+
+                        } else {
+                            processingItem.shrink(1);
+                            inventory.add(result);
+                            player.getCooldowns().addCooldown(processingItem.getItem(), 20);
+                            Utils.playGrindingSound((ServerLevel) level, player);
+                            Utils.sendGrindingParticles((ServerLevel) level, event.getPos(), inventory.getItem(slot));
+                        }
 
                     } else {
-                        if (processingItem.getCount() != itemAmount){
-                            processingItem.set(ModDataComponents.GRIND_STATE, 1);
+
+                        event.setCanceled(true);
+                        Utils.playGrindingSound((ServerLevel) level, player);
+                        if (currentStage < maxStage) {
+                            inventory.getItem(slot).set(ModDataComponents.GRIND_STATE, inventory.getItem(slot).getOrDefault(ModDataComponents.GRIND_STATE, 1) + 1);
+                            player.getCooldowns().addCooldown(inventory.getItem(slot).getItem(), 10);
+                            Utils.sendGrindingParticles((ServerLevel) level, event.getPos(), inventory.getItem(slot));
+                        } else {
+                            player.getCooldowns().addCooldown(inventory.getItem(slot).getItem(), 20);
+                            Utils.sendGrindingParticles((ServerLevel) level, event.getPos(), inventory.getItem(slot));
+                            inventory.getItem(slot).set(ModDataComponents.GRIND_STATE, 1);
+                            inventory.removeItem(slot, 1);
+                            inventory.add(result);
                         }
-                        player.getCooldowns().addCooldown(inventory.getItem(slot).getItem(), 20);
-                        Utils.sendGrindingParticles((ServerLevel) level, event.getPos(), inventory.getItem(slot));
-                        inventory.getItem(slot).set(ModDataComponents.GRIND_STATE, 1);
-                        inventory.removeItem(slot, 1);
-                        inventory.add(result);
                     }
+
+
                 } else {
                     event.setCanceled(true);
                 }
 
 
+            }
+        } else if (ConditionsHelper.isGrindStone(event.getLevel().getBlockState(pos).getBlock()) && player.isShiftKeyDown()){
+            event.setCanceled(true);
+        }
+    }
+
+    public static void CuttingProcedure(PlayerInteractEvent.RightClickBlock event){
+        Player player = event.getEntity();
+        Level level = event.getLevel();
+        BlockPos pos = event.getPos();
+        if (ConditionsHelper.isMetCuttingConditions(player, level, pos)) {
+            if (ConditionsHelper.isMetMicsConditions(player) && player.isShiftKeyDown()){
+                InteractionHand hand = InteractionHand.OFF_HAND;
+                int slot = 40;
+                ItemStack result;
+                Optional<RecipeHolder<CuttingRecipe>> recipeOptional;
+                Inventory inventory = player.getInventory();
+                RecipeManager recipeManager = level.getRecipeManager();
+
+                Optional<RecipeHolder<CuttingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
+                        ModRecipes.CUTTING_TYPE.get(),
+                        new CuttingRecipeInput(player.getMainHandItem()),
+                        level);
+
+                Optional<RecipeHolder<CuttingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
+                        ModRecipes.CUTTING_TYPE.get(),
+                        new CuttingRecipeInput(player.getOffhandItem()),
+                        level);
+
+                if (recipeOptionalMain.isPresent()) {
+                    recipeOptional = recipeOptionalMain;
+                    hand = InteractionHand.MAIN_HAND;
+                    slot = inventory.selected;
+                    result = recipeOptionalMain.get().value().assemble(new CuttingRecipeInput(player.getMainHandItem()), level.registryAccess());
+                } else {
+                    recipeOptional = recipeOptionalOff;
+                    result = recipeOptionalOff.get().value().assemble(new CuttingRecipeInput(player.getOffhandItem()), level.registryAccess());
+                    hand = InteractionHand.OFF_HAND;
+                }
+                if (player.getCooldowns().isOnCooldown(inventory.getItem(slot).getItem())){
+                    return;
+                }
+                if (player instanceof ServerPlayer serverPlayer) {
+                    PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), hand, Animation.CUTTING));
+                }
+                event.setCanceled(true);
+                Utils.playCuttingSound((ServerLevel) level, player);
+                Utils.sendCuttingParticles((ServerLevel) level, pos, inventory.getItem(slot));
+                player.getCooldowns().addCooldown(inventory.getItem(slot).getItem(), 5);
+                inventory.getItem(slot).shrink(1);
+                inventory.add(result);
+
+            }
+        }
+    }
+
+
+    public static void CarvingProcedureTick(PlayerTickEvent.Post event){
+
+        Player player = event.getEntity();
+        Level level = player.level();
+
+        if (level == null) {
+            RealisticForging.LOGGER.error("LEVEL IS NULL, WHY");
+            return;
+        }
+        if (level.isClientSide && Minecraft.getInstance().hitResult != null && Minecraft.getInstance().hitResult.getType() == HitResult.Type.BLOCK){
+            BlockHitResult blockHit = (BlockHitResult) Minecraft.getInstance().hitResult;
+            Block targetBlock = level.getBlockState(blockHit.getBlockPos()).getBlock();
+            if (ConditionsHelper.isHoldingCarvingHammer(player) && ConditionsHelper.isHoldingChisel(player)){
+                InteractionHand hand = null;
+                if (player.getMainHandItem().is(ModItems.POINTCHISEL)){
+                    hand = InteractionHand.MAIN_HAND;
+                } else if (player.getOffhandItem().is(ModItems.POINTCHISEL)){
+                    hand = InteractionHand.OFF_HAND;
+                }
+                if ((Minecraft.getInstance().hitResult.getType() == HitResult.Type.BLOCK && targetBlock == Blocks.DIAMOND_ORE)){
+                    if (!CARVING_ACTION){
+                        AnimationHelper.playChiselingAnimation(hand);
+                        RealisticForging.LOGGER.debug("PLAYING CHISELING ANIMATION");
+                        CARVING_ACTION = true;
+                        RealisticForging.LOGGER.debug("MADE CARVING ACTION TRUE");
+                    }
+
+                } else {
+                    if (CARVING_ACTION){
+                        AnimationHelper.cancelAnimation(player);
+                        CARVING_ACTION = false;
+                        targetBlock = null;
+                        RealisticForging.LOGGER.debug("MADE CARVING ACTION FALSE");
+                    }
+
+                }
+
+            }
+        }
+
+
+    }
+
+    public static void CarvingProcedureHit(PlayerInteractEvent.RightClickBlock event){
+        if (CARVING_ACTION){
+            Player player = event.getEntity();
+            if (player instanceof ServerPlayer serverPlayer) {
+                PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), ConditionsHelper.getCarvingHammerHand(player), Animation.CHISELINGHIT));
             }
         }
     }

@@ -5,5 +5,8 @@ public enum Animation {
     CLEANING,
     COOLING,
     PICKING,
-    GRINDING
+    GRINDING,
+    CUTTING,
+    CHISELING,
+    CHISELINGHIT
 }

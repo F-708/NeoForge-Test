@@ -1,10 +1,10 @@
 {
   "type": "realisticforging:grinding",
       "ingredient": {
-        "item": "realisticforging:rough_diamond"
+        "item": "realisticforging:rough_cut_diamond"
       },
       "result": {
         "id": "minecraft:diamond"
       },
-      "max_stage": 4
+      "max_stage": 3
 }

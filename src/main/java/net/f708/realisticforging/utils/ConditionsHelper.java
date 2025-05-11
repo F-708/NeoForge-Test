@@ -3,6 +3,7 @@ package net.f708.realisticforging.utils;
 import net.f708.realisticforging.item.ModItems;
 import net.f708.realisticforging.recipe.*;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -10,6 +11,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.GrindstoneBlock;
+import net.minecraft.world.level.block.StonecutterBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -54,6 +56,26 @@ public class ConditionsHelper {
 
     public static boolean isHoldingSticks(Player player) {
         return player.getMainHandItem().is(ModItems.TWOSTICKS) || (player.getOffhandItem().is(ModItems.TWOSTICKS));
+    }
+
+    public static boolean isHoldingCarvingHammer(Player player) {
+        return player.getMainHandItem().is(ModItems.CARVINGHAMMER) || (player.getOffhandItem().is(ModItems.CARVINGHAMMER));
+    }
+
+    public static boolean isHoldingChisel(Player player) {
+        return player.getMainHandItem().is(ModItems.POINTCHISEL) || (player.getOffhandItem().is(ModItems.POINTCHISEL));
+    }
+
+    public static InteractionHand getCarvingHammerHand(Player player){
+        InteractionHand hand = null;
+        if (isHoldingCarvingHammer(player)){
+            if (player.getMainHandItem().is(ModItems.CARVINGHAMMER)){
+                hand = InteractionHand.MAIN_HAND;
+            } else {
+                hand = InteractionHand.OFF_HAND;
+            }
+        }
+        return hand;
     }
 
     private static boolean isHoldingHotItemAbleToCool(Player player, Level level){
@@ -136,6 +158,25 @@ public class ConditionsHelper {
         return result;
     }
 
+    public static boolean isHoldingCuttableItem(Player player, Level level){
+        boolean result = false;
+        RecipeManager recipeManager = level.getRecipeManager();
+
+        Optional<RecipeHolder<CuttingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
+                ModRecipes.CUTTING_TYPE.get(),
+                new CuttingRecipeInput(player.getOffhandItem()),
+                level);
+        Optional<RecipeHolder<CuttingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
+                ModRecipes.CUTTING_TYPE.get(),
+                new CuttingRecipeInput(player.getMainHandItem()),
+                level);
+        if (recipeOptionalOff.isPresent() || recipeOptionalMain.isPresent()) {
+            result = true;
+
+        }
+        return result;
+    }
+
 
     private static boolean isFurnaceGotRecipeItem(Level level, BlockPos pos){
         boolean result = false;
@@ -160,6 +201,10 @@ public class ConditionsHelper {
         return result;
     }
 
+
+    public static boolean isStoneCutter(Block block) {
+        return block instanceof StonecutterBlock;
+    }
 
     public static boolean isGrindStone(Block block){
         return block instanceof GrindstoneBlock;
@@ -224,6 +269,10 @@ public class ConditionsHelper {
 
     public static boolean isMetGrindingConditions(Player player, Level level, BlockPos pos){
         return  isHoldingGrindableItem(player, level) && isGrindStone(level.getBlockState(pos).getBlock());
+    }
+
+    public static boolean isMetCuttingConditions(Player player, Level level, BlockPos pos){
+        return  isHoldingCuttableItem(player, level) && isStoneCutter(level.getBlockState(pos).getBlock());
     }
 
     public static boolean isMetSticksTongsGetterConditions(Player player, Level level){

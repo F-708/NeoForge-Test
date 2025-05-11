@@ -1,0 +1,9 @@
+{
+  "type": "realisticforging:cutting",
+      "ingredient": {
+        "item": "realisticforging:rough_diamond"
+      },
+      "result": {
+        "id": "realisticforging:rough_cut_diamond"
+      }
+}

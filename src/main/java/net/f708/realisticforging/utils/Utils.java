@@ -168,7 +168,17 @@ public class Utils {
     public static void sendGrindingParticles(ServerLevel level, BlockPos pos, ItemStack item){
         Random random = new Random();
         ParticleOptions particleOptions = new ItemParticleOption(ParticleTypes.ITEM, item);
-        level.sendParticles(particleOptions, pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5, random.nextInt(5, 10), 0.2, 0, 0.2, 0.15);
+        level.sendParticles(particleOptions, pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5, random.nextInt(8, 17), 0.2, 0, 0.2, 0.15);
+    }
+
+    public static void playCuttingSound(ServerLevel level, Player player){
+        level.playSound(null, player, SoundEvents.UI_STONECUTTER_TAKE_RESULT, SoundSource.PLAYERS, 1f, 1f );
+    }
+
+    public static void sendCuttingParticles(ServerLevel level, BlockPos pos, ItemStack item){
+        Random random = new Random();
+        ParticleOptions particleOptions = new ItemParticleOption(ParticleTypes.ITEM, item);
+        level.sendParticles(particleOptions, pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, random.nextInt(5, 10), 0.2, 0, 0.2, 0.15);
     }
 
 }

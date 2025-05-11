@@ -19,6 +19,13 @@ public class AnimationHelper {
         PlayerHelper.alignPlayerAxis(player);
     }
 
+    public static void playAnimation(Player player, String animationKey, Boolean leftHand, Boolean rightHand) {
+        PlayerAnimator.playAnimation(player.level(), player, animationKey, leftHand, rightHand);
+        PacketDistributor.sendToServer(new PacketServerPlayAnimation(animationKey));
+        PlayerHelper.alignPlayerAxis(player);
+    }
+
+
     public static void cancelAnimation(Player player) {
         PlayerAnimator.cancelAnimation(player.level(), player);
     }
@@ -66,6 +73,18 @@ public class AnimationHelper {
         AnimationHelper.cancelAnimation(player);
         player.swing(hand);
     }
+
+    public static void playChiselingAnimation(InteractionHand hand){
+        Player player = Minecraft.getInstance().player;
+        AnimationHelper.cancelAnimation(player);
+        if (hand == InteractionHand.MAIN_HAND) {
+            AnimationHelper.playAnimation(player, "chiseling_action_right");
+        } else {
+            AnimationHelper.playAnimation(player, "chiseling_action_left");
+        }
+    }
+
+
 
 
 

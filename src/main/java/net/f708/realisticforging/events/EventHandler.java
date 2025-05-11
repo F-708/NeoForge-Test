@@ -3,11 +3,15 @@ package net.f708.realisticforging.events;
 import net.f708.realisticforging.item.custom.PickedItem;
 import net.f708.realisticforging.modProcedures.CleaningProcedure;
 import net.f708.realisticforging.modProcedures.HotItemsProcedure;
+import net.f708.realisticforging.utils.ConditionsHelper;
 import net.f708.realisticforging.utils.Utils;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
@@ -18,7 +22,7 @@ public class EventHandler {
     public static void playerRangeModified(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
         AttributeMap attributeMap = player.getAttributes();
-        if (player.getMainHandItem().getItem() instanceof PickedItem || player.getOffhandItem().getItem() instanceof PickedItem) {
+        if ((player.getMainHandItem().getItem() instanceof PickedItem || player.getOffhandItem().getItem() instanceof PickedItem) && ConditionsHelper.isHoldingHammer(player)) {
             Utils.descreaseInteractionRange(attributeMap, player);
         } else {
             Utils.returnInteractionRange(attributeMap, player);
@@ -66,6 +70,21 @@ public class EventHandler {
         ProcedureHandler.GrindingProcedure(event);
     }
 
+    @SubscribeEvent
+    public static void CutItem(PlayerInteractEvent.RightClickBlock event){
+        ProcedureHandler.CuttingProcedure(event);
+    }
+
+
+    @SubscribeEvent
+    public static void Chiseling(PlayerTickEvent.Post event){
+        ProcedureHandler.CarvingProcedureTick(event);
+    }
+
+    @SubscribeEvent
+    public static void ChiselingHit(PlayerInteractEvent.RightClickBlock event){
+        ProcedureHandler.CarvingProcedureHit(event);
+    }
 }
 
 

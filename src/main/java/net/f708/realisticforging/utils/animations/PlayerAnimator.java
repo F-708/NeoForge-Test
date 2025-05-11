@@ -100,6 +100,18 @@ public class PlayerAnimator {
         }
     }
 
+    public static void playAnimation(LevelAccessor world, Entity entity, String animationName, Boolean leftHand, Boolean rightHand) {
+        try {
+            if (world.isClientSide()) {
+                playClientAnimation(entity, animationName,leftHand,rightHand);
+            } else {
+                playServerAnimation(world, entity, animationName);
+            }
+        } catch (Exception e) {
+            RealisticForging.LOGGER.error("Error in PlayerAnimator::playAnimation: {}", e.getMessage(), e);
+        }
+    }
+
     public static void cancelAnimation(LevelAccessor world, Entity entity) {
         try {
             if (world.isClientSide()) {
@@ -152,6 +164,30 @@ public class PlayerAnimator {
             }
         }
     }
+
+    private static void playClientAnimation(Entity entity, String animationName, Boolean LeftItem, Boolean RightItem) {
+        if (entity instanceof AbstractClientPlayer) {
+            Object associatedData = PlayerAnimationAccess.getPlayerAssociatedData((AbstractClientPlayer) entity)
+                    .get(ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "player_animations"));
+            if (associatedData instanceof ModifierLayer<?> modifierLayer) {
+                @SuppressWarnings("unchecked")
+                var animation = (ModifierLayer<IAnimation>) modifierLayer;
+                if (!animation.isActive()) {
+                    animation.replaceAnimationWithFade(
+                            AbstractFadeModifier.functionalFadeIn(20, (modelName, type, value) -> value),
+                            Objects.requireNonNull(PlayerAnimationRegistry.getAnimation(
+                                            ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, animationName)))
+                                    .playAnimation()
+                                    .setFirstPersonMode(getFirstPersonAlternatives())
+                                    .setFirstPersonConfiguration(new FirstPersonConfiguration()
+                                            .setShowRightArm(false)
+                                            .setShowLeftItem(LeftItem)
+                                            .setShowRightItem(RightItem)));
+                }
+            }
+        }
+    }
+
 
     // Used to specify if a first person changing mod is installed
     private static FirstPersonMode getFirstPersonAlternatives() {

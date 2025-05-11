@@ -2,5 +2,20 @@
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "realisticforging:item/rough_cut_diamond"
-  }
+  },
+
+  "overrides": [
+    {
+      "predicate": {
+        "realisticforging:state": 0.1
+      },
+      "model": "realisticforging:item/molded_diamond"
+    },
+    {
+      "predicate": {
+        "realisticforging:state": 0.2
+      },
+      "model": "realisticforging:item/molded_diamond_2"
+    }
+  ]
 }

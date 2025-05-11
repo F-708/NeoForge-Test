@@ -9,5 +9,7 @@
   "item.realisticforging.pure_raw_gold_ore": "Pure Raw Gold Ore",
   "item.realisticforging.copper_dust": "Copper Dust",
 
-  "tooltip.realisticforging.hot": "This thing is so HOT!"
+  "tooltip.realisticforging.hot": "This thing is so HOT!",
+
+  "mics.grinding.advice": "I must grind single item..."
 }

@@ -89,6 +89,16 @@ public class ModRecipes {
                 }
             });
 
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<CuttingRecipe>> CUTTING_SERIALIZER =
+            SERIALIZERS.register("cutting", CuttingRecipe.Serializer::new);
+    public static final DeferredHolder<RecipeType<?>, RecipeType<CuttingRecipe>> CUTTING_TYPE =
+            TYPES.register("cutting", ()-> new RecipeType<CuttingRecipe>() {
+                @Override
+                public String toString() {
+                    return "cutting";
+                }
+            });
+
 
 
     public static void register(IEventBus eventBus) {
