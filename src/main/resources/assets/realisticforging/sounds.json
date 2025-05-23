@@ -12,5 +12,19 @@
       "realisticforging:forging9",
       "realisticforging:forging10"
     ]
+  },
+  "carving": {
+    "sounds": [
+      "realisticforging:chisel1",
+      "realisticforging:chisel2",
+      "realisticforging:chisel3",
+      "realisticforging:chisel4",
+      "realisticforging:chisel5",
+      "realisticforging:chisel6",
+      "realisticforging:chisel7",
+      "realisticforging:chisel8",
+      "realisticforging:chisel9",
+      "realisticforging:chisel10"
+    ]
   }
 }

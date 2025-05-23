@@ -1,0 +1,12 @@
+{
+  "type": "realisticforging:carving",
+  "ingredient": {
+    "item": "realisticforging:carved_diamond_ore2"
+  },
+  "resultitem": {
+    "id": "realisticforging:rough_diamond"
+  },
+  "resultblock": {
+    "id": "minecraft:stone"
+  }
+}

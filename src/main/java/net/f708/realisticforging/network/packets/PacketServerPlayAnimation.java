@@ -16,21 +16,23 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 @EventBusSubscriber(modid = RealisticForging.MODID, bus = EventBusSubscriber.Bus.MOD)
-public record PacketServerPlayAnimation(String animationName) implements CustomPacketPayload {
+public record PacketServerPlayAnimation(String animationName, Boolean RH) implements CustomPacketPayload {
 
     public static final Type<PacketServerPlayAnimation> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "sync_server_animation"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, PacketServerPlayAnimation> STREAM_CODEC =
-            StreamCodec.of((RegistryFriendlyByteBuf buffer, PacketServerPlayAnimation message) ->
-                    buffer.writeUtf(message.animationName()), (RegistryFriendlyByteBuf buffer) -> new PacketServerPlayAnimation(buffer.readUtf()));
+            StreamCodec.of((RegistryFriendlyByteBuf buffer, PacketServerPlayAnimation message) -> {
+                buffer.writeUtf(message.animationName());
+                buffer.writeBoolean(message.RH);
+                    }, (RegistryFriendlyByteBuf buffer) -> new PacketServerPlayAnimation(buffer.readUtf(), buffer.readBoolean()));
 
 
     public static void handleData(final PacketServerPlayAnimation message, final IPayloadContext context) {
         if (context.flow().isServerbound()) {
             context.enqueueWork(() -> {
                 if (!context.player().level().isClientSide()) {
-                    PlayerAnimator.playAnimation(context.player().level(), context.player(), message.animationName());
+                    PlayerAnimator.playAnimation(context.player().level(), context.player(), message.animationName(), message.RH);
                 }
             }).exceptionally(e -> {
                 context.connection().disconnect(Component.literal(e.getMessage()));

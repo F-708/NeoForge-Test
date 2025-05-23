@@ -16,8 +16,7 @@ public class ModSounds {
             DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, RealisticForging.MODID);
 
     public static final Supplier<SoundEvent> FORGING_SOUND = registerSoundEvent("forging");
-    public static final Supplier<SoundEvent> PICKING_SOUND = registerSoundEvent("picking");
-    public static final Supplier<SoundEvent> COOLING_SOUND = registerSoundEvent("cooling");
+    public static final Supplier<SoundEvent> CARVING_SOUND = registerSoundEvent("carving");
 
     private static Supplier<SoundEvent> registerSoundEvent(String name){
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, name);

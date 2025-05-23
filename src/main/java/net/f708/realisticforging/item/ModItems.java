@@ -3,9 +3,12 @@ package net.f708.realisticforging.item;
 import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.item.custom.HotItem;
 import net.f708.realisticforging.item.custom.PickedItem;
+import net.f708.realisticforging.item.custom.SledgeHammerItem;
 import net.f708.realisticforging.item.custom.TongsItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemCooldowns;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.Tiers;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -94,6 +97,12 @@ public class ModItems {
     public static final DeferredItem<Item> POINTCHISEL = ITEMS.register("point_chisel",
             () -> new Item(new Item.Properties()
                     .stacksTo(1)));
+
+    public static final DeferredItem<SledgeHammerItem> DIAMOND_SLEDGEHAMMER = ITEMS.register("diamond_sledgehammer",
+            () -> new SledgeHammerItem(Tiers.DIAMOND, new Item.Properties()
+                    .stacksTo(1)
+                    .durability(1432)
+                    .attributes(SledgeHammerItem.createAttributes(Tiers.DIAMOND, 4, -3.7F))));
 
 
 

@@ -34,7 +34,7 @@ import java.util.Objects;
 
 // Packet Please Play Player Animation
 @EventBusSubscriber(modid = RealisticForging.MODID, bus = EventBusSubscriber.Bus.MOD)
-public record PacketPPPAnimation (Integer entityId, InteractionHand hand, Animation animation) implements CustomPacketPayload {
+public record PacketPPPAnimation (Integer entityId, Animation animation, Boolean RH) implements CustomPacketPayload {
 
 
     public static final CustomPacketPayload.Type<PacketPPPAnimation> TYPE =
@@ -43,9 +43,9 @@ public record PacketPPPAnimation (Integer entityId, InteractionHand hand, Animat
     public static final StreamCodec<RegistryFriendlyByteBuf, PacketPPPAnimation> STREAM_CODEC =
             StreamCodec.of((RegistryFriendlyByteBuf buffer, PacketPPPAnimation message) -> {
                 buffer.writeInt(message.entityId);
-                buffer.writeEnum(message.hand);
                 buffer.writeEnum(message.animation);
-            }, (RegistryFriendlyByteBuf buffer) -> new PacketPPPAnimation(buffer.readInt(), buffer.readEnum(InteractionHand.class), buffer.readEnum(Animation.class)));
+                buffer.writeBoolean(message.RH);
+            }, (RegistryFriendlyByteBuf buffer) -> new PacketPPPAnimation(buffer.readInt(), buffer.readEnum(Animation.class), buffer.readBoolean()));
 
     public static void handleData(final PacketPPPAnimation message, final IPayloadContext context) {
         if (context.flow().isClientbound()) {
@@ -65,11 +65,14 @@ public record PacketPPPAnimation (Integer entityId, InteractionHand hand, Animat
             Player player = (Player) level.getEntity(message.entityId());
             if (player instanceof AbstractClientPlayer clientPlayer) {
                 switch (message.animation){
-                    case FORGING -> AnimationHelper.playForgingAnimation(message.hand);
-                    case COOLING -> AnimationHelper.playCoolingAnimation(message.hand);
-                    case PICKING, GRINDING, CUTTING, CHISELINGHIT -> AnimationHelper.playSwingAnimation(message.hand);
-                    case CLEANING -> AnimationHelper.playCleaningAnimationBareHands(message.hand);
-                    case CHISELING -> AnimationHelper.playChiselingAnimation(message.hand);
+                    case CANCEL -> AnimationHelper.cancelAnimation(clientPlayer);
+                    case FORGING -> AnimationHelper.playForgingAnimation(message.RH);
+                    case COOLING -> AnimationHelper.playCoolingAnimation(message.RH);
+                    case PICKING, GRINDING -> AnimationHelper.playSwingAnimation(message.RH);
+                    case CUTTING -> AnimationHelper.playCuttingAnimation(message.RH);
+                    case CLEANING -> AnimationHelper.playCleaningAnimationBareHands(message.RH);
+                    case CARVING -> AnimationHelper.playCarvingAnimation(message.RH);
+                    case SLEDGEHAMMERSWING -> AnimationHelper.playSledgeHammerAnimation(message.RH);
                     default -> {
                         return;
                     }

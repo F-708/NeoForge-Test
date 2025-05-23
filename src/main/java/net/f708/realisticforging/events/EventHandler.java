@@ -1,10 +1,14 @@
 package net.f708.realisticforging.events;
 
 import net.f708.realisticforging.item.custom.PickedItem;
-import net.f708.realisticforging.modProcedures.CleaningProcedure;
-import net.f708.realisticforging.modProcedures.HotItemsProcedure;
+import net.f708.realisticforging.item.custom.SledgeHammerItem;
+import net.f708.realisticforging.network.packets.PacketPPPAnimation;
+import net.f708.realisticforging.utils.Animation;
 import net.f708.realisticforging.utils.ConditionsHelper;
 import net.f708.realisticforging.utils.Utils;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerPlayerConnection;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
@@ -12,8 +16,14 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.player.SweepAttackEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.logging.Handler;
 
 @EventBusSubscriber(modid = "realisticforging")
 public class EventHandler {
@@ -22,22 +32,24 @@ public class EventHandler {
     public static void playerRangeModified(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
         AttributeMap attributeMap = player.getAttributes();
-        if ((player.getMainHandItem().getItem() instanceof PickedItem || player.getOffhandItem().getItem() instanceof PickedItem) && ConditionsHelper.isHoldingHammer(player)) {
+        if (ConditionsHelper.forgingRangeConditions(player) || ConditionsHelper.carvingRangeConditions(player)) {
             Utils.descreaseInteractionRange(attributeMap, player);
         } else {
             Utils.returnInteractionRange(attributeMap, player);
         }
     }
 
+    @SubscribeEvent
+    public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event){
+        Player player = event.getEntity();
+        player.getTags().remove("BUSY");
+    }
+
+
 
     @SubscribeEvent
     public static void getHotItemFromFurnace(PlayerInteractEvent.RightClickBlock event) {
         ProcedureHandler.PickingProcedure(event);
-    }
-
-    @SubscribeEvent
-    public static void hotItemsInInventory(PlayerTickEvent.Post event) {
-        HotItemsProcedure hotItemsDealDamage = new HotItemsProcedure(event);
     }
 
     @SubscribeEvent
@@ -75,55 +87,13 @@ public class EventHandler {
         ProcedureHandler.CuttingProcedure(event);
     }
 
-
     @SubscribeEvent
-    public static void Chiseling(PlayerTickEvent.Post event){
-        ProcedureHandler.CarvingProcedureTick(event);
+    public static void Carving(PlayerInteractEvent.RightClickBlock event){
+        ProcedureHandler.CarvingProcedure(event);
     }
 
-    @SubscribeEvent
-    public static void ChiselingHit(PlayerInteractEvent.RightClickBlock event){
-        ProcedureHandler.CarvingProcedureHit(event);
-    }
+
+
 }
-
-
-
-
-//    @SubscribeEvent
-//    public static void useOnAnvil(PlayerInteractEvent.RightClickBlock event){
-//        ForgingProcess.useOnAnvil(event);
-//    }
-
-
-
-//    @SubscribeEvent
-//    public static void useOnAnvil(PlayerInteractEvent.RightClickBlock event) {
-//        Player player = event.getEntity();
-//        Level level = event.getLevel();
-//        Block block = level.getBlockState(event.getPos()).getBlock();
-//        Item mainHandItem = player.getMainHandItem().getItem();
-//        Item offHandItem = player.getOffhandItem().getItem();
-//        if (block instanceof AnvilBlock) {
-//            if (FORGING_MAP.containsKey(offHandItem) && mainHandItem == ModItems.SMITHINGHAMMER.get()
-//                    ||
-//                    FORGING_MAP.containsKey(mainHandItem) && offHandItem == ModItems.SMITHINGHAMMER.get()
-//            ) {
-//                if (player.getCooldowns().isOnCooldown(ModItems.SMITHINGHAMMER.get())) {
-//                    event.setCanceled(true);
-//                    return;
-//                }
-//                player.getCooldowns().addCooldown(ModItems.SMITHINGHAMMER.get(), 22);
-//                player.getCooldowns().addCooldown(offHandItem, 22);
-//                net.f708.realisticforging.utils.animtions.AnimationHelper.playAnimation(level, player, "ore_hit_right");
-//                TickScheduler.schedule(() -> {ForgingProcess.useOnAnvil(event);}, 8);
-//                event.setCanceled(true);
-//
-//            }
-//
-//        }
-//
-//    }
-//}
 
 

@@ -99,6 +99,15 @@ public class ModRecipes {
                 }
             });
 
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<CarvingRecipe>> CARVING_SERIALIZER =
+            SERIALIZERS.register("carving", CarvingRecipe.Serializer::new);
+    public static final DeferredHolder<RecipeType<?>, RecipeType<CarvingRecipe>> CARVING_TYPE =
+            TYPES.register("carving", ()-> new RecipeType<CarvingRecipe>() {
+                @Override
+                public String toString() {
+                    return "carving";
+                }
+            });
 
 
     public static void register(IEventBus eventBus) {

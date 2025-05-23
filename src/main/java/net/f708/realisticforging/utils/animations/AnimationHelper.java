@@ -13,15 +13,9 @@ import net.neoforged.neoforge.network.PacketDistributor;
 @OnlyIn(Dist.CLIENT)
 public class AnimationHelper {
 
-    public static void playAnimation(Player player, String animationKey) {
-        PlayerAnimator.playAnimation(player.level(), player, animationKey);
-        PacketDistributor.sendToServer(new PacketServerPlayAnimation(animationKey));
-        PlayerHelper.alignPlayerAxis(player);
-    }
-
-    public static void playAnimation(Player player, String animationKey, Boolean leftHand, Boolean rightHand) {
-        PlayerAnimator.playAnimation(player.level(), player, animationKey, leftHand, rightHand);
-        PacketDistributor.sendToServer(new PacketServerPlayAnimation(animationKey));
+    public static void playAnimation(Player player, String animationKey, boolean RH) {
+        PlayerAnimator.playAnimation(player.level(), player, animationKey, RH);
+        PacketDistributor.sendToServer(new PacketServerPlayAnimation(animationKey, RH));
         PlayerHelper.alignPlayerAxis(player);
     }
 
@@ -30,58 +24,60 @@ public class AnimationHelper {
         PlayerAnimator.cancelAnimation(player.level(), player);
     }
 
-    public static void playSwingAnimation(InteractionHand hand) {
+    public static void playSwingAnimation(Boolean RH) {
         Player player = Minecraft.getInstance().player;
         AnimationHelper.cancelAnimation(player);
-        player.swing(hand);
+        if (RH){
+            player.swing(InteractionHand.MAIN_HAND);
+        } else
+            player.swing(InteractionHand.OFF_HAND);
+
     }
 
-    public static void playForgingAnimation(InteractionHand hand) {
+    public static void playForgingAnimation(Boolean RH) {
         Player player = Minecraft.getInstance().player;
-        PlayerAnimator.cancelAnimation(Minecraft.getInstance().level, player);
-        if (hand == InteractionHand.MAIN_HAND) {
-            playAnimation(player, "forging_ore_right");
-        }
-        else {
-            AnimationHelper.playAnimation(player, "forging_ore_left");
-        }
+            playAnimation(player, "forging_ore_right", RH);
     }
 
 
-    public static void playCoolingAnimation(InteractionHand hand) {
+    public static void playCoolingAnimation(Boolean RH) {
         Player player = Minecraft.getInstance().player;
-        AnimationHelper.cancelAnimation(player);
-        if (hand == InteractionHand.MAIN_HAND) {
-            AnimationHelper.playAnimation(player, "cooling_right");
-        } else {
-            AnimationHelper.playAnimation(player, "cooling_left");
-        }
+            AnimationHelper.playAnimation(player, "cooling_left", RH);
     }
 
-    public static void playCleaningAnimationBareHands(InteractionHand hand) {
+    public static void playCleaningAnimationBareHands(Boolean RH) {
         Player player = Minecraft.getInstance().player;
-        AnimationHelper.cancelAnimation(player);
-        if (hand == InteractionHand.MAIN_HAND) {
-            AnimationHelper.playAnimation(player, "cleaning_right");
-        } else {
-            AnimationHelper.playAnimation(player, "cleaning_left");
-        }
+            AnimationHelper.playAnimation(player, "cleaning_right", RH);
     }
 
-    public static void playSticksTongsGettingAnimation(InteractionHand hand) {
+    public static void playSticksTongsGettingAnimation(Boolean RH) {
         Player player = Minecraft.getInstance().player;
-        AnimationHelper.cancelAnimation(player);
-        player.swing(hand);
+        if (RH){
+            player.swing(InteractionHand.MAIN_HAND);
+        }
+        else player.swing(InteractionHand.OFF_HAND);
+
     }
 
-    public static void playChiselingAnimation(InteractionHand hand){
+    public static void playStartChiselingAnimation(Boolean RH){
         Player player = Minecraft.getInstance().player;
-        AnimationHelper.cancelAnimation(player);
-        if (hand == InteractionHand.MAIN_HAND) {
-            AnimationHelper.playAnimation(player, "chiseling_action_right");
-        } else {
-            AnimationHelper.playAnimation(player, "chiseling_action_left");
-        }
+            AnimationHelper.playAnimation(player, "start_chiseling_action_right", RH);
+    }
+
+
+    public static void playCarvingAnimation(Boolean RH){
+        Player player = Minecraft.getInstance().player;
+        AnimationHelper.playAnimation(player, "carving_ore_right", RH);
+    }
+
+    public static void playCuttingAnimation(Boolean RH){
+        Player player = Minecraft.getInstance().player;
+        AnimationHelper.playAnimation(player, "cutting_animation_long", RH);
+    }
+
+    public static void playSledgeHammerAnimation(Boolean RH){
+        Player player = Minecraft.getInstance().player;
+        AnimationHelper.playAnimation(player, "sledgehammer_swing", RH);
     }
 
 

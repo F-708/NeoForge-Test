@@ -11,6 +11,10 @@ import net.minecraft.world.level.block.Block;
 public class ModTags {
     public static class Blocks{
 
+        public static final TagKey<Block> NEEDS_SLEDGEHAMMER = createTag("needs_sledgehammer");
+        public static final TagKey<Block> INCORRECT_FOR_SLEDGEHAMMER = createTag("incorrect_for_sledgehammer");
+
+
         public static final TagKey<Block> FORGEABLE_BLOCK = createTag("forgeable_block");
 
             private static TagKey<Block> createTag (String name) {

@@ -6,11 +6,14 @@ import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.api.layered.modifier.AbstractFadeModifier;
 import dev.kosmx.playerAnim.api.layered.modifier.AdjustmentModifier;
+import dev.kosmx.playerAnim.api.layered.modifier.MirrorModifier;
+import dev.kosmx.playerAnim.api.layered.modifier.SpeedModifier;
 import dev.kosmx.playerAnim.core.util.Vec3f;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import net.f708.realisticforging.RealisticForging;
+import net.f708.realisticforging.utils.TickScheduler;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -43,6 +46,8 @@ public class PlayerAnimator {
                 PlayerAnimator::registerPlayerAnimation);
     }
 
+
+
     private static IAnimation registerPlayerAnimation(AbstractClientPlayer player) {
         ModifierLayer<IAnimation> animationLayer = new ModifierLayer<>();
 
@@ -51,7 +56,11 @@ public class PlayerAnimator {
             float rotationY = 0;
             float rotationZ = 0;
 
+
+
             float pitchRadians = (float) Math.toRadians(player.getXRot() / 2F);
+
+
 
             switch (partName) {
                 case "torso" -> {
@@ -73,10 +82,11 @@ public class PlayerAnimator {
                     new Vec3f(0, 0, 0),
                     new Vec3f(0, 0, 0)
             ));
+
+
         });
-
         animationLayer.addModifier(adjustmentModifier, 0);
-
+        adjustmentModifier.fadeOut(20);
         return animationLayer;
     }
 
@@ -88,29 +98,19 @@ public class PlayerAnimator {
      * @param animationName The animation to be played.
      */
 
-    public static void playAnimation(LevelAccessor world, Entity entity, String animationName) {
+
+    public static void playAnimation(LevelAccessor world, Entity entity, String animationName, Boolean RH) {
         try {
             if (world.isClientSide()) {
-                playClientAnimation(entity, animationName);
+                playClientAnimation(entity, animationName, RH);
             } else {
-                playServerAnimation(world, entity, animationName);
+                playServerAnimation(world, entity, animationName, RH);
             }
         } catch (Exception e) {
             RealisticForging.LOGGER.error("Error in PlayerAnimator::playAnimation: {}", e.getMessage(), e);
         }
     }
 
-    public static void playAnimation(LevelAccessor world, Entity entity, String animationName, Boolean leftHand, Boolean rightHand) {
-        try {
-            if (world.isClientSide()) {
-                playClientAnimation(entity, animationName,leftHand,rightHand);
-            } else {
-                playServerAnimation(world, entity, animationName);
-            }
-        } catch (Exception e) {
-            RealisticForging.LOGGER.error("Error in PlayerAnimator::playAnimation: {}", e.getMessage(), e);
-        }
-    }
 
     public static void cancelAnimation(LevelAccessor world, Entity entity) {
         try {
@@ -143,16 +143,39 @@ public class PlayerAnimator {
         }
     }
 
-    private static void playClientAnimation(Entity entity, String animationName) {
+//    private static void playClientAnimation(Entity entity, String animationName) {
+//        if (entity instanceof AbstractClientPlayer) {
+//            Object associatedData = PlayerAnimationAccess.getPlayerAssociatedData((AbstractClientPlayer) entity)
+//                    .get(ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "player_animations"));
+//            if (associatedData instanceof ModifierLayer<?> modifierLayer) {
+//                @SuppressWarnings("unchecked")
+//                var animation = (ModifierLayer<IAnimation>) modifierLayer;
+//                if (!animation.isActive()) {
+//                    animation.replaceAnimationWithFade(
+//                            AbstractFadeModifier.functionalFadeIn(20, (modelName, type, value) -> value),
+//                            Objects.requireNonNull(PlayerAnimationRegistry.getAnimation(
+//                                            ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, animationName)))
+//                                    .playAnimation()
+//                                    .setFirstPersonMode(getFirstPersonAlternatives())
+//                                    .setFirstPersonConfiguration(new FirstPersonConfiguration()
+//                                            .setShowRightArm(false)
+//                                            .setShowLeftItem(true)));
+//                }
+//            }
+//        }
+//    }
+
+    private static void playClientAnimation(Entity entity, String animationName, Boolean RH) {
         if (entity instanceof AbstractClientPlayer) {
             Object associatedData = PlayerAnimationAccess.getPlayerAssociatedData((AbstractClientPlayer) entity)
                     .get(ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "player_animations"));
             if (associatedData instanceof ModifierLayer<?> modifierLayer) {
                 @SuppressWarnings("unchecked")
                 var animation = (ModifierLayer<IAnimation>) modifierLayer;
-                if (!animation.isActive()) {
+                    MirrorModifier mirror = new MirrorModifier();
+                mirror.setEnabled(RH);
                     animation.replaceAnimationWithFade(
-                            AbstractFadeModifier.functionalFadeIn(20, (modelName, type, value) -> value),
+                            AbstractFadeModifier.functionalFadeIn(10, (modelName, type, value) -> value),
                             Objects.requireNonNull(PlayerAnimationRegistry.getAnimation(
                                             ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, animationName)))
                                     .playAnimation()
@@ -160,33 +183,10 @@ public class PlayerAnimator {
                                     .setFirstPersonConfiguration(new FirstPersonConfiguration()
                                             .setShowRightArm(false)
                                             .setShowLeftItem(true)));
-                }
             }
         }
     }
 
-    private static void playClientAnimation(Entity entity, String animationName, Boolean LeftItem, Boolean RightItem) {
-        if (entity instanceof AbstractClientPlayer) {
-            Object associatedData = PlayerAnimationAccess.getPlayerAssociatedData((AbstractClientPlayer) entity)
-                    .get(ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "player_animations"));
-            if (associatedData instanceof ModifierLayer<?> modifierLayer) {
-                @SuppressWarnings("unchecked")
-                var animation = (ModifierLayer<IAnimation>) modifierLayer;
-                if (!animation.isActive()) {
-                    animation.replaceAnimationWithFade(
-                            AbstractFadeModifier.functionalFadeIn(20, (modelName, type, value) -> value),
-                            Objects.requireNonNull(PlayerAnimationRegistry.getAnimation(
-                                            ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, animationName)))
-                                    .playAnimation()
-                                    .setFirstPersonMode(getFirstPersonAlternatives())
-                                    .setFirstPersonConfiguration(new FirstPersonConfiguration()
-                                            .setShowRightArm(false)
-                                            .setShowLeftItem(LeftItem)
-                                            .setShowRightItem(RightItem)));
-                }
-            }
-        }
-    }
 
 
     // Used to specify if a first person changing mod is installed
@@ -198,11 +198,12 @@ public class PlayerAnimator {
         }
     }
 
-    private static void playServerAnimation(LevelAccessor world, Entity entity, String animationName) {
+    private static void playServerAnimation(LevelAccessor world, Entity entity, String animationName, boolean RH) {
         if (!world.isClientSide() && entity instanceof Player) {
             PacketDistributor.sendToPlayersTrackingEntity(entity,
-                    new net.f708.realisticforging.network.packets.PacketPlayAnimationAtPlayer(animationName, entity.getId(), false));
+                    new net.f708.realisticforging.network.packets.PacketPlayAnimationAtPlayer(animationName, entity.getId(), false, RH));
         }
     }
+
 
 }

@@ -1,6 +1,8 @@
 package net.f708.realisticforging.utils;
 
+import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.item.ModItems;
+import net.f708.realisticforging.item.custom.PickedItem;
 import net.f708.realisticforging.recipe.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -50,6 +52,7 @@ public class ConditionsHelper {
         return result;
     }
 
+
     public static boolean isHoldingTongs(Player player) {
         return player.getMainHandItem().is(ModItems.TONGS) || (player.getOffhandItem().is(ModItems.TONGS));
     }
@@ -66,16 +69,16 @@ public class ConditionsHelper {
         return player.getMainHandItem().is(ModItems.POINTCHISEL) || (player.getOffhandItem().is(ModItems.POINTCHISEL));
     }
 
-    public static InteractionHand getCarvingHammerHand(Player player){
-        InteractionHand hand = null;
+    public static boolean isHoldingCarvingHammerInRightHand(Player player){
+        boolean RH = false;
         if (isHoldingCarvingHammer(player)){
             if (player.getMainHandItem().is(ModItems.CARVINGHAMMER)){
-                hand = InteractionHand.MAIN_HAND;
+                RH = true;
             } else {
-                hand = InteractionHand.OFF_HAND;
+                RH = false;
             }
         }
-        return hand;
+        return RH;
     }
 
     private static boolean isHoldingHotItemAbleToCool(Player player, Level level){
@@ -201,6 +204,17 @@ public class ConditionsHelper {
         return result;
     }
 
+    private static boolean isCarvingRecipeBlock(Level level, BlockPos pos){
+        boolean result = true;
+        RecipeManager recipeManager = level.getRecipeManager();
+        Optional<RecipeHolder<CarvingRecipe>> recipeBlock = recipeManager.getRecipeFor(
+                ModRecipes.CARVING_TYPE.get(), (new CarvingRecipeInput(level.getBlockState(pos).getBlock().asItem().getDefaultInstance())), level);
+        if (recipeBlock.isEmpty()) {
+            result = false;
+        }
+        return result;
+    }
+
 
     public static boolean isStoneCutter(Block block) {
         return block instanceof StonecutterBlock;
@@ -245,6 +259,14 @@ public class ConditionsHelper {
         return !player.isSprinting();
     }
 
+    public static boolean forgingRangeConditions(Player player){
+        return (player.getMainHandItem().getItem() instanceof PickedItem || player.getOffhandItem().getItem() instanceof PickedItem) && ConditionsHelper.isHoldingHammer(player);
+    }
+
+    public static boolean carvingRangeConditions(Player player){
+        return (isHoldingChisel(player) && isHoldingCarvingHammer(player));
+    }
+
 
     public static boolean isMetMicsConditions(Player player){
         return isInAir(player) && isSleeping(player) && isPassenger(player) && isSprinting(player);
@@ -259,24 +281,27 @@ public class ConditionsHelper {
     }
 
     public static boolean isMetCoolingConditions(Player player, Level level){
-        return
-                isHoldingHotItemAbleToCool(player, level);
+        return isHoldingHotItemAbleToCool(player, level) && isMetMicsConditions(player);
     }
 
     public static boolean isMetCleaningConditions(Player player, Level level){
-        return isHoldingCleanableItem(player, level);
+        return isHoldingCleanableItem(player, level) && isMetMicsConditions(player);
     }
 
     public static boolean isMetGrindingConditions(Player player, Level level, BlockPos pos){
-        return  isHoldingGrindableItem(player, level) && isGrindStone(level.getBlockState(pos).getBlock());
+        return  isHoldingGrindableItem(player, level) && isGrindStone(level.getBlockState(pos).getBlock()) && isMetMicsConditions(player);
     }
 
     public static boolean isMetCuttingConditions(Player player, Level level, BlockPos pos){
-        return  isHoldingCuttableItem(player, level) && isStoneCutter(level.getBlockState(pos).getBlock());
+        return  isHoldingCuttableItem(player, level) && isStoneCutter(level.getBlockState(pos).getBlock()) && isMetMicsConditions(player);
     }
 
     public static boolean isMetSticksTongsGetterConditions(Player player, Level level){
         return isHoldingFullTongs(player, level);
+    }
+
+    public static boolean isMetCarvingConditions(Level level, Player player, BlockPos pos){
+        return isHoldingChisel(player) && isHoldingCarvingHammer(player) && isCarvingRecipeBlock(level, pos) && isMetMicsConditions(player);
     }
 
 

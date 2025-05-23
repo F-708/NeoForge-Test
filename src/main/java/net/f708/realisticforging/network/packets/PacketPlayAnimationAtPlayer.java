@@ -5,6 +5,7 @@ import dev.kosmx.playerAnim.api.firstPerson.FirstPersonMode;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.api.layered.modifier.AbstractFadeModifier;
+import dev.kosmx.playerAnim.api.layered.modifier.MirrorModifier;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import net.f708.realisticforging.RealisticForging;
@@ -29,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 @EventBusSubscriber(modid = RealisticForging.MODID, bus = EventBusSubscriber.Bus.MOD)
-public record PacketPlayAnimationAtPlayer(String animationName, Integer entityId, boolean override) implements CustomPacketPayload {
+public record PacketPlayAnimationAtPlayer(String animationName, Integer entityId, boolean override, boolean RH) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<PacketPlayAnimationAtPlayer> TYPE =
             new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "sync_clients_animation"));
@@ -39,7 +40,8 @@ public record PacketPlayAnimationAtPlayer(String animationName, Integer entityId
                 buffer.writeUtf(message.animationName);
                 buffer.writeInt(message.entityId);
                 buffer.writeBoolean(message.override);
-            }, (RegistryFriendlyByteBuf buffer) -> new PacketPlayAnimationAtPlayer(buffer.readUtf(), buffer.readInt(), buffer.readBoolean()));
+                buffer.writeBoolean(message.RH);
+            }, (RegistryFriendlyByteBuf buffer) -> new PacketPlayAnimationAtPlayer(buffer.readUtf(), buffer.readInt(), buffer.readBoolean(), buffer.readBoolean()));
 
     public static void handleData(final PacketPlayAnimationAtPlayer message, final IPayloadContext context) {
         if (context.flow().isClientbound()) {
@@ -62,10 +64,22 @@ public record PacketPlayAnimationAtPlayer(String animationName, Integer entityId
                 Object associatedData = PlayerAnimationAccess.getPlayerAssociatedData(clientPlayer).get(ResourceLocation
                         .fromNamespaceAndPath(RealisticForging.MODID, "player_animations"));
                 if (associatedData instanceof ModifierLayer<?> modifierLayer) {
+                    MirrorModifier mirror = new MirrorModifier();
+                    if (message.RH) {
+                        if (modifierLayer.size() > 1) {
+                            modifierLayer.removeModifier(1);
+                            RealisticForging.LOGGER.debug("REMOVED MIRROR");
+                        }
+                    } else {
+                        if (modifierLayer.size() <=1) {
+                            modifierLayer.addModifier(mirror, 1);
+                            RealisticForging.LOGGER.debug("ADDED MIRROR");
+                        }
+                    }
                     @SuppressWarnings("unchecked")
                     var animation = (ModifierLayer<IAnimation>) modifierLayer;
                     animation.replaceAnimationWithFade(
-                            AbstractFadeModifier.functionalFadeIn(20, (modelName, type, value) -> value),
+                            AbstractFadeModifier.functionalFadeIn(10, (modelName, type, value) -> value),
                             Objects.requireNonNull(PlayerAnimationRegistry.getAnimation(ResourceLocation.fromNamespaceAndPath
                                             (RealisticForging.MODID, message.animationName())))
                                     .playAnimation()
