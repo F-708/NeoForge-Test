@@ -73,6 +73,7 @@ public record PacketPPPAnimation (Integer entityId, Animation animation, Boolean
                     case CLEANING -> AnimationHelper.playCleaningAnimationBareHands(message.RH);
                     case CARVING -> AnimationHelper.playCarvingAnimation(message.RH);
                     case SLEDGEHAMMERSWING -> AnimationHelper.playSledgeHammerAnimation(message.RH);
+                    case SLEDGEHAMMERSWINGSECOND -> AnimationHelper.playSledgeHammerAnimationCombo(message.RH);
                     default -> {
                         return;
                     }

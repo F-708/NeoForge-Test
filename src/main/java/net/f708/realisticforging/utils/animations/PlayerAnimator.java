@@ -52,6 +52,7 @@ public class PlayerAnimator {
         ModifierLayer<IAnimation> animationLayer = new ModifierLayer<>();
 
         AdjustmentModifier adjustmentModifier = new AdjustmentModifier((partName) -> {
+
             float rotationX = 0;
             float rotationY = 0;
             float rotationZ = 0;
@@ -172,10 +173,19 @@ public class PlayerAnimator {
             if (associatedData instanceof ModifierLayer<?> modifierLayer) {
                 @SuppressWarnings("unchecked")
                 var animation = (ModifierLayer<IAnimation>) modifierLayer;
-                    MirrorModifier mirror = new MirrorModifier();
-                mirror.setEnabled(RH);
+                MirrorModifier mirror = new MirrorModifier();
+                if (RH) {
+                    if (modifierLayer.size() > 1) {
+                        modifierLayer.removeModifier(1);
+                    }
+                } else {
+                    if (modifierLayer.size() <=1) {
+                        modifierLayer.addModifier(mirror, 1);
+                    }
+                }
+
                     animation.replaceAnimationWithFade(
-                            AbstractFadeModifier.functionalFadeIn(10, (modelName, type, value) -> value),
+                            AbstractFadeModifier.functionalFadeIn(5, (modelName, type, value) -> value),
                             Objects.requireNonNull(PlayerAnimationRegistry.getAnimation(
                                             ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, animationName)))
                                     .playAnimation()
@@ -186,7 +196,6 @@ public class PlayerAnimator {
             }
         }
     }
-
 
 
     // Used to specify if a first person changing mod is installed

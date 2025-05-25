@@ -68,12 +68,10 @@ public record PacketPlayAnimationAtPlayer(String animationName, Integer entityId
                     if (message.RH) {
                         if (modifierLayer.size() > 1) {
                             modifierLayer.removeModifier(1);
-                            RealisticForging.LOGGER.debug("REMOVED MIRROR");
                         }
                     } else {
                         if (modifierLayer.size() <=1) {
                             modifierLayer.addModifier(mirror, 1);
-                            RealisticForging.LOGGER.debug("ADDED MIRROR");
                         }
                     }
                     @SuppressWarnings("unchecked")

@@ -9,6 +9,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -98,11 +99,23 @@ public class ModItems {
             () -> new Item(new Item.Properties()
                     .stacksTo(1)));
 
+    public static final DeferredItem<SledgeHammerItem> IRON_SLEDGEHAMMER = ITEMS.register("iron_sledgehammer",
+            () -> new SledgeHammerItem(Tiers.IRON, new Item.Properties()
+                    .stacksTo(1)
+                    .durability(482)
+                    .setNoRepair()));
+
     public static final DeferredItem<SledgeHammerItem> DIAMOND_SLEDGEHAMMER = ITEMS.register("diamond_sledgehammer",
             () -> new SledgeHammerItem(Tiers.DIAMOND, new Item.Properties()
                     .stacksTo(1)
-                    .durability(1432)
-                    .attributes(SledgeHammerItem.createAttributes(Tiers.DIAMOND, 4, -3.7F))));
+                    .durability(964)
+                    .setNoRepair()));
+
+    public static final DeferredItem<SledgeHammerItem> NETHERITE_SLEDGEHAMMER = ITEMS.register("netherite_sledgehammer",
+            () -> new SledgeHammerItem(Tiers.NETHERITE, new Item.Properties()
+                    .stacksTo(1)
+                    .durability(1632)
+                    .setNoRepair()));
 
 
 

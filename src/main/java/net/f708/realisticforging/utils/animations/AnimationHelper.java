@@ -77,7 +77,12 @@ public class AnimationHelper {
 
     public static void playSledgeHammerAnimation(Boolean RH){
         Player player = Minecraft.getInstance().player;
-        AnimationHelper.playAnimation(player, "sledgehammer_swing", RH);
+        AnimationHelper.playAnimation(player, "sledgehammer_swing_first35", RH);
+    }
+
+    public static void playSledgeHammerAnimationCombo(Boolean RH){
+        Player player = Minecraft.getInstance().player;
+        AnimationHelper.playAnimation(player, "sledgehammer_swing_first12", RH);
     }
 
 

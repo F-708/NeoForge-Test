@@ -5,10 +5,13 @@ import net.f708.realisticforging.item.ModItems;
 import net.f708.realisticforging.item.custom.PickedItem;
 import net.f708.realisticforging.recipe.*;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -16,10 +19,18 @@ import net.minecraft.world.level.block.GrindstoneBlock;
 import net.minecraft.world.level.block.StonecutterBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Optional;
 
 public class ConditionsHelper {
+
+    public static boolean metSledgeHammerConditions(ServerPlayer serverPlayer, BlockPos pos, Level level){
+        BlockState state = level.getBlockState(pos);
+        return !serverPlayer.gameMode.getGameModeForPlayer().equals(GameType.ADVENTURE) && !state.is(BlockTags.NEEDS_STONE_TOOL)
+                && !state.is(BlockTags.NEEDS_IRON_TOOL)
+                && !state.is(BlockTags.NEEDS_DIAMOND_TOOL) && level.mayInteract(serverPlayer, pos) && state.getDestroySpeed(level, pos) != -1;
+    }
 
     public static boolean isHoldingHammer(Player player) {
         return player.getMainHandItem().is(ModTags.Items.HAMMER_ITEM) || (player.getOffhandItem().is(ModTags.Items.HAMMER_ITEM));
