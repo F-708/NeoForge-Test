@@ -3,6 +3,7 @@ package net.f708.realisticforging;
 import net.f708.realisticforging.attributes.ModAttributes;
 import net.f708.realisticforging.block.ModBlocks;
 import net.f708.realisticforging.component.ModDataComponents;
+import net.f708.realisticforging.data.ModData;
 import net.f708.realisticforging.item.ModCreativeModeTabs;
 import net.f708.realisticforging.item.ModItems;
 import net.f708.realisticforging.network.NetworkHandler;
@@ -53,6 +54,7 @@ public class RealisticForging
         ModDataComponents.register(modEventBus);
         ModAttributes.register(modEventBus);
         ModSounds.register(modEventBus);
+        ModData.ATTACHMENT_TYPES.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in.
         // Note that this is necessary if and only if we want *this* class (RealisticForging) to respond directly to events.

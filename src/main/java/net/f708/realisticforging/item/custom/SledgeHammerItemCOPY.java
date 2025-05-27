@@ -25,7 +25,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUtils;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.TieredItem;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -40,68 +43,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class SledgeHammerItem extends TieredItem {
-    public SledgeHammerItem(Tier tier, Properties properties) {
+public class SledgeHammerItemCOPY extends TieredItem {
+    public SledgeHammerItemCOPY(Tier tier, Properties properties) {
         super(tier, properties);
     }
     BlockHitResult traceResult;
 
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
-        return 40;
+        return 72000; // Бесконечное использование, пока игрок не отпустит кнопку
     }
 
-    @Override
-    public void onUseTick(Level level, LivingEntity livingEntity, ItemStack stack, int remainingUseDuration) {
-        if (remainingUseDuration >= 0 && livingEntity instanceof Player player) {
-            if (player.getMainHandItem().isEmpty() || player.getOffhandItem().isEmpty()) {
-                if (!player.getCooldowns().isOnCooldown(this)) {
-                        boolean flag = remainingUseDuration % 40 == 0;
-                        if (flag){
-                            boolean RH = player.getMainHandItem().is(SledgeHammerItem.this);
-                            if (player.getTags().contains("SLEDGEHAMMER_COMBO")){
-                                RH = !RH;
-                            }
-
-                            if (player instanceof ServerPlayer serverPlayer) {
-                                player.getData(ModData.IS_SWINGING).setSwinging(true);
-                                PacketDistributor.sendToPlayer(serverPlayer, new PacketTriggerPlayerSwing(player.getData(ModData.IS_SWINGING)));
-                                PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.SLEDGEHAMMERSWINGSECOND, RH));
-                            }
-                            boolean finalRH = RH;
-                            TickScheduler.schedule(() -> {
-                                traceResult = player.level().clip(new ClipContext(player.getEyePosition(1f),
-                                        (player.getEyePosition(1f).add(player.getViewVector(1f).scale(4f))),
-                                        ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
-                                Block block = level.getBlockState(traceResult.getBlockPos()).getBlock();
-                                performAttack(player, player.level(), finalRH, 1);
-                                breakNearbyBlocks(level, traceResult.getBlockPos(), player, finalRH);
-                            }, 26);
-
-                            if (player.getTags().contains("SLEDGEHAMMER_COMBO")){
-                                player.getTags().remove("SLEDGEHAMMER_COMBO");
-                            } else {
-                                player.getTags().add("SLEDGEHAMMER_COMBO");
-                            }
-                        }
-                        return;
-                }
-            }
-        }
-    }
 
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity livingEntity, int timeLeft) {
-        if (livingEntity instanceof Player player) {
-            if (!player.getCooldowns().isOnCooldown(this)){
-                if (player instanceof ServerPlayer serverPlayer) {
-                    int remainingTicks = this.getUseDuration(stack, livingEntity) - timeLeft;
-                    applyCooldown(player, 50);
+        RealisticForging.LOGGER.debug("END!");
+        if (livingEntity instanceof Player player && player instanceof ServerPlayer serverPlayer) {
+            // Проверяем, закончился ли кулдаун
+            if (!player.getCooldowns().isOnCooldown(stack.getItem())) {
+                player.getData(ModData.IS_SWINGING).setSwinging(false);
+                PacketDistributor.sendToPlayer(serverPlayer, new PacketTriggerPlayerSwing(player.getData(ModData.IS_SWINGING)));
+            } else {
+                for (int i = 1; i < 39; i++){
                     TickScheduler.schedule(() -> {
-                        player.getData(ModData.IS_SWINGING).setSwinging(false);
-                        PacketDistributor.sendToPlayer(serverPlayer, new PacketTriggerPlayerSwing(player.getData(ModData.IS_SWINGING)));
-                        player.stopUsingItem();
-                    }, timeLeft);
+                        if (!player.getCooldowns().isOnCooldown(stack.getItem()) && player.getData(ModData.IS_SWINGING).isSwinging()) {
+                            player.getData(ModData.IS_SWINGING).setSwinging(false);
+                            PacketDistributor.sendToPlayer(serverPlayer, new PacketTriggerPlayerSwing(player.getData(ModData.IS_SWINGING)));
+                        }
+                    }, i);
                 }
             }
         }
@@ -111,15 +80,62 @@ public class SledgeHammerItem extends TieredItem {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
         if (player.getMainHandItem().isEmpty() || player.getOffhandItem().isEmpty()) {
             if (!player.getCooldowns().isOnCooldown(this)) {
-                player.startUsingItem(usedHand);
-                player.awardStat(Stats.ITEM_USED.get(this));
-            } else {
-                return InteractionResultHolder.consume(player.getItemInHand(usedHand));
+                boolean RH = usedHand == InteractionHand.MAIN_HAND;
+                player.getCooldowns().addCooldown(this, 39);
+
+                AttributeMap attributeMap = player.getAttributes();
+
+                Utils.slowDownPlayer(attributeMap, player, 35);
+
+
+                if (player.getTags().contains("SLEDGEHAMMER_COMBO")){
+                    RH = !RH;
+                }
+                if (player instanceof ServerPlayer serverPlayer) {
+                    boolean finalRH1 = RH;
+//                            TickScheduler.schedule(() -> {
+//                                PacketDistributor.sendToPlayer(serverPlayer, new PacketPlayCameraShake(20, 5, finalRH1));
+//                            }, 23);
+                    player.getData(ModData.IS_SWINGING).setSwinging(true);
+                    PacketDistributor.sendToPlayer(serverPlayer, new PacketTriggerPlayerSwing(player.getData(ModData.IS_SWINGING)));
+                    TickScheduler.schedule(()->{
+//                                player.getData(ModData.IS_SWINGING).setSwinging(false);
+//                                PacketDistributor.sendToPlayer(serverPlayer, new PacketTriggerPlayerSwing(player.getData(ModData.IS_SWINGING)));
+                    },39);
+
+
+                    PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.SLEDGEHAMMERSWINGSECOND, RH));
+                }
+
+
+                boolean finalRH = RH;
+                TickScheduler.schedule(() -> {
+                    traceResult = player.level().clip(new ClipContext(player.getEyePosition(1f),
+                            (player.getEyePosition(1f).add(player.getViewVector(1f).scale(4f))),
+                            ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
+                    Block block = level.getBlockState(traceResult.getBlockPos()).getBlock();
+                    performAttack(player, player.level(), finalRH, 2);
+                    breakNearbyBlocks(level, traceResult.getBlockPos(), player, finalRH);
+                }, 26);
+
+                if (player.getTags().contains("SLEDGEHAMMER_COMBO")){
+                    player.getTags().remove("SLEDGEHAMMER_COMBO");
+                } else {
+                    player.getTags().add("SLEDGEHAMMER_COMBO");
+                }
+
             }
         }
+        player.awardStat(Stats.ITEM_USED.get(this));
         return ItemUtils.startUsingInstantly(level, player, usedHand);
     }
-
+    @Override
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
+        if (entity instanceof Player player){
+            player.getCooldowns().addCooldown(stack.getItem(), 40);
+        }
+        return true;
+    }
 
     private void performAttack(Player player, Level level, boolean isRight, double knockbackStrength) {
         AABB attackBox = player.getBoundingBox().expandTowards(player.getViewVector(1.0F).scale(3.0D));
@@ -412,31 +428,21 @@ public class SledgeHammerItem extends TieredItem {
             if (ConditionsHelper.metSledgeHammerConditions((ServerPlayer) player, pos, level)){
                 if (level.getBlockState(pos).is(Blocks.ANCIENT_DEBRIS)) {
                     level.destroyBlock(pos, true, player);
-                    sledgehammer.hurtAndBreak(5, player, sledgehammer.getEquipmentSlot());
                 }
                 if (!level.getBlockState(pos).is(Blocks.AIR)){
                     actualPosList.add(pos);
+                } else {
                     sledgehammer.hurtAndBreak(1, player, sledgehammer.getEquipmentSlot());
                     level.destroyBlock(pos, random.nextBoolean(), player);
                 }
             }
         }
-        if (!actualPosList.isEmpty()) {
+        if (!blockPosList.isEmpty()) {
             Utils.playSmashSound((ServerLevel) level, player);
             if (player instanceof ServerPlayer serverPlayer){
                 PacketDistributor.sendToPlayer(serverPlayer, new PacketPlayCameraShake(10 * actualPosList.size(), actualPosList.size()*2, actualPosList.size(), actualPosList.size() * 2, RH));
                 RealisticForging.LOGGER.debug("Duration: " + 10 * actualPosList.size() + " intensity: " + 2 * actualPosList.size() + " waves: "+ actualPosList.size());
             }
-        }
-    }
-
-    public static void applyCooldown(Player player, int timeAmount){
-        List<Item> list = new ArrayList<>();
-        list.add(ModItems.IRON_SLEDGEHAMMER.get());
-        list.add(ModItems.DIAMOND_SLEDGEHAMMER.get());
-        list.add(ModItems.NETHERITE_SLEDGEHAMMER.get());
-        for (Item item : list){
-            player.getCooldowns().addCooldown(item, timeAmount);
         }
     }
 

@@ -17,6 +17,7 @@ public class ModSounds {
 
     public static final Supplier<SoundEvent> FORGING_SOUND = registerSoundEvent("forging");
     public static final Supplier<SoundEvent> CARVING_SOUND = registerSoundEvent("carving");
+    public static final Supplier<SoundEvent> SMASHING_SOUND = registerSoundEvent("smashing");
 
     private static Supplier<SoundEvent> registerSoundEvent(String name){
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, name);

@@ -248,17 +248,16 @@ public class Utils {
         }, 44);
     }
 
-    public static void alightCarvingPlayer(Player player, BlockPos pos){
-        TickScheduler.schedule(() -> {
-            PlayerHelper.alightPlayerAxisToBlock(player, pos);
-        }, 17);
-        TickScheduler.schedule(() -> {
-            PlayerHelper.alightPlayerAxisToBlock(player, pos);
-        }, 30);
-        TickScheduler.schedule(() -> {
-            PlayerHelper.alightPlayerAxisToBlock(player, pos);
-        }, 44);
+    public static void playSmashSound(ServerLevel level, Player player){
+        level.playSound(null, player, ModSounds.SMASHING_SOUND.get(), SoundSource.PLAYERS, 2f, 1f );
     }
+
+
+
+
+
+
+
 
     public static void sendCracksToPlayers(List<Player> nearbyPlayers, Player player, BlockPos pos) {
         for (Player p : nearbyPlayers) {

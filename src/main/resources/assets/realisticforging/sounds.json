@@ -26,5 +26,10 @@
       "realisticforging:chisel9",
       "realisticforging:chisel10"
     ]
+  },
+  "smashing": {
+    "sounds": [
+      "realisticforging:smashing1"
+    ]
   }
 }

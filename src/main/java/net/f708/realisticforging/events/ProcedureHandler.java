@@ -643,7 +643,6 @@ public class ProcedureHandler {
             Utils.slowDownPlayer(attributeMap, player, 44);
             Utils.playCarvingSound((ServerLevel) level, player);
             Utils.sendCarvingParticles((ServerLevel) level, pos, block);
-            Utils.alightCarvingPlayer(player, pos);
             ClientboundBlockDestructionPacket packet = new ClientboundBlockDestructionPacket(player.getId(), pos, 4);
 
             if (player instanceof ServerPlayer serverPlayer) {
