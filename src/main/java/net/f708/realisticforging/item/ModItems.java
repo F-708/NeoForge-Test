@@ -5,10 +5,7 @@ import net.f708.realisticforging.item.custom.HotItem;
 import net.f708.realisticforging.item.custom.PickedItem;
 import net.f708.realisticforging.item.custom.SledgeHammerItem;
 import net.f708.realisticforging.item.custom.TongsItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemCooldowns;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -100,19 +97,19 @@ public class ModItems {
                     .stacksTo(1)));
 
     public static final DeferredItem<SledgeHammerItem> IRON_SLEDGEHAMMER = ITEMS.register("iron_sledgehammer",
-            () -> new SledgeHammerItem(Tiers.IRON, new Item.Properties()
+            () -> new SledgeHammerItem(Tiers.IRON, new Item.Properties().attributes(SledgeHammerItem.createAttributes(Tiers.IRON, 2.0F, -3.0F))
                     .stacksTo(1)
                     .durability(482)
                     .setNoRepair()));
 
     public static final DeferredItem<SledgeHammerItem> DIAMOND_SLEDGEHAMMER = ITEMS.register("diamond_sledgehammer",
-            () -> new SledgeHammerItem(Tiers.DIAMOND, new Item.Properties()
+            () -> new SledgeHammerItem(Tiers.DIAMOND, new Item.Properties().attributes(SledgeHammerItem.createAttributes(Tiers.DIAMOND, 2.0F, -3.0F))
                     .stacksTo(1)
-                    .durability(964)
+                    .durability(846)
                     .setNoRepair()));
 
     public static final DeferredItem<SledgeHammerItem> NETHERITE_SLEDGEHAMMER = ITEMS.register("netherite_sledgehammer",
-            () -> new SledgeHammerItem(Tiers.NETHERITE, new Item.Properties()
+            () -> new SledgeHammerItem(Tiers.NETHERITE, new Item.Properties().attributes(SledgeHammerItem.createAttributes(Tiers.NETHERITE, 2.0F, -3.0F))
                     .stacksTo(1)
                     .durability(1632)
                     .setNoRepair()));

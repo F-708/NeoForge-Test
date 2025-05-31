@@ -1,48 +1,35 @@
 package net.f708.realisticforging.utils;
 
 import net.f708.realisticforging.attributes.ModModifiers;
-import net.f708.realisticforging.network.packets.PacketPPPAnimation;
-import net.f708.realisticforging.network.packets.PacketServerCancelAnimation;
 import net.f708.realisticforging.recipe.CleaningRecipe;
 import net.f708.realisticforging.recipe.CleaningRecipeInput;
 import net.f708.realisticforging.recipe.ModRecipes;
 import net.f708.realisticforging.sounds.ModSounds;
-import net.f708.realisticforging.utils.animations.PlayerHelper;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundBlockDestructionPacket;
-import net.minecraft.server.level.BlockDestructionProgress;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class Utils {
+
+
 
     public static void setBusy(Player player){
         player.getTags().add("BUSY");
@@ -248,8 +235,13 @@ public class Utils {
         }, 44);
     }
 
-    public static void playSmashSound(ServerLevel level, Player player){
-        level.playSound(null, player, ModSounds.SMASHING_SOUND.get(), SoundSource.PLAYERS, 2f, 1f );
+    public static void playSmashSound(ServerLevel level, Player player, float volume){
+        Random random = new Random();
+        level.playSound(null, player, ModSounds.SMASHING_BLOCK_SOUND.get(), SoundSource.PLAYERS, 1f * volume, random.nextFloat(0.9f, 1.1f) );
+    }
+    public static void playEntitySmashSound(ServerLevel level, Player player, float volume){
+        Random random = new Random();
+        level.playSound(null, player, ModSounds.SMASHING_SOUND.get(), SoundSource.PLAYERS, 0.5f, random.nextFloat(0.9f, 1.1f));
     }
 
 

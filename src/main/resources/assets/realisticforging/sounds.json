@@ -27,6 +27,15 @@
       "realisticforging:chisel10"
     ]
   },
+  "smashing_block": {
+    "sounds": [
+      "realisticforging:smashing_block1",
+      "realisticforging:smashing_block2",
+      "realisticforging:smashing_block3",
+      "realisticforging:smashing_block4",
+      "realisticforging:smashing_block5"
+    ]
+  },
   "smashing": {
     "sounds": [
       "realisticforging:smashing1"

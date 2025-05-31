@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "minecraft:netherite_ingot"
+  },
+  "base": {
+    "item": "realisticforging:diamond_sledgehammer"
+  },
+  "result": {
+    "count": 1,
+    "id": "realisticforging:netherite_sledgehammer"
+  },
+  "template": {
+    "item": "minecraft:netherite_upgrade_smithing_template"
+  }
+}

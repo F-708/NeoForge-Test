@@ -13,13 +13,25 @@ import net.f708.realisticforging.utils.TickScheduler;
 import net.f708.realisticforging.utils.Utils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundBlockDestructionPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
@@ -27,24 +39,41 @@ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.SimpleExplosionDamageCalculator;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
-public class SledgeHammerItem extends TieredItem {
-    public SledgeHammerItem(Tier tier, Properties properties) {
-        super(tier, properties);
-    }
+public class SledgeHammerItem extends DiggerItem {
     BlockHitResult traceResult;
+
+    public SledgeHammerItem(Tier tier, Properties properties) {
+        super(tier, BlockTags.MINEABLE_WITH_PICKAXE ,properties);
+    }
+
+    @Override
+    public boolean canAttackBlock(BlockState state, Level level, BlockPos pos, Player player) {
+        return player.isCreative();
+    }
+
+    @Override
+    public boolean canPerformAction(ItemStack stack, ItemAbility itemAbility) {
+        return ItemAbilities.DEFAULT_SWORD_ACTIONS.contains(itemAbility);
+    }
 
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
@@ -83,6 +112,7 @@ public class SledgeHammerItem extends TieredItem {
                             } else {
                                 player.getTags().add("SLEDGEHAMMER_COMBO");
                             }
+//                            applyCooldown(player, 39);
                         }
                         return;
                 }
@@ -133,12 +163,11 @@ public class SledgeHammerItem extends TieredItem {
 
         for (Entity target : targets) {
             if (target.isAttackable() && target != player) {
-                Utils.playSmashSound((ServerLevel) level, player);
+                Utils.playEntitySmashSound((ServerLevel) level, player, 1);
                 player.attack(target);
 
                 Vec3 horizontalDirection = !isRight ? right : right.scale(-1);
 
-                // Добавляем вертикальную составляющую (вверх)
                 Vec3 knockDirection = new Vec3(
                         horizontalDirection.x,
                         0.05D,
@@ -161,59 +190,15 @@ public class SledgeHammerItem extends TieredItem {
         List<BlockPos> actualPosList = new ArrayList<>();
         if (player.getMainHandItem().is(ModItems.IRON_SLEDGEHAMMER) || player.getOffhandItem().is(ModItems.IRON_SLEDGEHAMMER)){
             switch (traceResult.getDirection()){
-                case DOWN, UP, EAST, WEST, NORTH, SOUTH -> {
-                    switch (player.getDirection()){
-                        case EAST -> {
-                            blockPosList.add(center);
-                            if (RH){
-                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() - 1));
-                            } else {
-                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() + 1));
-
-                            }
-                        }
-                        case SOUTH -> {
-                            blockPosList.add(center);
-                            if (RH){
-                                blockPosList.add(new BlockPos(center.getX() + 1, center.getY(), center.getZ()));
-                            } else {
-                                blockPosList.add(new BlockPos(center.getX() - 1, center.getY(), center.getZ()));
-                            }
-                        }
-                        case WEST -> {
-                            blockPosList.add(center);
-                            if (RH){
-                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() + 1));
-                            } else {
-                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() - 1));
-                            }
-                        }
-                        case NORTH -> {
-                            blockPosList.add(center);
-                            if (RH){
-                                blockPosList.add(new BlockPos(center.getX() - 1, center.getY(), center.getZ()));
-                            } else {
-                                blockPosList.add(new BlockPos(center.getX() + 1, center.getY(), center.getZ()));
-                            }
-                        }
-                    }
-                }
-            }
-
-
-        } else if(player.getMainHandItem().is(ModItems.DIAMOND_SLEDGEHAMMER) || player.getOffhandItem().is(ModItems.DIAMOND_SLEDGEHAMMER)){
-            switch (traceResult.getDirection()){
                 case EAST, WEST, NORTH, SOUTH -> {
                     switch (player.getDirection()){
                         case EAST -> {
                             blockPosList.add(center);
                             if (RH){
                                 blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() - 1));
-//                                    blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() - 2));
                                 blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() + 1));
                             } else {
                                 blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() + 1));
-//                                    blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() + 2));
                                 blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() - 1));
 
                             }
@@ -222,11 +207,9 @@ public class SledgeHammerItem extends TieredItem {
                             blockPosList.add(center);
                             if (RH){
                                 blockPosList.add(new BlockPos(center.getX() + 1, center.getY(), center.getZ()));
-//                                    blockPosList.add(new BlockPos(center.getX() + 2, center.getY(), center.getZ()));
                                 blockPosList.add(new BlockPos(center.getX() - 1, center.getY(), center.getZ()));
                             } else {
                                 blockPosList.add(new BlockPos(center.getX() - 1, center.getY(), center.getZ()));
-//                                    blockPosList.add(new BlockPos(center.getX() - 2, center.getY(), center.getZ()));
                                 blockPosList.add(new BlockPos(center.getX() + 1, center.getY(), center.getZ()));
                             }
                         }
@@ -234,11 +217,10 @@ public class SledgeHammerItem extends TieredItem {
                             blockPosList.add(center);
                             if (RH){
                                 blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() + 1));
-//                                    blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() + 2));
                                 blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() - 1));
                             } else {
                                 blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() - 1));
-//                                    blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() - 2));
+
                                 blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() + 1));
                             }
                         }
@@ -246,11 +228,9 @@ public class SledgeHammerItem extends TieredItem {
                             blockPosList.add(center);
                             if (RH){
                                 blockPosList.add(new BlockPos(center.getX() - 1, center.getY(), center.getZ()));
-//                                    blockPosList.add(new BlockPos(center.getX() - 2, center.getY(), center.getZ()));
                                 blockPosList.add(new BlockPos(center.getX() + 1, center.getY(), center.getZ()));
                             } else {
                                 blockPosList.add(new BlockPos(center.getX() + 1, center.getY(), center.getZ()));
-//                                    blockPosList.add(new BlockPos(center.getX() + 2, center.getY(), center.getZ()));
                                 blockPosList.add(new BlockPos(center.getX() - 1, center.getY(), center.getZ()));
                             }
                         }
@@ -302,58 +282,125 @@ public class SledgeHammerItem extends TieredItem {
                     }
                 }
             }
+
+
+        } else if(player.getMainHandItem().is(ModItems.DIAMOND_SLEDGEHAMMER) || player.getOffhandItem().is(ModItems.DIAMOND_SLEDGEHAMMER)){
+            switch (traceResult.getDirection()){
+                case EAST, WEST, NORTH, SOUTH -> {
+                    switch (player.getDirection()){
+                        case EAST, WEST -> {
+                            blockPosList.add(center);
+                            if (player.getY() == center.getY()){
+                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() - 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() + 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() + 1, center.getZ() - 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() + 1, center.getZ() + 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() + 1, center.getZ()));
+                            } else if (player.getY() < center.getY()){
+                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() - 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() + 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() - 1, center.getZ() - 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() - 1, center.getZ() + 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() - 1, center.getZ()));
+                            }
+
+                        }
+                        case SOUTH, NORTH -> {
+                            blockPosList.add(center);
+                            if (player.getY() == center.getY()){
+                                blockPosList.add(new BlockPos(center.getX()-1, center.getY(), center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX()+1, center.getY(), center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX()-1, center.getY() + 1, center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX()+1, center.getY() + 1, center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() + 1, center.getZ()));
+                            } else if (player.getY() < center.getY()){
+                                blockPosList.add(new BlockPos(center.getX()-1, center.getY(), center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX()+1, center.getY(), center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX()-1, center.getY() - 1, center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX()+1, center.getY() - 1, center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() - 1, center.getZ()));
+                            }
+                        }
+                    }
+                }
+                case UP, DOWN -> {
+                    switch (player.getDirection()) {
+                        case EAST -> {
+                            blockPosList.add(center);
+                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() - 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() + 1));
+                        }
+                        case SOUTH -> {
+                            blockPosList.add(center);
+                                blockPosList.add(new BlockPos(center.getX() + 1, center.getY(), center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX() - 1, center.getY(), center.getZ()));
+                        }
+                        case WEST -> {
+                            blockPosList.add(center);
+                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() + 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() - 1));
+                        }
+                        case NORTH -> {
+                            blockPosList.add(center);
+                                blockPosList.add(new BlockPos(center.getX() - 1, center.getY(), center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX() + 1, center.getY(), center.getZ()));
+                        }
+                    }
+                }
+            }
         }
         else if(player.getMainHandItem().is(ModItems.NETHERITE_SLEDGEHAMMER) || player.getOffhandItem().is(ModItems.NETHERITE_SLEDGEHAMMER)){
             switch (traceResult.getDirection()){
                 case EAST, WEST, NORTH, SOUTH -> {
                     switch (player.getDirection()){
-                        case EAST -> {
+                        case EAST, WEST -> {
                             blockPosList.add(center);
-                            if (RH){
+                            if (player.getY() + 1 == center.getY()){
                                 blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() - 1));
-                                blockPosList.add(new BlockPos(center.getX(), center.getY() + (random.nextBoolean() ? 1 : -1), center.getZ()));
                                 blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() + 1));
-                            } else {
-                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() + 1));
-                                blockPosList.add(new BlockPos(center.getX(), center.getY() + (random.nextBoolean() ? 1 : -1), center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() + 1, center.getZ() - 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() + 1, center.getZ() + 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() + 1, center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() - 1, center.getZ() - 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() - 1, center.getZ() + 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() - 1, center.getZ()));
+                            } else if (player.getY() < center.getY()){
                                 blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() - 1));
-
+                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() + 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() - 1, center.getZ() - 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() - 1, center.getZ() + 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() - 1, center.getZ()));
+                            } else if (player.getY() >= center.getY()){
+                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() - 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() + 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() + 1, center.getZ() - 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() + 1, center.getZ() + 1));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() + 1, center.getZ()));
                             }
                         }
-                        case SOUTH -> {
+                        case SOUTH, NORTH -> {
                             blockPosList.add(center);
-                            if (RH){
-                                blockPosList.add(new BlockPos(center.getX() + 1, center.getY(), center.getZ()));
-                                blockPosList.add(new BlockPos(center.getX(), center.getY() + (random.nextBoolean() ? 1 : -1), center.getZ()));
-                                blockPosList.add(new BlockPos(center.getX() - 1, center.getY(), center.getZ()));
-                            } else {
-                                blockPosList.add(new BlockPos(center.getX() - 1, center.getY(), center.getZ()));
-                                blockPosList.add(new BlockPos(center.getX(), center.getY() + (random.nextBoolean() ? 1 : -1), center.getZ()));
-                                blockPosList.add(new BlockPos(center.getX() + 1, center.getY(), center.getZ()));
-                            }
-                        }
-                        case WEST -> {
-                            blockPosList.add(center);
-                            if (RH){
-                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() + 1));
-                                blockPosList.add(new BlockPos(center.getX(), center.getY() + (random.nextBoolean() ? 1 : -1), center.getZ()));
-                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() - 1));
-                            } else {
-                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() - 1));
-                                blockPosList.add(new BlockPos(center.getX(), center.getY() + (random.nextBoolean() ? 1 : -1), center.getZ()));
-                                blockPosList.add(new BlockPos(center.getX(), center.getY(), center.getZ() + 1));
-                            }
-                        }
-                        case NORTH -> {
-                            blockPosList.add(center);
-                            if (RH){
-                                blockPosList.add(new BlockPos(center.getX() - 1, center.getY(), center.getZ()));
-                                blockPosList.add(new BlockPos(center.getX(), center.getY() + (random.nextBoolean() ? 1 : -1), center.getZ()));
-                                blockPosList.add(new BlockPos(center.getX() + 1, center.getY(), center.getZ()));
-                            } else {
-                                blockPosList.add(new BlockPos(center.getX() + 1, center.getY(), center.getZ()));
-                                blockPosList.add(new BlockPos(center.getX(), center.getY() + (random.nextBoolean() ? 1 : -1), center.getZ()));
-                                blockPosList.add(new BlockPos(center.getX() - 1, center.getY(), center.getZ()));
+                            if (player.getY() + 1 == center.getY()){
+                                blockPosList.add(new BlockPos(center.getX()-1, center.getY(), center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX()+1, center.getY(), center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX()-1, center.getY() + 1, center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX()+1, center.getY() + 1, center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() + 1, center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX()-1, center.getY() - 1, center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX()+1, center.getY() - 1, center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() - 1, center.getZ()));
+                            } else if (player.getY() < center.getY()){
+                                blockPosList.add(new BlockPos(center.getX()-1, center.getY(), center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX()+1, center.getY(), center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX()-1, center.getY() - 1, center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX()+1, center.getY() - 1, center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() - 1, center.getZ()));
+                            } else if (player.getY() >= center.getY()){
+                                blockPosList.add(new BlockPos(center.getX()-1, center.getY(), center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX()+1, center.getY(), center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX()-1, center.getY() + 1, center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX()+1, center.getY() + 1, center.getZ()));
+                                blockPosList.add(new BlockPos(center.getX(), center.getY() + 1, center.getZ()));
                             }
                         }
                     }
@@ -411,10 +458,11 @@ public class SledgeHammerItem extends TieredItem {
             }
             if (ConditionsHelper.metSledgeHammerConditions((ServerPlayer) player, pos, level)){
                 if (level.getBlockState(pos).is(Blocks.ANCIENT_DEBRIS)) {
+                    actualPosList.add(pos);
                     level.destroyBlock(pos, true, player);
                     sledgehammer.hurtAndBreak(5, player, sledgehammer.getEquipmentSlot());
                 }
-                if (!level.getBlockState(pos).is(Blocks.AIR)){
+                if (!level.getBlockState(pos).is(Blocks.AIR) && !level.getBlockState(pos).is(Blocks.ANCIENT_DEBRIS)){
                     actualPosList.add(pos);
                     sledgehammer.hurtAndBreak(1, player, sledgehammer.getEquipmentSlot());
                     level.destroyBlock(pos, random.nextBoolean(), player);
@@ -422,10 +470,35 @@ public class SledgeHammerItem extends TieredItem {
             }
         }
         if (!actualPosList.isEmpty()) {
-            Utils.playSmashSound((ServerLevel) level, player);
+            TargetingConditions conditions = TargetingConditions.forNonCombat().range(32);
+            List<Player> closePlayers = level.getNearbyPlayers(conditions, player, player.getBoundingBox().inflate(8));
+            List<Player> nearbyPlayers = level.getNearbyPlayers(conditions, player, player.getBoundingBox().inflate(16));
+            List<Player> farPlayers = level.getNearbyPlayers(conditions, player, player.getBoundingBox().inflate(32));
+
+            Utils.playSmashSound((ServerLevel) level, player, actualPosList.size());
             if (player instanceof ServerPlayer serverPlayer){
-                PacketDistributor.sendToPlayer(serverPlayer, new PacketPlayCameraShake(10 * actualPosList.size(), actualPosList.size()*2, actualPosList.size(), actualPosList.size() * 2, RH));
-                RealisticForging.LOGGER.debug("Duration: " + 10 * actualPosList.size() + " intensity: " + 2 * actualPosList.size() + " waves: "+ actualPosList.size());
+                PacketDistributor.sendToPlayer(serverPlayer, new PacketPlayCameraShake(20 * actualPosList.size(), actualPosList.size()*2, actualPosList.size() / 2, actualPosList.size() * 2, RH));
+            }
+            for (Player p : closePlayers){
+                if (p instanceof ServerPlayer serverPlayer){
+                    nearbyPlayers.remove(p);
+                    farPlayers.remove(p);
+                    PacketDistributor.sendToPlayer(serverPlayer, new PacketPlayCameraShake(20 * actualPosList.size(), actualPosList.size()*2, actualPosList.size() / 2, actualPosList.size() * 2, random.nextBoolean()));
+                }
+            }
+            for (Player p : nearbyPlayers){
+                if (p instanceof ServerPlayer serverPlayer){
+                    closePlayers.remove(p);
+                    farPlayers.remove(p);
+                    PacketDistributor.sendToPlayer(serverPlayer, new PacketPlayCameraShake(15 * actualPosList.size(), actualPosList.size(), actualPosList.size() / 3, actualPosList.size(), random.nextBoolean()));
+                }
+            }
+            for (Player p : farPlayers){
+                closePlayers.remove(p);
+                nearbyPlayers.remove(p);
+                if (p instanceof ServerPlayer serverPlayer){
+                    PacketDistributor.sendToPlayer(serverPlayer, new PacketPlayCameraShake(10 * actualPosList.size(), actualPosList.size() / 2, actualPosList.size() / 4, actualPosList.size() / 2 , random.nextBoolean()));
+                }
             }
         }
     }
@@ -438,6 +511,10 @@ public class SledgeHammerItem extends TieredItem {
         for (Item item : list){
             player.getCooldowns().addCooldown(item, timeAmount);
         }
+    }
+
+    public static boolean isHoldingSledgeHammer(Player player){
+        return player.getMainHandItem().getItem() instanceof SledgeHammerItem || player.getOffhandItem().getItem() instanceof SledgeHammerItem;
     }
 
 
