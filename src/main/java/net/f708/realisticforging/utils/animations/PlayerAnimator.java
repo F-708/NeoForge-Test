@@ -100,12 +100,12 @@ public class PlayerAnimator {
      */
 
 
-    public static void playAnimation(LevelAccessor world, Entity entity, String animationName, Boolean RH) {
+    public static void playAnimation(LevelAccessor world, Entity entity, String animationName, Boolean RH, int fadeInTicks) {
         try {
             if (world.isClientSide()) {
-                playClientAnimation(entity, animationName, RH);
+                playClientAnimation(entity, animationName, RH, fadeInTicks);
             } else {
-                playServerAnimation(world, entity, animationName, RH);
+                playServerAnimation(world, entity, animationName, RH, fadeInTicks);
             }
         } catch (Exception e) {
             RealisticForging.LOGGER.error("Error in PlayerAnimator::playAnimation: {}", e.getMessage(), e);
@@ -166,7 +166,7 @@ public class PlayerAnimator {
 //        }
 //    }
 
-    private static void playClientAnimation(Entity entity, String animationName, Boolean RH) {
+    private static void playClientAnimation(Entity entity, String animationName, Boolean RH, int fadeInTicks) {
         if (entity instanceof AbstractClientPlayer) {
             Object associatedData = PlayerAnimationAccess.getPlayerAssociatedData((AbstractClientPlayer) entity)
                     .get(ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "player_animations"));
@@ -185,7 +185,7 @@ public class PlayerAnimator {
                 }
 
                     animation.replaceAnimationWithFade(
-                            AbstractFadeModifier.functionalFadeIn(5, (modelName, type, value) -> value),
+                            AbstractFadeModifier.functionalFadeIn(fadeInTicks, (modelName, type, value) -> value),
                             Objects.requireNonNull(PlayerAnimationRegistry.getAnimation(
                                             ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, animationName)))
                                     .playAnimation()
@@ -207,10 +207,10 @@ public class PlayerAnimator {
         }
     }
 
-    private static void playServerAnimation(LevelAccessor world, Entity entity, String animationName, boolean RH) {
+    private static void playServerAnimation(LevelAccessor world, Entity entity, String animationName, boolean RH, int fadeInTicks) {
         if (!world.isClientSide() && entity instanceof Player) {
             PacketDistributor.sendToPlayersTrackingEntity(entity,
-                    new net.f708.realisticforging.network.packets.PacketPlayAnimationAtPlayer(animationName, entity.getId(), false, RH));
+                    new net.f708.realisticforging.network.packets.PacketPlayAnimationAtPlayer(animationName, entity.getId(), false, RH, fadeInTicks));
         }
     }
 

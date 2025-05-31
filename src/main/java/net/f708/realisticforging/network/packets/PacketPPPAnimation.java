@@ -34,7 +34,7 @@ import java.util.Objects;
 
 // Packet Please Play Player Animation
 @EventBusSubscriber(modid = RealisticForging.MODID, bus = EventBusSubscriber.Bus.MOD)
-public record PacketPPPAnimation (Integer entityId, Animation animation, Boolean RH) implements CustomPacketPayload {
+public record PacketPPPAnimation (Integer entityId, Animation animation, Boolean RH, int fadeInTicks) implements CustomPacketPayload {
 
 
     public static final CustomPacketPayload.Type<PacketPPPAnimation> TYPE =
@@ -45,7 +45,8 @@ public record PacketPPPAnimation (Integer entityId, Animation animation, Boolean
                 buffer.writeInt(message.entityId);
                 buffer.writeEnum(message.animation);
                 buffer.writeBoolean(message.RH);
-            }, (RegistryFriendlyByteBuf buffer) -> new PacketPPPAnimation(buffer.readInt(), buffer.readEnum(Animation.class), buffer.readBoolean()));
+                buffer.writeInt(message.fadeInTicks);
+            }, (RegistryFriendlyByteBuf buffer) -> new PacketPPPAnimation(buffer.readInt(), buffer.readEnum(Animation.class), buffer.readBoolean(), buffer.readInt()));
 
     public static void handleData(final PacketPPPAnimation message, final IPayloadContext context) {
         if (context.flow().isClientbound()) {
@@ -66,14 +67,14 @@ public record PacketPPPAnimation (Integer entityId, Animation animation, Boolean
             if (player instanceof AbstractClientPlayer clientPlayer) {
                 switch (message.animation){
                     case CANCEL -> AnimationHelper.cancelAnimation(clientPlayer);
-                    case FORGING -> AnimationHelper.playForgingAnimation(message.RH);
-                    case COOLING -> AnimationHelper.playCoolingAnimation(message.RH);
+                    case FORGING -> AnimationHelper.playForgingAnimation(message.RH, message.fadeInTicks);
+                    case COOLING -> AnimationHelper.playCoolingAnimation(message.RH, message.fadeInTicks);
                     case PICKING, GRINDING -> AnimationHelper.playSwingAnimation(message.RH);
-                    case CUTTING -> AnimationHelper.playCuttingAnimation(message.RH);
-                    case CLEANING -> AnimationHelper.playCleaningAnimationBareHands(message.RH);
-                    case CARVING -> AnimationHelper.playCarvingAnimation(message.RH);
-                    case SLEDGEHAMMERSWING -> AnimationHelper.playSledgeHammerAnimation(message.RH);
-                    case SLEDGEHAMMERSWINGSECOND -> AnimationHelper.playSledgeHammerAnimationCombo(message.RH);
+                    case CUTTING -> AnimationHelper.playCuttingAnimation(message.RH, message.fadeInTicks);
+                    case CLEANING -> AnimationHelper.playCleaningAnimationBareHands(message.RH, message.fadeInTicks);
+                    case CARVING -> AnimationHelper.playCarvingAnimation(message.RH, message.fadeInTicks);
+                    case SLEDGEHAMMERSWING -> AnimationHelper.playSledgeHammerAnimation(message.RH, message.fadeInTicks);
+                    case SLEDGEHAMMERSWINGSECOND -> AnimationHelper.playSledgeHammerAnimationCombo(message.RH, message.fadeInTicks);
                     default -> {
                         return;
                     }

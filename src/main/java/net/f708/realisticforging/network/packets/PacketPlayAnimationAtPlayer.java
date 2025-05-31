@@ -30,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 @EventBusSubscriber(modid = RealisticForging.MODID, bus = EventBusSubscriber.Bus.MOD)
-public record PacketPlayAnimationAtPlayer(String animationName, Integer entityId, boolean override, boolean RH) implements CustomPacketPayload {
+public record PacketPlayAnimationAtPlayer(String animationName, Integer entityId, boolean override, boolean RH, int fadeInTicks) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<PacketPlayAnimationAtPlayer> TYPE =
             new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "sync_clients_animation"));
@@ -41,7 +41,8 @@ public record PacketPlayAnimationAtPlayer(String animationName, Integer entityId
                 buffer.writeInt(message.entityId);
                 buffer.writeBoolean(message.override);
                 buffer.writeBoolean(message.RH);
-            }, (RegistryFriendlyByteBuf buffer) -> new PacketPlayAnimationAtPlayer(buffer.readUtf(), buffer.readInt(), buffer.readBoolean(), buffer.readBoolean()));
+                buffer.writeInt(message.fadeInTicks);
+            }, (RegistryFriendlyByteBuf buffer) -> new PacketPlayAnimationAtPlayer(buffer.readUtf(), buffer.readInt(), buffer.readBoolean(), buffer.readBoolean(), buffer.readInt()));
 
     public static void handleData(final PacketPlayAnimationAtPlayer message, final IPayloadContext context) {
         if (context.flow().isClientbound()) {
@@ -77,7 +78,7 @@ public record PacketPlayAnimationAtPlayer(String animationName, Integer entityId
                     @SuppressWarnings("unchecked")
                     var animation = (ModifierLayer<IAnimation>) modifierLayer;
                     animation.replaceAnimationWithFade(
-                            AbstractFadeModifier.functionalFadeIn(10, (modelName, type, value) -> value),
+                            AbstractFadeModifier.functionalFadeIn(message.fadeInTicks, (modelName, type, value) -> value),
                             Objects.requireNonNull(PlayerAnimationRegistry.getAnimation(ResourceLocation.fromNamespaceAndPath
                                             (RealisticForging.MODID, message.animationName())))
                                     .playAnimation()

@@ -79,7 +79,7 @@ public class ProcedureHandler {
                 result = recipeHolder.value().assemble(new ForgingRecipeInput(inventory.getItem(slotWithForgeable)), level.registryAccess());
                 Utils.setBusy(player);
                 if (player instanceof ServerPlayer serverPlayer) {
-                    PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(), new PacketPPPAnimation(event.getEntity().getId(), Animation.FORGING, RH));
+                    PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(), new PacketPPPAnimation(event.getEntity().getId(), Animation.FORGING, RH, 5));
                 }
                 TickScheduler.schedule(()->{
                     Utils.removeBusy(player);
@@ -232,7 +232,7 @@ public class ProcedureHandler {
                 tongsRecipeHolder = tongsRecipeOptional.get();
                 ItemStack result = tongsRecipeHolder.value().assemble(new TongsPickingRecipeInput(Holder), level.registryAccess());
                 if (player instanceof ServerPlayer serverPlayer) {
-                    PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(), new PacketPPPAnimation(event.getEntity().getId(), Animation.PICKING, RH));
+                    PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(), new PacketPPPAnimation(event.getEntity().getId(), Animation.PICKING, RH, 5));
                 }
                 event.setCanceled(true);
                 TickScheduler.schedule(() -> {
@@ -256,7 +256,7 @@ public class ProcedureHandler {
                 sticksRecipeHolder = sticksRecipeOptional.get();
                 ItemStack result = sticksRecipeHolder.value().assemble(new SticksPickingRecipeInput(Holder), level.registryAccess());
                 if (player instanceof ServerPlayer serverPlayer) {
-                    PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(), new PacketPPPAnimation(event.getEntity().getId(), Animation.PICKING, RH));
+                    PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(), new PacketPPPAnimation(event.getEntity().getId(), Animation.PICKING, RH, 5));
                 }
                 event.setCanceled(true);
                 TickScheduler.schedule(() -> {
@@ -299,7 +299,7 @@ public class ProcedureHandler {
                             return;
                         }
                         if (player instanceof ServerPlayer serverPlayer) {
-                            PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.COOLING, true));
+                            PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.COOLING, true, 5));
                         }
                         ItemStack result = recipeOptionalOff.get().value().assemble(new CoolingRecipeInput(player.getOffhandItem()), level.registryAccess());
                         player.getCooldowns().addCooldown(player.getOffhandItem().getItem(), 20);
@@ -319,7 +319,7 @@ public class ProcedureHandler {
                             return;
                         }
                         if (player instanceof ServerPlayer serverPlayer) {
-                            PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.COOLING, false));
+                            PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.COOLING, false, 5));
                         }
                         ItemStack result = recipeOptionalMain.get().value().assemble(new CoolingRecipeInput(player.getMainHandItem()), level.registryAccess());
                         player.getCooldowns().addCooldown(player.getMainHandItem().getItem(), 20);
@@ -375,7 +375,7 @@ public class ProcedureHandler {
                 }
                 Utils.setBusy(player);
                 if (player instanceof ServerPlayer serverPlayer) {
-                    PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.CLEANING, RH));
+                    PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.CLEANING, RH, 5));
                 }
                 player.getCooldowns().addCooldown(stack.getItem(), 40);
                 Utils.sendCleaningParticles((ServerLevel) level, player);
@@ -482,7 +482,7 @@ public class ProcedureHandler {
                 int currentStage = inventory.getItem(slot).getOrDefault(ModDataComponents.GRIND_STATE, 1);
                 if (!player.getCooldowns().isOnCooldown(inventory.getItem(slot).getItem())) {
                     if (player instanceof ServerPlayer serverPlayer) {
-                        PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.GRINDING, RH));
+                        PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.GRINDING, RH, 5));
                     }
 
                     if ((processingItem.getCount() > 1)){
@@ -578,7 +578,7 @@ public class ProcedureHandler {
                 }
                 Utils.setBusy(player);
                 if (player instanceof ServerPlayer serverPlayer) {
-                    PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.CUTTING, RH));
+                    PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.CUTTING, RH, 5));
                 }
                 event.setCanceled(true);
                 Utils.playCuttingSound((ServerLevel) level, player);
@@ -646,7 +646,7 @@ public class ProcedureHandler {
             ClientboundBlockDestructionPacket packet = new ClientboundBlockDestructionPacket(player.getId(), pos, 4);
 
             if (player instanceof ServerPlayer serverPlayer) {
-                PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.CARVING, RH));
+                PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.CARVING, RH, 5));
             }
             //
 //                serverPlayer.connection.send(packet);

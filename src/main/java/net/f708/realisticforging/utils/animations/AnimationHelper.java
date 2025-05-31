@@ -13,9 +13,9 @@ import net.neoforged.neoforge.network.PacketDistributor;
 @OnlyIn(Dist.CLIENT)
 public class AnimationHelper {
 
-    public static void playAnimation(Player player, String animationKey, boolean RH) {
-        PlayerAnimator.playAnimation(player.level(), player, animationKey, RH);
-        PacketDistributor.sendToServer(new PacketServerPlayAnimation(animationKey, RH));
+    public static void playAnimation(Player player, String animationKey, boolean RH, int fadeInTicks) {
+        PlayerAnimator.playAnimation(player.level(), player, animationKey, RH, fadeInTicks);
+        PacketDistributor.sendToServer(new PacketServerPlayAnimation(animationKey, RH, fadeInTicks));
         PlayerHelper.alignPlayerAxis(player);
     }
 
@@ -34,20 +34,20 @@ public class AnimationHelper {
 
     }
 
-    public static void playForgingAnimation(Boolean RH) {
+    public static void playForgingAnimation(Boolean RH, int fadeInTicks) {
         Player player = Minecraft.getInstance().player;
-            playAnimation(player, "forging_ore_right", RH);
+            playAnimation(player, "forging_ore_right", RH, fadeInTicks);
     }
 
 
-    public static void playCoolingAnimation(Boolean RH) {
+    public static void playCoolingAnimation(Boolean RH, int fadeInTicks) {
         Player player = Minecraft.getInstance().player;
-            AnimationHelper.playAnimation(player, "cooling_left", RH);
+            AnimationHelper.playAnimation(player, "cooling_left", RH, fadeInTicks);
     }
 
-    public static void playCleaningAnimationBareHands(Boolean RH) {
+    public static void playCleaningAnimationBareHands(Boolean RH, int fadeInTicks) {
         Player player = Minecraft.getInstance().player;
-            AnimationHelper.playAnimation(player, "cleaning_right", RH);
+            AnimationHelper.playAnimation(player, "cleaning_right", RH,fadeInTicks);
     }
 
     public static void playSticksTongsGettingAnimation(Boolean RH) {
@@ -59,30 +59,35 @@ public class AnimationHelper {
 
     }
 
-    public static void playStartChiselingAnimation(Boolean RH){
+    public static void playStartChiselingAnimation(Boolean RH, int fadeInTicks){
         Player player = Minecraft.getInstance().player;
-            AnimationHelper.playAnimation(player, "start_chiseling_action_right", RH);
+            AnimationHelper.playAnimation(player, "start_chiseling_action_right", RH, fadeInTicks);
     }
 
 
-    public static void playCarvingAnimation(Boolean RH){
+    public static void playCarvingAnimation(Boolean RH, int fadeInTicks){
         Player player = Minecraft.getInstance().player;
-        AnimationHelper.playAnimation(player, "carving_ore_right", RH);
+        AnimationHelper.playAnimation(player, "carving_ore_right", RH, fadeInTicks);
     }
 
-    public static void playCuttingAnimation(Boolean RH){
+    public static void playCuttingAnimation(Boolean RH, int fadeInTicks){
         Player player = Minecraft.getInstance().player;
-        AnimationHelper.playAnimation(player, "cutting_animation_long", RH);
+        AnimationHelper.playAnimation(player, "cutting_animation_long", RH, fadeInTicks);
     }
 
-    public static void playSledgeHammerAnimation(Boolean RH){
+    public static void playSledgeHammerAnimation(Boolean RH, int fadeInTicks){
         Player player = Minecraft.getInstance().player;
-        AnimationHelper.playAnimation(player, "sledgehammer_swing_first35", RH);
+        AnimationHelper.playAnimation(player, "sledgehammer_swing_first35", RH, fadeInTicks);
     }
 
-    public static void playSledgeHammerAnimationCombo(Boolean RH){
+    public static void playSledgeHammerAnimationCombo(Boolean RH, int fadeInTicks){
         Player player = Minecraft.getInstance().player;
-        AnimationHelper.playAnimation(player, "sledgehammer_swing_first12", RH);
+        AnimationHelper.playAnimation(player, "sledgehammer_swing_first12", RH, fadeInTicks);
+    }
+
+    public static void playForgingSingleAnimation(Boolean RH, int fadeInTicks){
+        Player player = Minecraft.getInstance().player;
+        AnimationHelper.playAnimation(player, "forging_single_right", RH, fadeInTicks);
     }
 
 
