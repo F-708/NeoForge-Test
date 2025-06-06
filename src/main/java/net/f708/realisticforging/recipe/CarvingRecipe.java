@@ -97,4 +97,3 @@ public record CarvingRecipe(Ingredient inputItem, ItemStack itemOutput, ItemStac
     }
 
 }
-

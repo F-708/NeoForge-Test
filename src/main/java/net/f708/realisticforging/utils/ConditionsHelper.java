@@ -3,12 +3,15 @@ package net.f708.realisticforging.utils;
 import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.item.ModItems;
 import net.f708.realisticforging.item.custom.PickedItem;
+import net.f708.realisticforging.item.custom.SmithingHammerItem;
 import net.f708.realisticforging.recipe.*;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.GameType;
@@ -59,8 +62,26 @@ public class ConditionsHelper {
                 }
             }
         }
-
         return result;
+    }
+
+    public static boolean isForgeableItemInRH(Player player, Level level){
+        boolean finalResult = false;
+        boolean resultExist = false;
+        RecipeManager recipeManager = level.getRecipeManager();
+        if (!isHammerInRightHand(player)) {
+            Optional<RecipeHolder<ForgingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
+                    ModRecipes.FORGING_TYPE.get(),
+                    new ForgingRecipeInput(player.getMainHandItem()),
+                    level);
+            if (recipeOptionalMain.isPresent()) {
+                resultExist = true;
+            }
+            if (resultExist){
+                finalResult = true;
+            }
+        }
+        return finalResult;
     }
 
 
@@ -187,6 +208,14 @@ public class ConditionsHelper {
         if (recipeOptionalOff.isPresent() || recipeOptionalMain.isPresent()) {
             result = true;
 
+        }
+        return result;
+    }
+
+    public static boolean isHammerInRightHand(Player player){
+        boolean result = false;
+        if (player.getMainHandItem().is(ModItems.SMITHINGHAMMER) || player.getOffhandItem().is(ModItems.WOODSMITHINGHAMMER) || player.getMainHandItem().is(ModItems.STONESMITHINGHAMMER)){
+            result = true;
         }
         return result;
     }

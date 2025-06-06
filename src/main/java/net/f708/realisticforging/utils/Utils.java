@@ -5,6 +5,9 @@ import net.f708.realisticforging.recipe.CleaningRecipe;
 import net.f708.realisticforging.recipe.CleaningRecipeInput;
 import net.f708.realisticforging.recipe.ModRecipes;
 import net.f708.realisticforging.sounds.ModSounds;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -15,6 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -23,6 +27,8 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LightBlock;
 
 import java.util.*;
 
@@ -89,16 +95,55 @@ public class Utils {
 
     }
 
+
     public static void sendForgingParticles(ServerLevel level, BlockPos pos){
         Random random = new Random();
-        level.sendParticles(ParticleTypes.LAVA, pos.getX() + random.nextFloat(0.3f, 0.7f), pos.getY() + 1.05f, pos.getZ() + random.nextFloat(0.2f, 0.8f), random.nextInt(2), 0, 0.1, 0, 0.05 );
-        level.sendParticles(ParticleTypes.LAVA, pos.getX() + random.nextFloat(0.3f, 0.7f), pos.getY() + 1.05f, pos.getZ() + random.nextFloat(0.2f, 0.8f), random.nextInt(2), 0, 0.1, 0, 0.05 );
-        level.sendParticles(ParticleTypes.LAVA, pos.getX() + random.nextFloat(0.3f, 0.7f), pos.getY() + 1.05f, pos.getZ() + random.nextFloat(0.2f, 0.8f), random.nextInt(2), 0, 0.1, 0, 0.05 );
+        for (int i = 0; i < 5; i++) {
+            level.sendParticles(ParticleTypes.LAVA, pos.getX() + random.nextFloat(0.3f, 0.7f), pos.getY() + 1.05f, pos.getZ() + random.nextFloat(0.2f, 0.8f), random.nextInt(5), 0, 0.1, 0, 0.05 );
+        }
+    }
+
+    public static void sendPerfectForgingParticles(ServerLevel level, BlockPos pos){
+        Random random = new Random();
+        for (int i = 0; i < 5; i++) {
+            level.sendParticles(ParticleTypes.LAVA, pos.getX() + random.nextFloat(0.3f, 0.7f), pos.getY() + 1.05f, pos.getZ() + random.nextFloat(0.2f, 0.8f), random.nextInt(5), 0, 0.1, 0, 0.05 );
+        }
+
+        ParticleOptions particleOptions = new BlockParticleOption(ParticleTypes.BLOCK, level.getBlockState(pos).getBlock().defaultBlockState());
+
+        level.sendParticles(particleOptions, pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, random.nextInt(10, 20), 0.2, 0, 0.2, 0.15);
+
+        level.sendParticles(ParticleTypes.EXPLOSION, pos.getX() + random.nextFloat(0.3f, 0.7f), pos.getY() + 1.05f, pos.getZ() + random.nextFloat(0.2f, 0.8f), 1, 0, 0.1, 0, 0.05 );
     }
 
     public static void playForgingSound(Level level, BlockPos pos){
         level.playSound(null, pos, ModSounds.FORGING_SOUND.get(), SoundSource.BLOCKS);
 
+    }
+
+    public static void playPerfectForgingSound(Level level, BlockPos pos){
+        level.playSound(null, pos, ModSounds.FORGING_SOUND.get(), SoundSource.BLOCKS, 1, 1.4f);
+
+    }
+
+    public static void setLight(Level level, BlockPos pos, int duration){
+        BlockPos targetPos = pos.above();
+        if (duration > 1){
+            level.setBlock(targetPos, Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, 6), 2);
+            for (int i = 0; i < duration / 3; i++){
+                int finalI = i;
+                TickScheduler.schedule(() -> {
+                    level.setBlock(targetPos, Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, 10 - finalI *2), 2);
+                }, i);
+                TickScheduler.schedule(()->{
+                    level.destroyBlock(targetPos, false, null, 2);
+                }, duration/ 3);
+            }
+        }
+        level.setBlock(targetPos, Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, 6), 2);
+        TickScheduler.schedule(() -> {
+            level.destroyBlock(targetPos, false, null, 2);
+        }, duration);
     }
 
     public static void sendCoolingParticles(ServerLevel level, BlockPos pos){

@@ -75,6 +75,8 @@ public record PacketPPPAnimation (Integer entityId, Animation animation, Boolean
                     case CARVING -> AnimationHelper.playCarvingAnimation(message.RH, message.fadeInTicks);
                     case SLEDGEHAMMERSWING -> AnimationHelper.playSledgeHammerAnimation(message.RH, message.fadeInTicks);
                     case SLEDGEHAMMERSWINGSECOND -> AnimationHelper.playSledgeHammerAnimationCombo(message.RH, message.fadeInTicks);
+                    case FORGINGUPSWING -> AnimationHelper.playForgingUpswingAnimation(message.RH, message.fadeInTicks);
+                    case FORGINGSWING -> AnimationHelper.playForgingSwingAnimation(message.RH, message.fadeInTicks);
                     default -> {
                         return;
                     }

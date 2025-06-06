@@ -183,7 +183,6 @@ public class PlayerAnimator {
                         modifierLayer.addModifier(mirror, 1);
                     }
                 }
-
                     animation.replaceAnimationWithFade(
                             AbstractFadeModifier.functionalFadeIn(fadeInTicks, (modelName, type, value) -> value),
                             Objects.requireNonNull(PlayerAnimationRegistry.getAnimation(

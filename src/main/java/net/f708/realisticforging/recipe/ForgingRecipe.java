@@ -15,7 +15,24 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
-public record ForgingRecipe(Ingredient inputItem, ItemStack output, Integer maxStage) implements Recipe<ForgingRecipeInput> {
+public class ForgingRecipe implements Recipe<ForgingRecipeInput> {
+
+    protected Ingredient inputItem;
+    protected ItemStack output;
+    protected int maxStage;
+
+    public ForgingRecipe(Ingredient inputItem, ItemStack output, int maxStage) {
+        this.inputItem = inputItem;
+        this.output = output;
+        this.maxStage = maxStage;
+    }
+
+    public Ingredient getInputItem() {
+        return inputItem;
+    }
+    public ItemStack getOutput() {
+        return output;
+    }
 
     public Integer getMaxStage(){
         return maxStage;
@@ -65,16 +82,16 @@ public record ForgingRecipe(Ingredient inputItem, ItemStack output, Integer maxS
     public static class Serializer implements RecipeSerializer<ForgingRecipe> {
 
         public static final MapCodec<ForgingRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(ForgingRecipe::inputItem),
-                ItemStack.CODEC.fieldOf("result").forGetter(ForgingRecipe::output),
-                Codec.INT.fieldOf("max_stage").forGetter(ForgingRecipe::maxStage)
+                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(ForgingRecipe::getInputItem),
+                ItemStack.CODEC.fieldOf("result").forGetter(ForgingRecipe::getOutput),
+                Codec.INT.fieldOf("max_stage").forGetter(ForgingRecipe::getMaxStage)
         ).apply(inst, ForgingRecipe::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, ForgingRecipe> STREAM_CODEC =
                 StreamCodec.composite(
-                        Ingredient.CONTENTS_STREAM_CODEC, ForgingRecipe::inputItem,
-                        ItemStack.STREAM_CODEC, ForgingRecipe::output,
-                        ByteBufCodecs.INT, ForgingRecipe::maxStage,
+                        Ingredient.CONTENTS_STREAM_CODEC, ForgingRecipe::getInputItem,
+                        ItemStack.STREAM_CODEC, ForgingRecipe::getOutput,
+                        ByteBufCodecs.INT, ForgingRecipe::getMaxStage,
                         ForgingRecipe::new
                 );
 

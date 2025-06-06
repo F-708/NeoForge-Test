@@ -1,10 +1,7 @@
 package net.f708.realisticforging.item;
 
 import net.f708.realisticforging.RealisticForging;
-import net.f708.realisticforging.item.custom.HotItem;
-import net.f708.realisticforging.item.custom.PickedItem;
-import net.f708.realisticforging.item.custom.SledgeHammerItem;
-import net.f708.realisticforging.item.custom.TongsItem;
+import net.f708.realisticforging.item.custom.*;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.neoforged.bus.api.IEventBus;
@@ -61,15 +58,15 @@ public class ModItems {
     public static final DeferredItem<Item> POLISHEDEMERALD = ITEMS.register("polished_emerald",
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> SMITHINGHAMMER = ITEMS.register("smithing_hammer",
-            () -> new Item(new Item.Properties()
+            () -> new SmithingHammerItem(new Item.Properties()
                     .stacksTo(1)
                     .durability(260)));
     public static final DeferredItem<Item> STONESMITHINGHAMMER = ITEMS.register("stone_smithing_hammer",
-            () -> new Item(new Item.Properties()
+            () -> new SmithingHammerItem(new Item.Properties()
                     .stacksTo(1)
                     .durability(90)));
     public static final DeferredItem<Item> WOODSMITHINGHAMMER = ITEMS.register("wood_smithing_hammer",
-            () -> new Item(new Item.Properties()
+            () -> new SmithingHammerItem(new Item.Properties()
                     .stacksTo(1)
                     .durability(20)));
     public static final DeferredItem<Item> TONGS = ITEMS.register("tongs",

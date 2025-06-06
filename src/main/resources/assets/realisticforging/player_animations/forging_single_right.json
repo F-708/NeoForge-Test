@@ -3,7 +3,7 @@
     "author": "F708",
     "description": "description",
     "emote": {
-        "beginTick": 0,
+        "beginTick": 5,
         "endTick": 22,
         "stopTick": 26,
         "isLoop": false,

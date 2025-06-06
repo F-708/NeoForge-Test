@@ -95,7 +95,7 @@ public class SledgeHammerItem extends DiggerItem {
                             if (player instanceof ServerPlayer serverPlayer) {
                                 player.getData(ModData.IS_SWINGING).setSwinging(true);
                                 PacketDistributor.sendToPlayer(serverPlayer, new PacketTriggerPlayerSwing(player.getData(ModData.IS_SWINGING)));
-                                PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.SLEDGEHAMMERSWINGSECOND, RH));
+                                PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.SLEDGEHAMMERSWINGSECOND, RH, 5));
                             }
                             boolean finalRH = RH;
                             TickScheduler.schedule(() -> {
@@ -112,9 +112,7 @@ public class SledgeHammerItem extends DiggerItem {
                             } else {
                                 player.getTags().add("SLEDGEHAMMER_COMBO");
                             }
-//                            applyCooldown(player, 39);
                         }
-                        return;
                 }
             }
         }
@@ -143,6 +141,7 @@ public class SledgeHammerItem extends DiggerItem {
             if (!player.getCooldowns().isOnCooldown(this)) {
                 player.startUsingItem(usedHand);
                 player.awardStat(Stats.ITEM_USED.get(this));
+                player.getCooldowns().addCooldown(this, 2);
             } else {
                 return InteractionResultHolder.consume(player.getItemInHand(usedHand));
             }
@@ -477,13 +476,13 @@ public class SledgeHammerItem extends DiggerItem {
 
             Utils.playSmashSound((ServerLevel) level, player, actualPosList.size());
             if (player instanceof ServerPlayer serverPlayer){
-                PacketDistributor.sendToPlayer(serverPlayer, new PacketPlayCameraShake(20 * actualPosList.size(), actualPosList.size()*2, actualPosList.size() / 2, actualPosList.size() * 2, RH));
+                PacketDistributor.sendToPlayer(serverPlayer, new PacketPlayCameraShake(20 * actualPosList.size(), actualPosList.size()*1.5f, actualPosList.size() / 2, actualPosList.size() * 2, RH));
             }
             for (Player p : closePlayers){
                 if (p instanceof ServerPlayer serverPlayer){
                     nearbyPlayers.remove(p);
                     farPlayers.remove(p);
-                    PacketDistributor.sendToPlayer(serverPlayer, new PacketPlayCameraShake(20 * actualPosList.size(), actualPosList.size()*2, actualPosList.size() / 2, actualPosList.size() * 2, random.nextBoolean()));
+                    PacketDistributor.sendToPlayer(serverPlayer, new PacketPlayCameraShake(20 * actualPosList.size(), actualPosList.size()*1.5f, actualPosList.size() / 2, actualPosList.size() * 2, random.nextBoolean()));
                 }
             }
             for (Player p : nearbyPlayers){

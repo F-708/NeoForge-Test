@@ -87,7 +87,17 @@ public class AnimationHelper {
 
     public static void playForgingSingleAnimation(Boolean RH, int fadeInTicks){
         Player player = Minecraft.getInstance().player;
-        AnimationHelper.playAnimation(player, "forging_single_right", RH, fadeInTicks);
+        AnimationHelper.playAnimation(player, "forging_single_right_longer", RH, fadeInTicks);
+    }
+
+    public static void playForgingUpswingAnimation(Boolean RH, int fadeInTicks){
+        Player player = Minecraft.getInstance().player;
+        AnimationHelper.playAnimation(player, "forging_upswing2", RH, fadeInTicks);
+    }
+
+    public static void playForgingSwingAnimation(Boolean RH, int fadeInTicks){
+        Player player = Minecraft.getInstance().player;
+        AnimationHelper.playAnimation(player, "forging_swing2", RH, fadeInTicks);
     }
 
 

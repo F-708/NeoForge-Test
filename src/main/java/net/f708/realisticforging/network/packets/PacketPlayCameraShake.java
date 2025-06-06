@@ -2,7 +2,7 @@ package net.f708.realisticforging.network.packets;
 
 import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.network.NetworkHandler;
-import net.f708.realisticforging.utils.CameraShake;
+import net.f708.realisticforging.utils.CameraUtils;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
@@ -43,7 +43,7 @@ public record PacketPlayCameraShake(int duration, float intensity, int waves, fl
 
     @OnlyIn(Dist.CLIENT)
     private static void handleClientData(PacketPlayCameraShake message) {
-        CameraShake.triggerCameraShake(message.duration, message.intensity, message.waves, message.decay, message.RH);
+        CameraUtils.triggerCameraShake(message.duration, message.intensity, message.waves, message.decay, message.RH);
     }
 
     @SubscribeEvent

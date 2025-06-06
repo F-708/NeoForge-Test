@@ -1,11 +1,8 @@
 package net.f708.realisticforging.events;
 
-import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.data.ModData;
 import net.f708.realisticforging.item.custom.SledgeHammerItem;
-import net.f708.realisticforging.utils.CameraShake;
 import net.f708.realisticforging.utils.ConditionsHelper;
-import net.f708.realisticforging.utils.TickScheduler;
 import net.f708.realisticforging.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
@@ -16,7 +13,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
