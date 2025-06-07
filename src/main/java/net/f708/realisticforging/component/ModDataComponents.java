@@ -2,9 +2,12 @@ package net.f708.realisticforging.component;
 
 import com.mojang.serialization.Codec;
 import net.f708.realisticforging.RealisticForging;
+import net.f708.realisticforging.TEST.ItemInTongs;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -20,6 +23,9 @@ public class ModDataComponents {
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> GRIND_STATE = register("grind_state",
             integerBuilder -> integerBuilder.persistent(Codec.INT));
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemInTongs>> ITEM_IN_TONGS = register("item_in_tongs",
+            builder -> builder.persistent(ItemInTongs.CODEC));
 
     private static <T>DeferredHolder<DataComponentType<?>, DataComponentType<T>> register(String name,
                                                                                           UnaryOperator<DataComponentType.Builder<T>> builderOperator){

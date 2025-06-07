@@ -10,7 +10,11 @@ import net.f708.realisticforging.network.NetworkHandler;
 import net.f708.realisticforging.recipe.ModRecipes;
 import net.f708.realisticforging.sounds.ModSounds;
 import net.f708.realisticforging.utils.ModItemProperties;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import org.slf4j.Logger;
 
@@ -91,6 +95,18 @@ public class RealisticForging
     @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents
     {
+
+        @SubscribeEvent
+        public static void registerAdditional(ModelEvent.RegisterAdditional event) {
+            event.register(ModelResourceLocation.standalone(
+                    ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "item/tongs_left")
+            ));
+            event.register(ModelResourceLocation.standalone(
+                    ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "item/tongs_right")
+            ));
+
+        }
+
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event){
             ModItemProperties.addCustomItemProperties();

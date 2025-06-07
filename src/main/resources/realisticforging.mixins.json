@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.f708.realisticforging.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "realisticforging.refmap.json",
+  "mixins": [
+    "ItemRendererMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

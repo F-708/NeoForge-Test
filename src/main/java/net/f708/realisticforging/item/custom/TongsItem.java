@@ -1,11 +1,15 @@
 package net.f708.realisticforging.item.custom;
 
+import net.f708.realisticforging.TEST.ItemInTongs;
+import net.f708.realisticforging.component.ModDataComponents;
 import net.f708.realisticforging.item.ModItems;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Container;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Inventory;
@@ -13,10 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.FurnaceResultSlot;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemCooldowns;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -37,7 +38,35 @@ public class TongsItem extends Item {
     }
     ItemCooldowns cooldowns = new ItemCooldowns();
 
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
+        ItemStack handWithTongs = player.getItemInHand(usedHand);
+        ItemStack handWithItem = (usedHand == InteractionHand.MAIN_HAND)
+                ? player.getOffhandItem()
+                : player.getMainHandItem();
 
+        if (!handWithItem.isEmpty() && !(handWithItem.getItem() instanceof BlockItem)) {
+            ItemInTongs itemInTongs = handWithTongs.get(ModDataComponents.ITEM_IN_TONGS);
+            if (itemInTongs == null || itemInTongs.stack().isEmpty()) {
+                // Проверка, что handWithItem не пустой и количество > 0
+                if (!handWithItem.isEmpty() && handWithItem.getCount() > 0) {
+                    handWithTongs.set(ModDataComponents.ITEM_IN_TONGS, new ItemInTongs(handWithItem));
+                    handWithItem.shrink(1);
+                }
+            }
+        } else {
+            ItemInTongs itemInTongs = handWithTongs.get(ModDataComponents.ITEM_IN_TONGS);
+            if (itemInTongs != null && !itemInTongs.stack().isEmpty()) {
+                // Убедитесь, что предмет не пустой перед добавлением в инвентарь
+                if (!itemInTongs.stack().isEmpty()) {
+                    player.getInventory().add(itemInTongs.stack());
+                }
+                handWithTongs.remove(ModDataComponents.ITEM_IN_TONGS); // Удаление компонента
+            }
+        }
+
+        return InteractionResultHolder.success(handWithTongs);
+    }
 
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
