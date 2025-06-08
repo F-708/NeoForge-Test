@@ -5,6 +5,9 @@ import net.f708.realisticforging.component.ModDataComponents;
 import net.f708.realisticforging.item.ModItems;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.AirItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 
 public class ModItemProperties {
     public static void addCustomItemProperties() {
@@ -60,6 +63,15 @@ public class ModItemProperties {
                     default ->
                             throw new IllegalStateException("Unexpected value: " + stack.get(ModDataComponents.FORGE_STATE));
                 }));
-    }
 
+        ItemProperties.register(ModItems.TONGS.get(), ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "holding"),
+                (((stack, level, entity, seed) -> {
+                    float value = 0f;
+                  if (stack.getOrDefault(ModDataComponents.ITEM_IN_TONGS, Items.AIR) != Items.AIR){
+                      value = 1f;
+                  }
+                  return value;
+                })));
+
+    }
 }

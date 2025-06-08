@@ -1,6 +1,8 @@
 package net.f708.realisticforging.datagen;
 
 import net.f708.realisticforging.RealisticForging;
+import net.f708.realisticforging.item.ModItems;
+import net.f708.realisticforging.utils.ModTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
@@ -17,6 +19,9 @@ public class ModItemTagProvider extends ItemTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
+        tag(ModTags.Items.PICKABLE_WITH_TONGS)
+                .add(ModItems.HOTRAWIRONORE.get())
+                .add(ModItems.HOTRAWIRONNUGGET.get());
 
     }
 }

@@ -13,6 +13,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SwordItem;
@@ -44,26 +45,26 @@ public abstract class ItemRendererMixin {
 
         list = new ArrayList<>(list);
 
-        ItemInTongs itemInTongs = itemStack.get(ModDataComponents.ITEM_IN_TONGS);
-        if (itemInTongs == null || itemInTongs.stack().isEmpty()) {
+        Item item = itemStack.getOrDefault(ModDataComponents.ITEM_IN_TONGS, Items.AIR);
+        if (item == Items.AIR) {
             list.add(getModel(ModItems.TONGS.get().getDefaultInstance(), null, null, 0));
         } else {
             list.clear();
 
             BakedModel leftModel = Minecraft.getInstance().getModelManager().getModel(
-                    ModelResourceLocation.standalone( // Используйте тот же вариант, что и при регистрации
+                    ModelResourceLocation.standalone(
                             ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "item/tongs_left")
                     )
             );
             BakedModel rightModel = Minecraft.getInstance().getModelManager().getModel(
-                    ModelResourceLocation.standalone( // Используйте тот же вариант, что и при регистрации
+                    ModelResourceLocation.standalone(
                             ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "item/tongs_right")
                     )
             );
 
             list.add(leftModel);
 
-            list.add(getModel(itemInTongs.stack(), null, null, 0));
+            list.add(getModel(new ItemStack(item), null, null, 0));
 
             list.add(rightModel);
         }

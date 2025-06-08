@@ -1,6 +1,20 @@
 {
-  "parent": "minecraft:item/handheld",
+  "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "realisticforging:item/tongs"
-  }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "realisticforging:holding": 1.0
+      },
+      "model": "realisticforging:item/tongs_holding"
+    },
+    {
+      "predicate": {
+        "realisticforging:holding": 0.0
+      },
+      "model": "realisticforging:item/tongs"
+    }
+  ]
 }

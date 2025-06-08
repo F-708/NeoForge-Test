@@ -15,6 +15,8 @@ public class ModTags {
         public static final TagKey<Block> INCORRECT_FOR_SLEDGEHAMMER = createTag("incorrect_for_sledgehammer");
 
 
+
+
         public static final TagKey<Block> FORGEABLE_BLOCK = createTag("forgeable_block");
 
             private static TagKey<Block> createTag (String name) {
@@ -28,6 +30,8 @@ public class ModTags {
         public static final TagKey<Item> HOT_ITEM = createTag("hot_item");
 
         public static final TagKey<Item> HAMMER_ITEM = createTag("hammer_item");
+
+        public static final TagKey<Item> PICKABLE_WITH_TONGS = createTag("pickable_with_tongs");
 
 
         private static TagKey<Item> createTag (String name){
