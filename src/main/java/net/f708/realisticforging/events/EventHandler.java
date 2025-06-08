@@ -6,13 +6,16 @@ import net.f708.realisticforging.item.custom.SmithingHammerItem;
 import net.f708.realisticforging.network.packets.PacketPPPAnimation;
 import net.f708.realisticforging.utils.Animation;
 import net.f708.realisticforging.utils.ConditionsHelper;
+import net.f708.realisticforging.utils.ModTags;
 import net.f708.realisticforging.utils.Utils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -96,7 +99,20 @@ public class EventHandler {
         ProcedureHandler.CarvingProcedure(event);
     }
 
-
+    @SubscribeEvent
+    public static void hotItemInInventory(PlayerTickEvent.Post event){
+        Player player = event.getEntity();
+        Inventory inventory = player.getInventory();
+        int total = inventory.items.stream()
+                .filter(stack -> stack.is(ModTags.Items.HOT_ITEM))
+                .mapToInt(ItemStack::getCount)
+                .sum();
+        if (inventory.contains(ModTags.Items.VERY_HOT_ITEM)) {
+            player.hurt(player.damageSources().onFire(), 4f);
+        } else if (inventory.contains(ModTags.Items.HOT_ITEM) && total >= 3) {
+            player.hurt(player.damageSources().onFire(), 2f);
+        }
+    }
 
 }
 

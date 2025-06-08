@@ -39,15 +39,11 @@ public class SmithingHammerItem extends Item {
         return 25;
     }
 
-    /// /
-
-
     @Override
     public UseAnim getUseAnimation(ItemStack stack) {
         return UseAnim.CUSTOM;
     }
 
-    /// /
 
     @Override
     public void onUseTick(Level level, LivingEntity livingEntity, ItemStack stack, int remainingUseDuration) {

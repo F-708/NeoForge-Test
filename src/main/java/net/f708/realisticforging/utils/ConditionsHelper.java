@@ -1,6 +1,7 @@
 package net.f708.realisticforging.utils;
 
 import net.f708.realisticforging.RealisticForging;
+import net.f708.realisticforging.component.ItemStackRecord;
 import net.f708.realisticforging.item.ModItems;
 import net.f708.realisticforging.item.custom.PickedItem;
 import net.f708.realisticforging.item.custom.SmithingHammerItem;
@@ -72,7 +73,7 @@ public class ConditionsHelper {
         if (!isHammerInRightHand(player)) {
             Optional<RecipeHolder<ForgingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
                     ModRecipes.FORGING_TYPE.get(),
-                    new ForgingRecipeInput(player.getMainHandItem()),
+                    new ForgingRecipeInput(ItemStackRecord.getStackFromDataComponent(player.getMainHandItem())),
                     level);
             if (recipeOptionalMain.isPresent()) {
                 resultExist = true;

@@ -4,12 +4,18 @@ import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.data.ModData;
 import net.f708.realisticforging.item.custom.SledgeHammerItem;
 import net.f708.realisticforging.utils.ConditionsHelper;
+import net.f708.realisticforging.utils.ModTags;
 import net.f708.realisticforging.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -17,11 +23,14 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber(modid = "realisticforging")
 public class MicsEventHandler {
+
+
 
     @SubscribeEvent
     public static void playerRangeModified(PlayerTickEvent.Post event) {

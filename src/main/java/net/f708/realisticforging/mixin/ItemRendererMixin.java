@@ -3,7 +3,6 @@ package net.f708.realisticforging.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.f708.realisticforging.RealisticForging;
-import net.f708.realisticforging.TEST.ItemInTongs;
 import net.f708.realisticforging.component.ModDataComponents;
 import net.f708.realisticforging.item.ModItems;
 import net.f708.realisticforging.item.custom.TongsItem;

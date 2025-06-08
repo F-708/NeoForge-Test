@@ -51,6 +51,14 @@ public class Utils {
         return busy;
     }
 
+    public static boolean isLeftHandFree(Player player){
+        return player.getOffhandItem().isEmpty();
+    }
+
+    public static boolean isRightHandFree(Player player){
+        return player.getMainHandItem().isEmpty();
+    }
+
     public static boolean isPlayerFarFromBlock(Player player, BlockPos pos, int amount){
         return player.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) > amount;
     }
