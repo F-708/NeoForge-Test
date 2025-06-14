@@ -2,12 +2,15 @@ package net.f708.realisticforging.events;
 
 import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.data.ModData;
+import net.f708.realisticforging.gui.ModScreen;
 import net.f708.realisticforging.item.custom.SledgeHammerItem;
 import net.f708.realisticforging.utils.ConditionsHelper;
 import net.f708.realisticforging.utils.ModTags;
+import net.f708.realisticforging.utils.TickScheduler;
 import net.f708.realisticforging.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageSources;
@@ -36,7 +39,9 @@ public class MicsEventHandler {
     public static void playerRangeModified(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
         AttributeMap attributeMap = player.getAttributes();
-        if (ConditionsHelper.forgingRangeConditions(player) || ConditionsHelper.carvingRangeConditions(player)) {
+        if (ConditionsHelper.forgingRangeConditions(player)
+                || ConditionsHelper.carvingRangeConditions(player)
+        || (ConditionsHelper.isHoldingHammer(player) && !ConditionsHelper.isOtherHandIsFree(player))) {
             Utils.descreaseInteractionRange(attributeMap, player);
         } else {
             Utils.returnInteractionRange(attributeMap, player);
@@ -79,6 +84,7 @@ public class MicsEventHandler {
         if (event.isAttack()){
             if (player != null){
                 if (SledgeHammerItem.isHoldingSledgeHammer(player)){
+//                    Minecraft.getInstance().setScreen(new ModScreen(Component.literal("model")));
                     event.setCanceled(true);
                     event.setSwingHand(false);
                 }

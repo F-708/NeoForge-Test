@@ -3,19 +3,16 @@ package net.f708.realisticforging.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.f708.realisticforging.RealisticForging;
-import net.f708.realisticforging.component.ModDataComponents;
+import net.f708.realisticforging.component.ItemStackRecord;
 import net.f708.realisticforging.item.ModItems;
-import net.f708.realisticforging.item.custom.TongsItem;
+import net.f708.realisticforging.item.custom.PickingItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -40,12 +37,14 @@ public abstract class ItemRendererMixin {
     private List<BakedModel> addAdditionalModel(BakedModel instance, ItemStack itemStack, boolean fabulous, Operation<List<BakedModel>> original) {
         List<BakedModel> list = original.call(instance, itemStack, fabulous);
 
-        if (!(itemStack.getItem() instanceof TongsItem)) return list;
+        if (!(itemStack.getItem() instanceof PickingItem)) return list;
 
         list = new ArrayList<>(list);
 
-        Item item = itemStack.getOrDefault(ModDataComponents.ITEM_IN_TONGS, Items.AIR);
-        if (item == Items.AIR) {
+        ItemStack item = ItemStackRecord.getStackFromDataComponent(itemStack);
+
+//        ItemStack item = itemStack.getOrDefault(ModDataComponents.ITEM_IN_TONGS, ItemStack.EMPTY);
+        if (item.isEmpty()) {
             list.add(getModel(ModItems.TONGS.get().getDefaultInstance(), null, null, 0));
         } else {
             list.clear();
@@ -63,7 +62,9 @@ public abstract class ItemRendererMixin {
 
             list.add(leftModel);
 
-            list.add(getModel(new ItemStack(item), null, null, 0));
+            list.add(getModel(item, null, null, 0));
+
+//            list.add(getModel(itemStack.getOrDefault(ModDataComponents.ITEM_IN_TONGS, ItemStack.EMPTY), null, null, 0));
 
             list.add(rightModel);
         }

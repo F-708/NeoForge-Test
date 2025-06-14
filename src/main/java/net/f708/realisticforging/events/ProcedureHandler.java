@@ -1,8 +1,10 @@
 package net.f708.realisticforging.events;
 
 import net.f708.realisticforging.RealisticForging;
+import net.f708.realisticforging.component.ItemStackRecord;
 import net.f708.realisticforging.component.ModDataComponents;
 import net.f708.realisticforging.item.ModItems;
+import net.f708.realisticforging.item.custom.PickingItem;
 import net.f708.realisticforging.network.packets.PacketPPPAnimation;
 import net.f708.realisticforging.recipe.*;
 import net.f708.realisticforging.utils.*;
@@ -11,6 +13,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockDestructionPacket;
 import net.minecraft.server.level.BlockDestructionProgress;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -34,135 +37,135 @@ public class ProcedureHandler {
 
 
     public static void ForgingProcedure(PlayerInteractEvent.RightClickBlock event) {
-        Level level = event.getLevel();
-        Player player = event.getEntity();
-        if (Utils.checkBusy(player)) {
-            event.setCanceled(true);
-            return;
-        }
-        if (ConditionsHelper.isMetForgingConditions(level, player, event.getPos())) {
-            AttributeMap attributeMap = player.getAttributes();
-            Inventory inventory = player.getInventory();
-
-            int slotWithForgeable;
-            RecipeManager recipeManager = event.getLevel().getRecipeManager();
-            Optional<RecipeHolder<ForgingRecipe>> recipeOptional;
-            RecipeHolder<ForgingRecipe> recipeHolder;
-            ItemStack result;
-            ItemStack Hammer;
-            boolean RH = false;
-
-            if (player.getOffhandItem().is(ModTags.Items.HAMMER_ITEM)) {
-                slotWithForgeable = inventory.selected;
-                Hammer = player.getOffhandItem();
-                RH = false;
-                recipeOptional = recipeManager.getRecipeFor(
-                        ModRecipes.FORGING_TYPE.get(),
-                        new ForgingRecipeInput(player.getMainHandItem()),
-                        event.getLevel());
-            } else {
-                Hammer = player.getMainHandItem();
-                slotWithForgeable = 40;
-                RH = true;
-                recipeOptional = recipeManager.getRecipeFor(
-                        ModRecipes.FORGING_TYPE.get(),
-                        new ForgingRecipeInput(player.getOffhandItem()),
-                        event.getLevel());
-            }
-            if (recipeOptional.isPresent()) {
-                if (player.getCooldowns().isOnCooldown(Hammer.getItem())) {
-                    event.setCanceled(true);
-                    return;
-                }
-                recipeHolder = recipeOptional.get();
-                int maxStage = recipeHolder.value().getMaxStage();
-                result = recipeHolder.value().assemble(new ForgingRecipeInput(inventory.getItem(slotWithForgeable)), level.registryAccess());
-                Utils.setBusy(player);
-                if (player instanceof ServerPlayer serverPlayer) {
-                    PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(), new PacketPPPAnimation(event.getEntity().getId(), Animation.FORGING, RH, 5));
-                }
-                TickScheduler.schedule(()->{
-                    Utils.removeBusy(player);
-                }, 40);
-                player.getCooldowns().addCooldown(Hammer.getItem(), 45);
-                event.setCanceled(true);
-                BlockPos pos = event.getPos();
-                Utils.slowDownPlayer(attributeMap, player, 45);
-                Hammer.hurtAndBreak(1, player, Hammer.getEquipmentSlot());
-                TickScheduler.schedule(() -> {
-                    Utils.playForgingSound(level, pos);
-                    Utils.sendForgingParticles((ServerLevel) level, pos);
-                }, 11);
-                TickScheduler.schedule(() -> {
-                    Utils.playForgingSound(level, pos);
-                    Utils.sendForgingParticles((ServerLevel) level, pos);
-                }, 25);
-                TickScheduler.schedule(() -> {
-                    Utils.playForgingSound(level, pos);
-                    Utils.sendForgingParticles((ServerLevel) level, pos);
-                }, 39);
-
-
-                TickScheduler.schedule(() -> {
-                    if (!Utils.isPlayerFarFromBlock(player, pos, 4)) {
-                        if (!ConditionsHelper.isMetForgingConditions(level, player, pos)) {
-                            return;
-                        }
-                        int slotWithForgeableItem;
-                        if (player.getOffhandItem().is(ModTags.Items.HAMMER_ITEM)) {
-                            slotWithForgeableItem = inventory.selected;
-                        } else {
-                            slotWithForgeableItem = 40;
-                        }
-                        int currentStage = inventory.getItem(slotWithForgeableItem).getOrDefault(ModDataComponents.FORGE_STATE, 1);
-                        if (currentStage < maxStage) {
-                            if (player.getOffhandItem().is(ModTags.Items.HAMMER_ITEM)) {
-                                int slotWithForgeableMain = inventory.selected;
-                                Optional<RecipeHolder<ForgingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
-                                        ModRecipes.FORGING_TYPE.get(),
-                                        new ForgingRecipeInput(player.getMainHandItem()),
-                                        event.getLevel());
-                                if (recipeOptionalMain.isPresent()) {
-                                    inventory.getItem(slotWithForgeableMain).set(ModDataComponents.FORGE_STATE, inventory.getItem(slotWithForgeableMain).getOrDefault(ModDataComponents.FORGE_STATE, 1) + 1);
-                                }
-                            } else if (player.getMainHandItem().is(ModTags.Items.HAMMER_ITEM)) {
-                                int slotWithForgeableOff = 40;
-                                Optional<RecipeHolder<ForgingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
-                                        ModRecipes.FORGING_TYPE.get(),
-                                        new ForgingRecipeInput(player.getOffhandItem()),
-                                        event.getLevel());
-                                if (recipeOptionalOff.isPresent()) {
-                                    inventory.getItem(slotWithForgeableOff).set(ModDataComponents.FORGE_STATE, inventory.getItem(slotWithForgeableOff).getOrDefault(ModDataComponents.FORGE_STATE, 1) + 1);
-                                }
-                            }
-                        } else {
-                            if (player.getOffhandItem().is(ModTags.Items.HAMMER_ITEM)) {
-                                int slotWithForgeableMain = inventory.selected;
-                                Optional<RecipeHolder<ForgingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
-                                        ModRecipes.FORGING_TYPE.get(),
-                                        new ForgingRecipeInput(player.getMainHandItem()),
-                                        event.getLevel());
-                                if (recipeOptionalMain.isPresent()) {
-                                    inventory.setItem(slotWithForgeableMain, result);
-                                }
-                            } else if (player.getMainHandItem().is(ModTags.Items.HAMMER_ITEM)) {
-                                int slotWithForgeableOff = 40;
-                                Optional<RecipeHolder<ForgingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
-                                        ModRecipes.FORGING_TYPE.get(),
-                                        new ForgingRecipeInput(player.getOffhandItem()),
-                                        event.getLevel());
-                                if (recipeOptionalOff.isPresent()) {
-                                    inventory.setItem(slotWithForgeableOff, result);
-                                }
-                            }
-                        }
-                    }
-                    }, 42);
-
-            }
-        } else if (ConditionsHelper.isHoldingHammer(player) && ConditionsHelper.isForgeableBlock(level, event.getPos())) {
-            event.setCanceled(true);
-        }
+//        Level level = event.getLevel();
+//        Player player = event.getEntity();
+//        if (Utils.checkBusy(player)) {
+//            event.setCanceled(true);
+//            return;
+//        }
+//        if (ConditionsHelper.isMetForgingConditions(level, player, event.getPos())) {
+//            AttributeMap attributeMap = player.getAttributes();
+//            Inventory inventory = player.getInventory();
+//
+//            int slotWithForgeable;
+//            RecipeManager recipeManager = event.getLevel().getRecipeManager();
+//            Optional<RecipeHolder<ForgingRecipe>> recipeOptional;
+//            RecipeHolder<ForgingRecipe> recipeHolder;
+//            ItemStack result;
+//            ItemStack Hammer;
+//            boolean RH = false;
+//
+//            if (player.getOffhandItem().is(ModTags.Items.HAMMER_ITEM)) {
+//                slotWithForgeable = inventory.selected;
+//                Hammer = player.getOffhandItem();
+//                RH = false;
+//                recipeOptional = recipeManager.getRecipeFor(
+//                        ModRecipes.FORGING_TYPE.get(),
+//                        new ForgingRecipeInput(player.getMainHandItem()),
+//                        event.getLevel());
+//            } else {
+//                Hammer = player.getMainHandItem();
+//                slotWithForgeable = 40;
+//                RH = true;
+//                recipeOptional = recipeManager.getRecipeFor(
+//                        ModRecipes.FORGING_TYPE.get(),
+//                        new ForgingRecipeInput(player.getOffhandItem()),
+//                        event.getLevel());
+//            }
+//            if (recipeOptional.isPresent()) {
+//                if (player.getCooldowns().isOnCooldown(Hammer.getItem())) {
+//                    event.setCanceled(true);
+//                    return;
+//                }
+//                recipeHolder = recipeOptional.get();
+//                int maxStage = recipeHolder.value().getMaxStage();
+//                result = recipeHolder.value().assemble(new ForgingRecipeInput(inventory.getItem(slotWithForgeable)), level.registryAccess());
+//                Utils.setBusy(player);
+//                if (player instanceof ServerPlayer serverPlayer) {
+//                    PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(), new PacketPPPAnimation(event.getEntity().getId(), Animation.FORGING, RH, 5));
+//                }
+//                TickScheduler.schedule(()->{
+//                    Utils.removeBusy(player);
+//                }, 40);
+//                player.getCooldowns().addCooldown(Hammer.getItem(), 45);
+//                event.setCanceled(true);
+//                BlockPos pos = event.getPos();
+//                Utils.slowDownPlayer(attributeMap, player, 45);
+//                Hammer.hurtAndBreak(1, player, Hammer.getEquipmentSlot());
+//                TickScheduler.schedule(() -> {
+//                    Utils.playForgingSound(level, pos);
+//                    Utils.sendForgingParticles((ServerLevel) level, pos);
+//                }, 11);
+//                TickScheduler.schedule(() -> {
+//                    Utils.playForgingSound(level, pos);
+//                    Utils.sendForgingParticles((ServerLevel) level, pos);
+//                }, 25);
+//                TickScheduler.schedule(() -> {
+//                    Utils.playForgingSound(level, pos);
+//                    Utils.sendForgingParticles((ServerLevel) level, pos);
+//                }, 39);
+//
+//
+//                TickScheduler.schedule(() -> {
+//                    if (!Utils.isPlayerFarFromBlock(player, pos, 4)) {
+//                        if (!ConditionsHelper.isMetForgingConditions(level, player, pos)) {
+//                            return;
+//                        }
+//                        int slotWithForgeableItem;
+//                        if (player.getOffhandItem().is(ModTags.Items.HAMMER_ITEM)) {
+//                            slotWithForgeableItem = inventory.selected;
+//                        } else {
+//                            slotWithForgeableItem = 40;
+//                        }
+//                        int currentStage = inventory.getItem(slotWithForgeableItem).getOrDefault(ModDataComponents.FORGE_STATE, 1);
+//                        if (currentStage < maxStage) {
+//                            if (player.getOffhandItem().is(ModTags.Items.HAMMER_ITEM)) {
+//                                int slotWithForgeableMain = inventory.selected;
+//                                Optional<RecipeHolder<ForgingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
+//                                        ModRecipes.FORGING_TYPE.get(),
+//                                        new ForgingRecipeInput(player.getMainHandItem()),
+//                                        event.getLevel());
+//                                if (recipeOptionalMain.isPresent()) {
+//                                    inventory.getItem(slotWithForgeableMain).set(ModDataComponents.FORGE_STATE, inventory.getItem(slotWithForgeableMain).getOrDefault(ModDataComponents.FORGE_STATE, 1) + 1);
+//                                }
+//                            } else if (player.getMainHandItem().is(ModTags.Items.HAMMER_ITEM)) {
+//                                int slotWithForgeableOff = 40;
+//                                Optional<RecipeHolder<ForgingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
+//                                        ModRecipes.FORGING_TYPE.get(),
+//                                        new ForgingRecipeInput(player.getOffhandItem()),
+//                                        event.getLevel());
+//                                if (recipeOptionalOff.isPresent()) {
+//                                    inventory.getItem(slotWithForgeableOff).set(ModDataComponents.FORGE_STATE, inventory.getItem(slotWithForgeableOff).getOrDefault(ModDataComponents.FORGE_STATE, 1) + 1);
+//                                }
+//                            }
+//                        } else {
+//                            if (player.getOffhandItem().is(ModTags.Items.HAMMER_ITEM)) {
+//                                int slotWithForgeableMain = inventory.selected;
+//                                Optional<RecipeHolder<ForgingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
+//                                        ModRecipes.FORGING_TYPE.get(),
+//                                        new ForgingRecipeInput(player.getMainHandItem()),
+//                                        event.getLevel());
+//                                if (recipeOptionalMain.isPresent()) {
+//                                    inventory.setItem(slotWithForgeableMain, result);
+//                                }
+//                            } else if (player.getMainHandItem().is(ModTags.Items.HAMMER_ITEM)) {
+//                                int slotWithForgeableOff = 40;
+//                                Optional<RecipeHolder<ForgingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
+//                                        ModRecipes.FORGING_TYPE.get(),
+//                                        new ForgingRecipeInput(player.getOffhandItem()),
+//                                        event.getLevel());
+//                                if (recipeOptionalOff.isPresent()) {
+//                                    inventory.setItem(slotWithForgeableOff, result);
+//                                }
+//                            }
+//                        }
+//                    }
+//                    }, 42);
+//
+//            }
+//        } else if (ConditionsHelper.isHoldingHammer(player) && ConditionsHelper.isForgeableBlock(level, event.getPos())) {
+//            event.setCanceled(true);
+//        }
     }
 
     public static void PickingProcedure(PlayerInteractEvent.RightClickBlock event) {
@@ -277,68 +280,98 @@ public class ProcedureHandler {
     }
 
     public static void CoolingProcedure(Level level, Player player, BlockPos pos) {
+        if (Utils.checkBusy(player) || !ConditionsHelper.isMetCoolingConditions(player, level)) return;
+        if (!ConditionsHelper.isWaterCauldron(level.getBlockState(pos).getBlock()) && !ConditionsHelper.isPlayerInWater(player)) return;
+
         Inventory inventory = player.getInventory();
-        if (Utils.checkBusy(player)) {
-            return;
+        RecipeManager recipeManager = level.getRecipeManager();
+
+        // Определение инструментов и руки
+        InteractionHand handType = PickingItem.getHandWithTongs(player);
+        boolean RH = handType == InteractionHand.MAIN_HAND;
+        ItemStack tongs = switch (handType) {
+            case MAIN_HAND -> player.getMainHandItem();
+            case OFF_HAND -> player.getOffhandItem();
+            default -> ItemStack.EMPTY;
+        };
+        boolean isInTongs = !tongs.isEmpty();
+
+        // Определение рецепта
+        Optional<RecipeHolder<CoolingRecipe>> recipeOptional = Optional.empty();
+        ItemStack handItem = ItemStack.EMPTY;
+        int slot;
+
+        if (isInTongs) {
+            slot = inventory.selected;
+            ItemStack contained = ItemStackRecord.getStackFromDataComponent(tongs);
+            recipeOptional = recipeManager.getRecipeFor(ModRecipes.COOLING_TYPE.get(), new CoolingRecipeInput(contained), level);
+        } else {
+            ItemStack mainHand = player.getMainHandItem();
+            ItemStack offHand = player.getOffhandItem();
+            recipeOptional = recipeManager.getRecipeFor(ModRecipes.COOLING_TYPE.get(), new CoolingRecipeInput(mainHand), level)
+                    .or(() -> recipeManager.getRecipeFor(ModRecipes.COOLING_TYPE.get(), new CoolingRecipeInput(offHand), level));
+            if (recipeOptional.isPresent()) {
+                handItem = recipeOptional.map(recipe -> mainHand).orElse(offHand);
+                slot = recipeOptional.map(recipe -> inventory.selected).orElse(40);
+                RH = recipeOptional.map(recipe -> true).orElse(false);
+            } else {
+                slot = inventory.selected;
+            }
         }
-        if (ConditionsHelper.isMetCoolingConditions(player, level)) {
-                if (ConditionsHelper.isWaterCauldron(level.getBlockState(pos).getBlock()) || ConditionsHelper.isPlayerInWater(player)) {
-                    RecipeManager recipeManager = level.getRecipeManager();
 
-                    Optional<RecipeHolder<CoolingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
-                            ModRecipes.COOLING_TYPE.get(),
-                            new CoolingRecipeInput(player.getOffhandItem()),
-                            level);
-                    Optional<RecipeHolder<CoolingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
-                            ModRecipes.COOLING_TYPE.get(),
-                            new CoolingRecipeInput(player.getMainHandItem()),
-                            level);
-                    Utils.setBusy(player);
-                    if (recipeOptionalOff.isPresent()) {
-                        if (player.getCooldowns().isOnCooldown(player.getOffhandItem().getItem())) {
-                            return;
-                        }
-                        if (player instanceof ServerPlayer serverPlayer) {
-                            PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.COOLING, true, 5));
-                        }
-                        ItemStack result = recipeOptionalOff.get().value().assemble(new CoolingRecipeInput(player.getOffhandItem()), level.registryAccess());
-                        player.getCooldowns().addCooldown(player.getOffhandItem().getItem(), 20);
-                        TickScheduler.schedule(() -> {
-                            Utils.sendCoolingParticles((ServerLevel) level, pos);
-                            Utils.playCoolingSound(level, pos);
-                        }, 10);
-                        TickScheduler.schedule(() -> {
-                            if (ConditionsHelper.isMetCoolingConditions(player, level)) {
-                                inventory.setItem(40, result);
+        if (recipeOptional.isEmpty()) return;
 
-                            }
-                        }, 16);
+        // Проверка этапа ковки
+        ItemStack finalStack = isInTongs ? ItemStackRecord.getStackFromDataComponent(tongs) : handItem;
+        if (!checkForgingStage(finalStack, recipeManager, level, player)) return;
 
-                    } else if (recipeOptionalMain.isPresent()) {
-                        if (player.getCooldowns().isOnCooldown(player.getMainHandItem().getItem())) {
-                            return;
-                        }
-                        if (player instanceof ServerPlayer serverPlayer) {
-                            PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.COOLING, false, 5));
-                        }
-                        ItemStack result = recipeOptionalMain.get().value().assemble(new CoolingRecipeInput(player.getMainHandItem()), level.registryAccess());
-                        player.getCooldowns().addCooldown(player.getMainHandItem().getItem(), 20);
-                        TickScheduler.schedule(() -> {
-                            Utils.sendCoolingParticles((ServerLevel) level, pos);
-                            Utils.playCoolingSound(level, pos);
-                        }, 10);
-                        TickScheduler.schedule(() -> {
-                            if (ConditionsHelper.isMetCoolingConditions(player, level)) {
-                                inventory.setItem(inventory.selected, result);
-                            }
+        // Применение рецепта
+        Utils.setBusy(player);
+        ItemStack itemToCheck = isInTongs ? ItemStackRecord.getStackFromDataComponent(tongs) : handItem;
+        if (player.getCooldowns().isOnCooldown(itemToCheck.getItem())) return;
 
-                        }, 16);
-                    }
-                    TickScheduler.schedule(() -> {
-                        Utils.removeBusy(player);
-                    }, 16);
+        if (player instanceof ServerPlayer serverPlayer) {
+            PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.COOLING, !RH, 5));
+        }
+
+        ItemStack result = recipeOptional.get().value().assemble(new CoolingRecipeInput(finalStack), level.registryAccess());
+        player.getCooldowns().addCooldown(itemToCheck.getItem(), 20);
+
+        TickScheduler.schedule(() -> {
+            Utils.sendCoolingParticles((ServerLevel) level, pos);
+            Utils.playCoolingSound(level, pos);
+        }, 10);
+
+        TickScheduler.schedule(() -> {
+            if (ConditionsHelper.isMetCoolingConditions(player, level)) {
+                if (isInTongs) {
+                    ItemStack tongs2 = switch (PickingItem.getHandWithTongs(player)) {
+                        case MAIN_HAND -> player.getMainHandItem();
+                        case OFF_HAND -> player.getOffhandItem();
+                        default -> ItemStack.EMPTY;
+                    };
+                    recipeManager.getRecipeFor(ModRecipes.FORGING_TYPE.get(), new ForgingRecipeInput(ItemStackRecord.getStackFromDataComponent(tongs2)), level)
+                            .filter(recipe -> recipe.value().getMaxStage() == ItemStackRecord.getStackFromDataComponent(tongs2).getOrDefault(ModDataComponents.FORGE_STATE, 1))
+                            .ifPresent(recipe -> ItemStackRecord.setItemStackIntoDataComponent(result, tongs2));
+                } else {
+                    inventory.setItem(slot, result);
                 }
-        }
+            }
+            Utils.removeBusy(player);
+        }, 16);
+    }
+
+    private static boolean checkForgingStage(ItemStack stack, RecipeManager recipeManager, Level level, Player player) {
+        return recipeManager.getRecipeFor(ModRecipes.FORGING_TYPE.get(), new ForgingRecipeInput(stack), level)
+                .map(recipe -> {
+                    int maxStage = recipe.value().getMaxStage();
+                    int currentStage = stack.getOrDefault(ModDataComponents.FORGE_STATE, 1);
+                    if (currentStage != maxStage) {
+                        RealisticForging.LOGGER.debug("Stage mismatch (Current: {}, Max: {})", currentStage, maxStage);
+                        return false;
+                    }
+                    return true;
+                }).orElse(true);
     }
 
     public static void CleaningProcedure(Level level, Player player) {

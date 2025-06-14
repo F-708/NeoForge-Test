@@ -2,5 +2,31 @@
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "realisticforging:item/hot_raw_iron_ore"
-  }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "realisticforging:state": 0.2
+      },
+      "model": "realisticforging:item/hot_raw_iron_ore2"
+    },
+    {
+      "predicate": {
+        "realisticforging:state": 0.4
+      },
+      "model": "realisticforging:item/hot_raw_iron_ore3"
+    },
+    {
+      "predicate": {
+        "realisticforging:state": 0.6
+      },
+      "model": "realisticforging:item/hot_raw_iron_ore4"
+    },
+    {
+      "predicate": {
+        "realisticforging:state": 0.8
+      },
+      "model": "realisticforging:item/hot_raw_iron_ore5"
+    }
+  ]
 }

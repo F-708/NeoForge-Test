@@ -1,0 +1,55 @@
+{
+    "name": "forging_helper_downswing",
+    "author": "F708",
+    "description": "description",
+    "emote": {
+        "beginTick": 0,
+        "endTick": 0,
+        "stopTick": 9,
+        "isLoop": false,
+        "returnTick": 0,
+        "nsfw": false,
+        "degrees": false,
+        "moves": [
+            {
+                "tick": -1,
+                "easing": "EASEINOUTQUAD",
+                "turn": 0,
+                "rightArm": {
+                    "x": -5.0,
+                    "y": 2.0,
+                    "z": -0.0,
+                    "pitch": -0.0,
+                    "yaw": -0.0,
+                    "roll": -0.0
+                }
+            },
+            {
+                "tick": -1,
+                "easing": "EASEINOUTQUAD",
+                "turn": 0,
+                "leftArm": {
+                    "x": 5.0,
+                    "y": 2.0,
+                    "z": -0.0,
+                    "pitch": -0.0,
+                    "yaw": -0.0,
+                    "roll": -0.0
+                }
+            },
+            {
+                "tick": -1,
+                "easing": "EASEINOUTQUAD",
+                "turn": 0,
+                "rightItem": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "pitch": 0.0,
+                    "yaw": 0.0,
+                    "roll": 0.0
+                }
+            }
+        ]
+    }
+}

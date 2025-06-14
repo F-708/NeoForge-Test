@@ -2,7 +2,6 @@ package net.f708.realisticforging.utils;
 
 public enum Animation {
     CANCEL,
-    FORGING,
     CLEANING,
     COOLING,
     PICKING,
@@ -12,5 +11,8 @@ public enum Animation {
     SLEDGEHAMMERSWING,
     SLEDGEHAMMERSWINGSECOND,
     FORGINGUPSWING,
-    FORGINGSWING
+    FORGINGSWING,
+    FORGINGHELPERUPSWING,
+    FORGINGHELPERHOLDING,
+    FORGINGHELPERDOWNSWING
 }

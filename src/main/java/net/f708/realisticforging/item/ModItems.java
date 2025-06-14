@@ -3,7 +3,6 @@ package net.f708.realisticforging.item;
 import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.item.custom.*;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -70,7 +69,7 @@ public class ModItems {
                     .stacksTo(1)
                     .durability(20)));
     public static final DeferredItem<Item> TONGS = ITEMS.register("tongs",
-            () -> new TongsItem(new Item.Properties()
+            () -> new PickingItem(new Item.Properties()
                     .stacksTo(1)));
     public static final DeferredItem<Item> TWOSTICKS = ITEMS.register("two_sticks",
             () -> new Item(new Item.Properties()

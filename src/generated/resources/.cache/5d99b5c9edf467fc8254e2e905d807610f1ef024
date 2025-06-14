@@ -1,4 +1,4 @@
-// 1.21.1	2025-06-04T22:12:23.8682566	Item Models: realisticforging
+// 1.21.1	2025-06-12T20:48:31.4155702	Item Models: realisticforging
 2416b5d71f5324a56d24a4579027faab01a99ae7 assets/realisticforging/models/item/bar_shaped_mold.json
 18628251ad7b3e550242905ee817277a87aab3c6 assets/realisticforging/models/item/big_pan.json
 ede2613cd4c70df84de5d82a64b4a5b067513cb3 assets/realisticforging/models/item/carving_hammer.json
@@ -7,7 +7,6 @@ f866573ee9ac28fb1a8d16b42eada3db3a6264f1 assets/realisticforging/models/item/cle
 b2e4b061f9bc965b5afd9f0973d0c5e2c988c0ac assets/realisticforging/models/item/cut_rough_emerald.json
 d3a5e5cf8a87b88414ca46946593f58e4156be89 assets/realisticforging/models/item/diamond_sledgehammer.json
 2cb43bd06a7ae438260cec89074379fe97624dd6 assets/realisticforging/models/item/hot_raw_iron_nugget.json
-5a8df28380a5776edac4aeac11cc64ecad57cc6f assets/realisticforging/models/item/hot_raw_iron_ore.json
 31893a387888d8c067b83985466bb4b89086ec07 assets/realisticforging/models/item/iron_sledgehammer.json
 b2b814563da94bac9fb34201f942d8a0be6be344 assets/realisticforging/models/item/molded_diamond.json
 151e630cf0ab5b76a607a88e58b989a715ac79b8 assets/realisticforging/models/item/molded_diamond_2.json

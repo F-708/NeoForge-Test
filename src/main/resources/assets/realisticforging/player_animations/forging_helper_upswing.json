@@ -1,0 +1,64 @@
+{
+    "name": "forging_helper_upswing",
+    "author": "F708",
+    "description": "description",
+    "emote": {
+        "beginTick": 0,
+        "endTick": 8,
+        "stopTick": 17,
+        "isLoop": false,
+        "returnTick": 0,
+        "nsfw": false,
+        "degrees": false,
+        "moves": [
+            {
+                "tick": 8,
+                "easing": "EASEINOUTQUAD",
+                "turn": 0,
+                "rightArm": {
+                    "x": -4.834627151489258,
+                    "y": 2.80411434173584,
+                    "z": -2.0671682357788086,
+                    "pitch": -1.2892358303070068,
+                    "yaw": -0.15268903970718384,
+                    "roll": -0.3764827251434326,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "scaleZ": 1.0
+                }
+            },
+            {
+                "tick": 8,
+                "easing": "EASEINOUTQUAD",
+                "turn": 0,
+                "leftArm": {
+                    "x": 4.279736042022705,
+                    "y": 2.6944808959960938,
+                    "z": -1.6324111223220825,
+                    "pitch": -1.2439031600952148,
+                    "yaw": 0.1813066452741623,
+                    "roll": 0.31849437952041626,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "scaleZ": 1.0
+                }
+            },
+            {
+                "tick": 8,
+                "easing": "EASEINOUTQUAD",
+                "turn": 0,
+                "rightItem": {
+                    "x": -2.7536544799804688,
+                    "y": -1.9477890729904175,
+                    "z": -1.62049400806427,
+                    "pitch": -1.0281497240066528,
+                    "yaw": -0.22609008848667145,
+                    "roll": 0.3059283494949341,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "scaleZ": 1.0
+                }
+            }
+        ]
+    }
+}

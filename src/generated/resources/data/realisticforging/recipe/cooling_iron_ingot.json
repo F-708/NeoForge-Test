@@ -1,0 +1,10 @@
+{
+  "type": "realisticforging:cooling",
+  "ingredient": {
+    "item": "realisticforging:hot_raw_iron_ore"
+  },
+  "result": {
+    "count": 1,
+    "id": "minecraft:iron_ingot"
+  }
+}

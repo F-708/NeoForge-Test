@@ -67,7 +67,6 @@ public record PacketPPPAnimation (Integer entityId, Animation animation, Boolean
             if (player instanceof AbstractClientPlayer clientPlayer) {
                 switch (message.animation){
                     case CANCEL -> AnimationHelper.cancelAnimation(clientPlayer);
-                    case FORGING -> AnimationHelper.playForgingAnimation(message.RH, message.fadeInTicks);
                     case COOLING -> AnimationHelper.playCoolingAnimation(message.RH, message.fadeInTicks);
                     case PICKING, GRINDING -> AnimationHelper.playSwingAnimation(message.RH);
                     case CUTTING -> AnimationHelper.playCuttingAnimation(message.RH, message.fadeInTicks);
@@ -77,6 +76,9 @@ public record PacketPPPAnimation (Integer entityId, Animation animation, Boolean
                     case SLEDGEHAMMERSWINGSECOND -> AnimationHelper.playSledgeHammerAnimationCombo(message.RH, message.fadeInTicks);
                     case FORGINGUPSWING -> AnimationHelper.playForgingUpswingAnimation(message.RH, message.fadeInTicks);
                     case FORGINGSWING -> AnimationHelper.playForgingSwingAnimation(message.RH, message.fadeInTicks);
+                    case FORGINGHELPERUPSWING -> AnimationHelper.playForgingHelperUpswingAnimation(message.RH, message.fadeInTicks);
+                    case FORGINGHELPERHOLDING -> AnimationHelper.playForgingHelperHoldingAnimation(message.RH, message.fadeInTicks);
+                    case FORGINGHELPERDOWNSWING -> AnimationHelper.playForgingHelperDownSwingAnimation(message.RH, message.fadeInTicks);
                     default -> {
                         return;
                     }

@@ -2,6 +2,7 @@ package net.f708.realisticforging.utils;
 
 import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.component.ItemStackRecord;
+import net.f708.realisticforging.component.ModDataComponents;
 import net.f708.realisticforging.item.ModItems;
 import net.f708.realisticforging.item.custom.PickedItem;
 import net.f708.realisticforging.item.custom.SmithingHammerItem;
@@ -27,6 +28,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Optional;
 
+import static net.minecraft.world.item.ItemStack.EMPTY;
+
 public class ConditionsHelper {
 
     public static boolean metSledgeHammerConditions(ServerPlayer serverPlayer, BlockPos pos, Level level){
@@ -37,52 +40,73 @@ public class ConditionsHelper {
     }
 
     public static boolean isHoldingHammer(Player player) {
-        return player.getMainHandItem().is(ModTags.Items.HAMMER_ITEM) || (player.getOffhandItem().is(ModTags.Items.HAMMER_ITEM));
+        return player.getMainHandItem().getItem() instanceof SmithingHammerItem || (player.getOffhandItem().getItem() instanceof SmithingHammerItem ||
+                (player.getMainHandItem().getItem() instanceof SmithingHammerItem || player.getOffhandItem().getItem() instanceof SmithingHammerItem));
     }
 
     public static boolean isHoldingForgeableItem(Player player, Level level) {
         boolean result = false;
-        if (isHoldingHammer(player)) {
-
             RecipeManager recipeManager = level.getRecipeManager();
-            if (player.getMainHandItem().is(ModTags.Items.HAMMER_ITEM)) {
                 Optional<RecipeHolder<ForgingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
                         ModRecipes.FORGING_TYPE.get(),
-                        new ForgingRecipeInput(player.getOffhandItem()),
+                        new ForgingRecipeInput(ItemStackRecord.getStackFromDataComponent(player.getOffhandItem())),
                         level);
                 if (recipeOptionalOff.isPresent()) {
                     result = true;
                 }
-            } else {
                 Optional<RecipeHolder<ForgingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
                         ModRecipes.FORGING_TYPE.get(),
-                        new ForgingRecipeInput(player.getMainHandItem()),
+                        new ForgingRecipeInput(ItemStackRecord.getStackFromDataComponent(player.getMainHandItem())),
                         level);
                 if (recipeOptionalMain.isPresent()) {
                     result = true;
-                }
-            }
+
         }
         return result;
     }
 
-    public static boolean isForgeableItemInRH(Player player, Level level){
-        boolean finalResult = false;
+    public static InteractionHand getHandWithForgeAble(Player player, Level level){
         boolean resultExist = false;
+        boolean LH = false;
+        boolean RH = false;
+
+        InteractionHand hand;
+
         RecipeManager recipeManager = level.getRecipeManager();
-        if (!isHammerInRightHand(player)) {
-            Optional<RecipeHolder<ForgingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
-                    ModRecipes.FORGING_TYPE.get(),
-                    new ForgingRecipeInput(ItemStackRecord.getStackFromDataComponent(player.getMainHandItem())),
-                    level);
+
+        Optional<RecipeHolder<ForgingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
+                ModRecipes.FORGING_TYPE.get(),
+                new ForgingRecipeInput(ItemStackRecord.getStackFromDataComponent(player.getMainHandItem())),
+//                    new ForgingRecipeInput(player.getMainHandItem().getOrDefault(ModDataComponents.ITEM_IN_TONGS, ItemStack.EMPTY)),
+                level);
             if (recipeOptionalMain.isPresent()) {
-                resultExist = true;
+                RH = true;
             }
-            if (resultExist){
-                finalResult = true;
-            }
+
+        Optional<RecipeHolder<ForgingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
+                ModRecipes.FORGING_TYPE.get(),
+                new ForgingRecipeInput(ItemStackRecord.getStackFromDataComponent(player.getOffhandItem())),
+//                    new ForgingRecipeInput(player.getMainHandItem().getOrDefault(ModDataComponents.ITEM_IN_TONGS, ItemStack.EMPTY)),
+                level);
+        if (recipeOptionalOff.isPresent()) {
+            LH = true;
         }
-        return finalResult;
+
+        if (RH && LH){
+            switch (ConditionsHelper.getHandWithHammer(player)){
+                case MAIN_HAND -> hand = InteractionHand.MAIN_HAND;
+                case OFF_HAND -> hand = InteractionHand.OFF_HAND;
+                case null, default -> hand = null;
+            }
+        } else if (RH){
+            hand = InteractionHand.MAIN_HAND;
+        } else if (LH){
+            hand = InteractionHand.OFF_HAND;
+        } else {
+            hand = null;
+        }
+
+        return hand;
     }
 
 
@@ -127,7 +151,15 @@ public class ConditionsHelper {
                 ModRecipes.COOLING_TYPE.get(),
                 new CoolingRecipeInput(player.getMainHandItem()),
                 level);
-        if (recipeOptionalOff.isPresent() || recipeOptionalMain.isPresent()) {
+        Optional<RecipeHolder<CoolingRecipe>> recipeOptionalOffPickable = recipeManager.getRecipeFor(
+                ModRecipes.COOLING_TYPE.get(),
+                new CoolingRecipeInput(ItemStackRecord.getStackFromDataComponent(player.getOffhandItem())),
+                level);
+        Optional<RecipeHolder<CoolingRecipe>> recipeOptionalMainPickable = recipeManager.getRecipeFor(
+                ModRecipes.COOLING_TYPE.get(),
+                new CoolingRecipeInput(ItemStackRecord.getStackFromDataComponent(player.getMainHandItem())),
+                level);
+        if (recipeOptionalOff.isPresent() || recipeOptionalMain.isPresent() || recipeOptionalOffPickable.isPresent() || recipeOptionalMainPickable.isPresent()) {
             result = true;
 
         }
@@ -151,6 +183,10 @@ public class ConditionsHelper {
 
         }
         return result;
+    }
+
+    public static boolean isOtherHandIsFree(Player player){
+        return (player.getMainHandItem().isEmpty() || player.getOffhandItem().isEmpty());
     }
 
     public static boolean isHoldingFullTongs(Player player, Level level){
@@ -213,12 +249,17 @@ public class ConditionsHelper {
         return result;
     }
 
-    public static boolean isHammerInRightHand(Player player){
+    public static InteractionHand getHandWithHammer(Player player){
         boolean result = false;
-        if (player.getMainHandItem().is(ModItems.SMITHINGHAMMER) || player.getOffhandItem().is(ModItems.WOODSMITHINGHAMMER) || player.getMainHandItem().is(ModItems.STONESMITHINGHAMMER)){
-            result = true;
+        InteractionHand hand;
+        if (player.getMainHandItem().getItem() instanceof SmithingHammerItem){
+            hand = InteractionHand.MAIN_HAND;
+        } else if (player.getOffhandItem().getItem() instanceof SmithingHammerItem){
+            hand = InteractionHand.OFF_HAND;
+        } else {
+            hand = null;
         }
-        return result;
+        return hand;
     }
 
 
@@ -278,6 +319,16 @@ public class ConditionsHelper {
         return level.getBlockState(pos).is(ModTags.Blocks.FORGEABLE_BLOCK);
     }
 
+    public static boolean isForgeableBlockAvailable(Level level, BlockPos pos) {
+        boolean result = false;
+        if (isForgeableBlock(level, pos)) {
+            if (level.getBlockState(pos.above()).is(Blocks.AIR)){
+                result = true;
+            }
+        }
+        return result;
+    }
+
     public static boolean isAbstractFurnaceBlockEntity(Level level, BlockPos pos){
         BlockEntity block = level.getBlockEntity(pos);
         return block instanceof AbstractFurnaceBlockEntity;
@@ -314,7 +365,7 @@ public class ConditionsHelper {
     }
 
     public static boolean isMetForgingConditions(Level level, Player player, BlockPos pos){
-        return isHoldingHammer(player) && isHoldingForgeableItem(player, level) && isForgeableBlock(level, pos);
+        return isHoldingHammer(player) && isHoldingForgeableItem(player, level) && isForgeableBlock(level, pos) && isForgeableBlockAvailable(level, pos);
     }
 
     public static boolean isMetPickingConditions(Level level, Player player, BlockPos pos){
@@ -326,7 +377,7 @@ public class ConditionsHelper {
     }
 
     public static boolean isMetCleaningConditions(Player player, Level level){
-        return isHoldingCleanableItem(player, level) && isMetMicsConditions(player);
+        return isHoldingCleanableItem(player, level) && isMetMicsConditions(player) && isOtherHandIsFree(player);
     }
 
     public static boolean isMetGrindingConditions(Player player, Level level, BlockPos pos){

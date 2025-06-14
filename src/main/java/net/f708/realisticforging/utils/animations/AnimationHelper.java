@@ -100,6 +100,21 @@ public class AnimationHelper {
         AnimationHelper.playAnimation(player, "forging_swing2", RH, fadeInTicks);
     }
 
+    public static void playForgingHelperUpswingAnimation(Boolean RH, int fadeInTicks){
+        Player player = Minecraft.getInstance().player;
+        AnimationHelper.playAnimation(player, "forging_helper_upswing", RH, fadeInTicks);
+    }
+
+    public static void playForgingHelperHoldingAnimation(Boolean RH, int fadeInTicks){
+        Player player = Minecraft.getInstance().player;
+        AnimationHelper.playAnimation(player, "forging_helper_holding", RH, fadeInTicks);
+    }
+
+    public static void playForgingHelperDownSwingAnimation(Boolean RH, int fadeInTicks){
+        Player player = Minecraft.getInstance().player;
+        AnimationHelper.playAnimation(player, "forging_helper_downswing", RH, fadeInTicks);
+    }
+
 
 
 

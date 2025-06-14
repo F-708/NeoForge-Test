@@ -1,4 +1,4 @@
-// 1.21.1	2025-06-04T22:12:23.8762593	Tags for minecraft:block mod id realisticforging
+// 1.21.1	2025-06-12T20:48:31.4225734	Tags for minecraft:block mod id realisticforging
 93cdb9226b8324e1a325d73764f313846da3e06b data/minecraft/tags/block/mineable/pickaxe.json
 a3c0bbfbb0c860c9cf82f35fafa7bbcfc2f97314 data/minecraft/tags/block/needs_iron_tool.json
 a65ea38cb7ab482d82746afc350ddfec6da1e452 data/realisticforging/tags/block/forgeable_block.json

@@ -83,14 +83,14 @@ public class ForgingRecipe implements Recipe<ForgingRecipeInput> {
 
         public static final MapCodec<ForgingRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
                 Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(ForgingRecipe::getInputItem),
-                ItemStack.CODEC.fieldOf("result").forGetter(ForgingRecipe::getOutput),
+                ItemStack.CODEC.optionalFieldOf("result", ItemStack.EMPTY).forGetter(ForgingRecipe::getOutput),
                 Codec.INT.fieldOf("max_stage").forGetter(ForgingRecipe::getMaxStage)
         ).apply(inst, ForgingRecipe::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, ForgingRecipe> STREAM_CODEC =
                 StreamCodec.composite(
                         Ingredient.CONTENTS_STREAM_CODEC, ForgingRecipe::getInputItem,
-                        ItemStack.STREAM_CODEC, ForgingRecipe::getOutput,
+                        ItemStack.OPTIONAL_STREAM_CODEC, ForgingRecipe::getOutput,
                         ByteBufCodecs.INT, ForgingRecipe::getMaxStage,
                         ForgingRecipe::new
                 );

@@ -1,0 +1,7 @@
+{
+  "type": "realisticforging:forging",
+  "ingredient": {
+    "item": "realisticforging:hot_raw_iron_ore"
+  },
+  "max_stage": 10
+}

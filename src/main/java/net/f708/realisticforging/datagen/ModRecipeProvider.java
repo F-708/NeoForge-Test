@@ -1,6 +1,7 @@
 package net.f708.realisticforging.datagen;
 
 import net.f708.realisticforging.RealisticForging;
+import net.f708.realisticforging.datagen.builder.CoolingRecipeBuilder;
 import net.f708.realisticforging.datagen.builder.ForgingRecipeBuilder;
 import net.f708.realisticforging.item.ModItems;
 import net.minecraft.core.HolderLookup;
@@ -41,8 +42,9 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 
         SmithingTransformRecipeBuilder.smithing(Ingredient.of(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), Ingredient.of(ModItems.DIAMOND_SLEDGEHAMMER.get()), Ingredient.of(Items.NETHERITE_INGOT), RecipeCategory.TOOLS, ModItems.NETHERITE_SLEDGEHAMMER.get());
 
-        itemForging(recipeOutput, Items.NETHER_BRICK, Items.DIAMOND_BLOCK.getDefaultInstance(), 20,  RecipeCategory.TOOLS);
+        itemForging(recipeOutput, ModItems.HOTRAWIRONORE, 10,  RecipeCategory.TOOLS);
 
+        itemCooling(recipeOutput, ModItems.HOTRAWIRONORE, Items.IRON_INGOT.getDefaultInstance(), RecipeCategory.MISC);
     }
 
     protected static void oreSmelting(RecipeOutput recipeOutput, List<ItemLike> pIngredients, RecipeCategory pCategory, ItemLike pResult,
@@ -69,6 +71,18 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
     protected static void itemForging(RecipeOutput recipeOutput, ItemLike ingredient, ItemStack output, int maxStage, RecipeCategory category){
             ForgingRecipeBuilder.generic(Ingredient.of(ingredient), output, maxStage, category).unlockedBy(getHasName(ingredient), has(ingredient))
                     .save(recipeOutput, RealisticForging.MODID + ":" + getItemName(output.getItem()) + "forging" + "_" + getItemName(output.getItem()));
+
+    }
+
+    protected static void itemForging(RecipeOutput recipeOutput, ItemLike ingredient, int maxStage, RecipeCategory category){
+        ForgingRecipeBuilder.generic(Ingredient.of(ingredient), maxStage, category).unlockedBy(getHasName(ingredient), has(ingredient))
+                .save(recipeOutput, RealisticForging.MODID + ":" + getItemName(ingredient.asItem()) + "forging" + "_" + getItemName(ingredient.asItem()));
+
+    }
+
+    protected static void itemCooling(RecipeOutput recipeOutput, ItemLike ingredient, ItemStack output, RecipeCategory category){
+        CoolingRecipeBuilder.generic(Ingredient.of(ingredient), output, category).unlockedBy(getHasName(ingredient), has(ingredient))
+                .save(recipeOutput, RealisticForging.MODID + ":" + getItemName(output.getItem()) + "cooling" + "_" + getItemName(output.getItem()));
 
     }
 }

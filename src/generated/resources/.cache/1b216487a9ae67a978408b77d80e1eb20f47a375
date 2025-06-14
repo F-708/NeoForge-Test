@@ -1,1 +1,3 @@
-// 1.21.1	2025-06-04T22:12:23.8702546	Tags for minecraft:item mod id realisticforging
+// 1.21.1	2025-06-13T20:54:49.6585705	Tags for minecraft:item mod id realisticforging
+60a5cc259223b6a183da673b7713c63ebf980a38 data/realisticforging/tags/item/pickable_with_tongs.json
+406c1f36317c45918e634edf26f7529b822a2a2b data/realisticforging/tags/item/very_hot_item.json

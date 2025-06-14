@@ -13,7 +13,6 @@ public class ModItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        basicItem(ModItems.HOTRAWIRONORE.get());
         basicItem(ModItems.RAWCLEANEDIRONORE.get());
         basicItem(ModItems.RAWIRONNUGGET.get());
         basicItem(ModItems.CLEANEDRAWIRONNUGGET.get());

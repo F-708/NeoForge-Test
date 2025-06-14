@@ -13,7 +13,7 @@
         "moves": [
             {
                 "tick": 4,
-                "easing": "CONSTANT",
+                "easing": "LINEAR",
                 "turn": 0,
                 "rightArm": {
                     "x": -5.171037197113037,
@@ -90,7 +90,7 @@
                 }
             },
             {
-                "tick": 4,
+                "tick": 3,
                 "easing": "CONSTANT",
                 "turn": 0,
                 "leftArm": {
@@ -103,8 +103,8 @@
                 }
             },
             {
-                "tick": 5,
-                "easing": "EASEINOUTSINE",
+                "tick": 4,
+                "easing": "LINEAR",
                 "turn": 0,
                 "leftArm": {
                     "pitch": -1.1252844333648682,
@@ -165,7 +165,7 @@
                 }
             },
             {
-                "tick": 4,
+                "tick": 3,
                 "easing": "CONSTANT",
                 "turn": 0,
                 "leftItem": {
@@ -178,8 +178,8 @@
                 }
             },
             {
-                "tick": 5,
-                "easing": "EASEINOUTSINE",
+                "tick": 4,
+                "easing": "LINEAR",
                 "turn": 0,
                 "leftItem": {
                     "x": 0.16325634717941284,
@@ -239,7 +239,7 @@
             },
             {
                 "tick": 4,
-                "easing": "CONSTANT",
+                "easing": "LINEAR",
                 "turn": 0,
                 "rightItem": {
                     "x": 0.1398196518421173,

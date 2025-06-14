@@ -144,7 +144,7 @@ public class Utils {
                     level.setBlock(targetPos, Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, 10 - finalI *2), 2);
                 }, i);
                 TickScheduler.schedule(()->{
-                    level.destroyBlock(targetPos, false, null, 2);
+                    level.removeBlock(targetPos, true);
                 }, duration/ 3);
             }
         }

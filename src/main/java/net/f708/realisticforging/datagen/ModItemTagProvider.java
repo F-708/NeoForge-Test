@@ -21,7 +21,9 @@ public class ModItemTagProvider extends ItemTagsProvider {
     protected void addTags(HolderLookup.Provider provider) {
         tag(ModTags.Items.PICKABLE_WITH_TONGS)
                 .add(ModItems.HOTRAWIRONORE.get())
-                .add(ModItems.HOTRAWIRONNUGGET.get());
-
+                .add(ModItems.HOTRAWIRONNUGGET.get())
+                .add(ModItems.RAWCLEANEDIRONORE.get());
+        tag(ModTags.Items.VERY_HOT_ITEM)
+                .add(ModItems.HOTRAWIRONORE.get());
     }
 }

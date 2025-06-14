@@ -1,36 +1,20 @@
 package net.f708.realisticforging.events;
 
-import net.f708.realisticforging.item.custom.PickedItem;
-import net.f708.realisticforging.item.custom.SledgeHammerItem;
-import net.f708.realisticforging.item.custom.SmithingHammerItem;
-import net.f708.realisticforging.network.packets.PacketPPPAnimation;
-import net.f708.realisticforging.utils.Animation;
+import net.f708.realisticforging.RealisticForging;
+import net.f708.realisticforging.item.custom.PickingItem;
 import net.f708.realisticforging.utils.ConditionsHelper;
 import net.f708.realisticforging.utils.ModTags;
-import net.f708.realisticforging.utils.Utils;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.common.util.TriState;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.entity.player.SweepAttackEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
-
-import java.util.logging.Handler;
 
 @EventBusSubscriber(modid = "realisticforging")
 public class EventHandler {
@@ -38,7 +22,20 @@ public class EventHandler {
 
     @SubscribeEvent
     public static void getHotItemFromFurnace(PlayerInteractEvent.RightClickBlock event) {
-        ProcedureHandler.PickingProcedure(event);
+//        Level level = event.getLevel();
+//        BlockEntity blockEntity = level.getBlockEntity(event.getPos());
+//        if (blockEntity instanceof AbstractFurnaceBlockEntity furnaceBlock){
+//            Player player = event.getEntity();
+//            if (TongsItem.isHoldingTongs(player)){
+//                ItemStack tongs = switch (TongsItem.getHandWithTongs(player)){
+//                    case MAIN_HAND -> player.getMainHandItem();
+//                    case OFF_HAND -> player.getOffhandItem();
+//                };
+//                if (TongsItem.isTongsAreFree(tongs)){
+//                }
+//            }
+//        }
+
     }
 
     @SubscribeEvent
@@ -52,26 +49,42 @@ public class EventHandler {
     }
 
     @SubscribeEvent
-    public static void useWithHammer(PlayerInteractEvent.RightClickBlock event) {
-//        ProcedureHandler.ForgingProcedure(event);
-        if (ConditionsHelper.isMetForgingConditions(event.getLevel(), event.getEntity(), event.getPos())) {
-            Player player = event.getEntity();
-            event.setCancellationResult(InteractionResult.PASS);
-            event.setCanceled(true);
-            event.setUseItem(TriState.FALSE);
-            if (ConditionsHelper.isHammerInRightHand(player)){
-                if (!player.getCooldowns().isOnCooldown(player.getMainHandItem().getItem())){
-                    player.startUsingItem(InteractionHand.MAIN_HAND);
+    public static void useOnBlock(PlayerInteractEvent.RightClickBlock event) {
+        Player player = event.getEntity();
+        Level level = event.getLevel();
+        if (ConditionsHelper.isHoldingHammer(player) && PickingItem.isHoldingTongs(player)) {
+            if (ConditionsHelper.isMetForgingConditions(event.getLevel(), event.getEntity(), event.getPos())) {
+                event.setCancellationResult(InteractionResult.PASS);
+                event.setCanceled(true);
+                event.setUseItem(TriState.FALSE);
+                switch (ConditionsHelper.getHandWithHammer(player)){
+                    case MAIN_HAND -> {
+                        if (!player.getCooldowns().isOnCooldown(player.getMainHandItem().getItem())){
+                            player.startUsingItem(InteractionHand.MAIN_HAND);
+                        }
+                    }
+                    case OFF_HAND -> {
+                        if (!player.getCooldowns().isOnCooldown(player.getOffhandItem().getItem())){
+                            player.startUsingItem(InteractionHand.OFF_HAND);
+                        }
+                    }
+
                 }
-            } else {
-                if (!player.getCooldowns().isOnCooldown(player.getOffhandItem().getItem())){
-                    player.startUsingItem(InteractionHand.OFF_HAND);
-                }
+            } else if ((ConditionsHelper.isHoldingHammer(event.getEntity())) && ConditionsHelper.isForgeableBlock(event.getLevel(), event.getPos())) {
+                event.setCancellationResult(InteractionResult.PASS);
+                event.setCanceled(true);
             }
-        } else if ((event.getEntity().getMainHandItem().getItem() instanceof SmithingHammerItem || event.getEntity().getOffhandItem().getItem() instanceof SmithingHammerItem)
-        && ConditionsHelper.isForgeableBlock(event.getLevel(), event.getPos())) {
-            event.setCanceled(true);
         }
+//        if (ConditionsHelper.isHoldingForgeableItem(player, level) && PickingItem.isHoldingTongs(player) &&
+//        ConditionsHelper.isForgeableBlock(level, event.getPos()) && ConditionsHelper.isOtherHandIsFree(player)) {
+//            if (player.isUsingItem()){
+//                return;
+//            }
+//            RealisticForging.LOGGER.debug("CONDITIONS ARE MET");
+//            player.startUsingItem(PickingItem.getHandWithTongs(player));
+//            event.setUseItem(TriState.TRUE);
+//            event.setUseBlock(TriState.FALSE);
+//        }
     }
 
     @SubscribeEvent
@@ -79,10 +92,10 @@ public class EventHandler {
         ProcedureHandler.CleaningProcedure(event.getLevel(), event.getEntity());
     }
 
-    @SubscribeEvent
-    public static void SticksTongsGetter(PlayerInteractEvent.RightClickItem event) {
-        ProcedureHandler.SticksTongsGetterProcedure(event.getLevel(), event.getEntity());
-    }
+//    @SubscribeEvent
+//    public static void SticksTongsGetter(PlayerInteractEvent.RightClickItem event) {
+//        ProcedureHandler.SticksTongsGetterProcedure(event.getLevel(), event.getEntity());
+//    }
 
     @SubscribeEvent
     public static void GrindItem(PlayerInteractEvent.RightClickBlock event){
@@ -103,14 +116,8 @@ public class EventHandler {
     public static void hotItemInInventory(PlayerTickEvent.Post event){
         Player player = event.getEntity();
         Inventory inventory = player.getInventory();
-        int total = inventory.items.stream()
-                .filter(stack -> stack.is(ModTags.Items.HOT_ITEM))
-                .mapToInt(ItemStack::getCount)
-                .sum();
         if (inventory.contains(ModTags.Items.VERY_HOT_ITEM)) {
             player.hurt(player.damageSources().onFire(), 4f);
-        } else if (inventory.contains(ModTags.Items.HOT_ITEM) && total >= 3) {
-            player.hurt(player.damageSources().onFire(), 2f);
         }
     }
 

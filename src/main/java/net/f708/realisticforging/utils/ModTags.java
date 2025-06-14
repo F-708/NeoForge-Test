@@ -29,7 +29,6 @@ public class ModTags {
         // If more than 2 in inventory - damage
         public static final TagKey<Item> HOT_ITEM = createTag("hot_item");
 
-        public static final TagKey<Item> HAMMER_ITEM = createTag("hammer_item");
 
         public static final TagKey<Item> PICKABLE_WITH_TONGS = createTag("pickable_with_tongs");
 
