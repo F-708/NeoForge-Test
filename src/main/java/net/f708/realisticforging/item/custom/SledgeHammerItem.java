@@ -77,16 +77,23 @@ public class SledgeHammerItem extends DiggerItem {
 
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
-        return 40;
+        return 41;
     }
 
     @Override
     public void onUseTick(Level level, LivingEntity livingEntity, ItemStack stack, int remainingUseDuration) {
         if (remainingUseDuration >= 0 && livingEntity instanceof Player player) {
+
             if (player.getMainHandItem().isEmpty() || player.getOffhandItem().isEmpty()) {
                 if (!player.getCooldowns().isOnCooldown(this)) {
+
                         boolean flag = remainingUseDuration % 40 == 0;
+                        boolean hunger = remainingUseDuration == 20;
+                        if (hunger){
+                            player.causeFoodExhaustion(1f);
+                        }
                         if (flag){
+
                             boolean RH = player.getMainHandItem().is(SledgeHammerItem.this);
                             if (player.getTags().contains("SLEDGEHAMMER_COMBO")){
                                 RH = !RH;
@@ -141,7 +148,7 @@ public class SledgeHammerItem extends DiggerItem {
             if (!player.getCooldowns().isOnCooldown(this)) {
                 player.startUsingItem(usedHand);
                 player.awardStat(Stats.ITEM_USED.get(this));
-                player.getCooldowns().addCooldown(this, 2);
+//                player.getCooldowns().addCooldown(this, 2);
             } else {
                 return InteractionResultHolder.consume(player.getItemInHand(usedHand));
             }

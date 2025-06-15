@@ -172,10 +172,10 @@ public class SmithingHammerItem extends Item {
                                     Utils.setLight(level, hitresult.getBlockPos(), 2);
 
                                     hammerFinal.hurtAndBreak(1, player, hammerFinal.getEquipmentSlot());
-
+                                    player.causeFoodExhaustion(0.005f);
                                     CameraUtils.triggerCameraShake(4, 2, 3,4 , RHFinal);
 //                                    if (ConditionsHelper.isMetForgingConditions(level, player, hitresult.getBlockPos())) {
-                                        RealisticForging.LOGGER.debug("BEFORE STAGE CONDITIONS ARE MET");
+
                                         if (currentForgingStage < finalForgingStage){
                                             RealisticForging.LOGGER.debug("INCREASING STAGE");
                                             ItemStackRecord.increaseForgingState(tongsWithForgeableFinal, stageamount);

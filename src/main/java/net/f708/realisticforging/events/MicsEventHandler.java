@@ -2,7 +2,7 @@ package net.f708.realisticforging.events;
 
 import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.data.ModData;
-import net.f708.realisticforging.gui.ModScreen;
+import net.f708.realisticforging.gui.FullscreenOverlay;
 import net.f708.realisticforging.item.custom.SledgeHammerItem;
 import net.f708.realisticforging.utils.ConditionsHelper;
 import net.f708.realisticforging.utils.ModTags;
@@ -23,9 +23,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
-import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -84,12 +82,12 @@ public class MicsEventHandler {
         if (event.isAttack()){
             if (player != null){
                 if (SledgeHammerItem.isHoldingSledgeHammer(player)){
-//                    Minecraft.getInstance().setScreen(new ModScreen(Component.literal("model")));
                     event.setCanceled(true);
                     event.setSwingHand(false);
                 }
             }
         }
     }
+
 
 }
