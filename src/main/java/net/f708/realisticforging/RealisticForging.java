@@ -4,6 +4,7 @@ import net.f708.realisticforging.attributes.ModAttributes;
 import net.f708.realisticforging.block.ModBlocks;
 import net.f708.realisticforging.component.ModDataComponents;
 import net.f708.realisticforging.data.ModData;
+import net.f708.realisticforging.events.MicsEventHandler;
 import net.f708.realisticforging.item.ModCreativeModeTabs;
 import net.f708.realisticforging.item.ModItems;
 import net.f708.realisticforging.network.NetworkHandler;

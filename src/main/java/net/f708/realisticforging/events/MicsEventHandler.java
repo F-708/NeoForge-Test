@@ -2,13 +2,15 @@ package net.f708.realisticforging.events;
 
 import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.data.ModData;
-import net.f708.realisticforging.gui.FullscreenOverlay;
+import net.f708.realisticforging.gui.HotOverlay;
+import net.f708.realisticforging.item.ModItems;
 import net.f708.realisticforging.item.custom.SledgeHammerItem;
 import net.f708.realisticforging.utils.ConditionsHelper;
 import net.f708.realisticforging.utils.ModTags;
 import net.f708.realisticforging.utils.TickScheduler;
 import net.f708.realisticforging.utils.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -21,17 +23,17 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber(modid = "realisticforging")
 public class MicsEventHandler {
-
-
 
     @SubscribeEvent
     public static void playerRangeModified(PlayerTickEvent.Post event) {
@@ -87,6 +89,13 @@ public class MicsEventHandler {
                 }
             }
         }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void renderOverlay(RenderGuiEvent.Post event){
+        HotOverlay overlay = new HotOverlay(Minecraft.getInstance(), Minecraft.getInstance().renderBuffers().bufferSource());
+        event.getGuiGraphics().blitSprite(overlay.getMODEL(), 0, 0, event.getGuiGraphics().guiWidth(), event.getGuiGraphics().guiHeight());
     }
 
 
