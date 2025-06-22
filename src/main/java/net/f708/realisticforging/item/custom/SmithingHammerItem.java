@@ -3,6 +3,8 @@ package net.f708.realisticforging.item.custom;
 import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.component.ItemStackRecord;
 import net.f708.realisticforging.component.ModDataComponents;
+import net.f708.realisticforging.data.ModData;
+import net.f708.realisticforging.data.SmithingHammerComboData;
 import net.f708.realisticforging.network.packets.PacketPPPAnimation;
 import net.f708.realisticforging.recipe.ForgingRecipe;
 import net.f708.realisticforging.recipe.ForgingRecipeInput;
@@ -191,13 +193,34 @@ public class SmithingHammerItem extends Item {
                             }
                             player.stopUsingItem();
                         }, 1);
-
+                        if (player.getData(ModData.SMITHING_HAMMER_COMBO).getCombo() < 10){
+                            player.getData(ModData.SMITHING_HAMMER_COMBO).increaseCombo();
+                        }
+                        player.getData(ModData.SMITHING_HAMMER_COMBO).syncData(player);
 
                         player.getCooldowns().addCooldown(stack.getItem(), 10);
 
                         player.stopUsingItem();
 
                     } else {
+                        if (ConditionsHelper.isHoldingHammer(player)){
+                            boolean RH = true;
+
+                            switch (ConditionsHelper.getHandWithHammer(player)) {
+                                case MAIN_HAND -> {RH = true;}
+                                case OFF_HAND -> {RH = false;}
+                            }
+
+                            if (player instanceof ServerPlayer serverPlayer) {
+                                PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.FORGINGSWING, RH, 5));
+                            }
+                            TickScheduler.schedule(() -> {
+                                Utils.playFailedForgingSound(level, hitresult.getBlockPos());
+                            }, 5);
+
+                        }
+
+
                         player.stopUsingItem();
                         player.getCooldowns().addCooldown(stack.getItem(), 40);
                     }

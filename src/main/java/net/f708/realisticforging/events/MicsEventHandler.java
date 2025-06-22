@@ -1,7 +1,9 @@
 package net.f708.realisticforging.events;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.data.ModData;
+import net.f708.realisticforging.data.SmithingHammerComboData;
 import net.f708.realisticforging.gui.HotOverlay;
 import net.f708.realisticforging.item.ModItems;
 import net.f708.realisticforging.item.custom.SledgeHammerItem;
@@ -34,6 +36,8 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber(modid = "realisticforging")
 public class MicsEventHandler {
+
+    private static int tickAmount;
 
     @SubscribeEvent
     public static void playerRangeModified(PlayerTickEvent.Post event) {
@@ -84,6 +88,7 @@ public class MicsEventHandler {
         if (event.isAttack()){
             if (player != null){
                 if (SledgeHammerItem.isHoldingSledgeHammer(player)){
+                    player.getData(ModData.SMITHING_HAMMER_COMBO).increaseCombo();
                     event.setCanceled(true);
                     event.setSwingHand(false);
                 }
@@ -94,8 +99,61 @@ public class MicsEventHandler {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void renderOverlay(RenderGuiEvent.Post event){
-        HotOverlay overlay = new HotOverlay(Minecraft.getInstance(), Minecraft.getInstance().renderBuffers().bufferSource());
-        event.getGuiGraphics().blitSprite(overlay.getMODEL(), 0, 0, event.getGuiGraphics().guiWidth(), event.getGuiGraphics().guiHeight());
+        ResourceLocation HOTOVERLAY = ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "hot/hotoverlay");
+        GuiGraphics guiGraphics =event.getGuiGraphics();
+        int width = event.getGuiGraphics().guiWidth();
+        int height = event.getGuiGraphics().guiHeight();
+//            float opacity = 0.0f;
+//            switch (Minecraft.getInstance().player != null ? Minecraft.getInstance().player.getData(ModData.SMITHING_HAMMER_COMBO).getCombo() : 0){
+//                case 1: opacity = 0.1f;
+//                case 2: opacity = 0.2f;
+//                case 3: opacity = 0.3f;
+//                case 4: opacity = 0.4f;
+//                case 5: opacity = 0.5f;
+//                case 6: opacity = 0.6f;
+//                case 7: opacity = 0.7f;
+//                case 8: opacity = 0.8f;
+//                case 9: opacity = 0.9f;
+//                case 10: opacity = 1.0f;
+//                default: opacity = 0.0f;
+//            };
+        float opacity = switch (Minecraft.getInstance().player.getData(ModData.SMITHING_HAMMER_COMBO).getCombo()){
+            case 1 -> 0.1f;
+            case 2 -> 0.2f;
+            case 3 -> 0.3f;
+            case 4 -> 0.4f;
+            case 5 -> 0.5f;
+            case 6 -> 0.6f;
+            case 7 -> 0.7f;
+            case 8 -> 0.8f;
+            case 9 -> 0.9f;
+            case 10 -> 1.0f;
+            default -> 0.0f;
+        };
+            try {
+                RenderSystem.enableBlend();
+                RenderSystem.defaultBlendFunc();
+                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, opacity);
+                guiGraphics.blitSprite(HOTOVERLAY, 0, 0, width, height);
+            }
+            finally {
+                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+                RenderSystem.disableBlend();
+        }
+
+    }
+
+    @SubscribeEvent
+    public static void descreaseForgingState(PlayerTickEvent.Post event){
+        tickAmount++;
+        if (tickAmount > 60){
+            Player player = event.getEntity();
+            if (player.getData(ModData.SMITHING_HAMMER_COMBO).getCombo() >= 0) {
+                player.getData(ModData.SMITHING_HAMMER_COMBO).descreaseCombo();
+                player.getData(ModData.SMITHING_HAMMER_COMBO).syncData(player);
+                tickAmount = 0;
+            }
+        }
     }
 
 

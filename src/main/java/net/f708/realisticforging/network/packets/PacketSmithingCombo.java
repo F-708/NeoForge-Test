@@ -58,10 +58,9 @@ public record PacketSmithingCombo(SmithingHammerComboData data) implements Custo
     private static void handleClientData(PacketSmithingCombo message) {
         Player player = Minecraft.getInstance().player;
         if (player != null) {
-            var swingingData = player.getData(ModData.IS_SWINGING);
-            swingingData.deserializeNBT(player.registryAccess(), message.data().serializeNBT(player.registryAccess()));
-            player.setData(ModData.IS_SWINGING, swingingData);
-//            player.setData(ModData.SMITHING_HAMMER_COMBO, message.data.ge);
+            var smithingData = player.getData(ModData.SMITHING_HAMMER_COMBO);
+            smithingData.deserializeNBT(player.registryAccess(), message.data().serializeNBT(player.registryAccess()));
+            player.setData(ModData.SMITHING_HAMMER_COMBO, smithingData);
         }
     }
 

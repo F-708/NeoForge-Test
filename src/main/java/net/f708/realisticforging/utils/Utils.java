@@ -129,6 +129,11 @@ public class Utils {
 
     }
 
+    public static void playFailedForgingSound(Level level, BlockPos pos){
+        level.playSound(null, pos, ModSounds.FORGING_SOUND.get(), SoundSource.BLOCKS, 1, 0.5f);
+
+    }
+
     public static void playPerfectForgingSound(Level level, BlockPos pos){
         level.playSound(null, pos, ModSounds.FORGING_SOUND.get(), SoundSource.BLOCKS, 1, 1.4f);
 
