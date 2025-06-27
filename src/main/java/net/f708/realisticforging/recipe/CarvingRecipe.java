@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -18,7 +19,7 @@ import net.minecraft.world.level.block.Block;
 
 import java.util.Arrays;
 
-public record CarvingRecipe(Ingredient inputItem, ItemStack itemOutput, ItemStack outputBlock) implements Recipe<CarvingRecipeInput> {
+public record CarvingRecipe(Ingredient inputItem, ItemStack itemOutput, int hitAmount, ItemStack outputBlock) implements Recipe<CarvingRecipeInput> {
 
     public ItemStack getInputItem(){
         return Arrays.stream(inputItem.getItems()).toList().stream().findFirst().get();
@@ -26,6 +27,14 @@ public record CarvingRecipe(Ingredient inputItem, ItemStack itemOutput, ItemStac
 
     public ItemStack getOutPutBlock(){
         return outputBlock;
+    }
+
+    public ItemStack getResultItem(){
+        return itemOutput.copy();
+    }
+
+    public int getHitAmount(){
+        return hitAmount;
     }
 
     @Override
@@ -74,6 +83,7 @@ public record CarvingRecipe(Ingredient inputItem, ItemStack itemOutput, ItemStac
         public static final MapCodec<CarvingRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
                 Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(CarvingRecipe::inputItem),
                 ItemStack.CODEC.optionalFieldOf("resultitem", ItemStack.EMPTY).forGetter(CarvingRecipe::itemOutput),
+                Codec.INT.fieldOf("hit_amount").forGetter(CarvingRecipe::hitAmount),
                 ItemStack.CODEC.fieldOf("resultblock").forGetter(CarvingRecipe::outputBlock)
         ).apply(inst, CarvingRecipe::new));
 
@@ -81,6 +91,7 @@ public record CarvingRecipe(Ingredient inputItem, ItemStack itemOutput, ItemStac
                 StreamCodec.composite(
                         Ingredient.CONTENTS_STREAM_CODEC, CarvingRecipe::inputItem,
                         ItemStack.OPTIONAL_STREAM_CODEC, CarvingRecipe::itemOutput,
+                        ByteBufCodecs.INT, CarvingRecipe::hitAmount,
                         ItemStack.STREAM_CODEC, CarvingRecipe::outputBlock,
                         CarvingRecipe::new
                 );

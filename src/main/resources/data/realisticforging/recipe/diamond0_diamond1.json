@@ -3,7 +3,11 @@
   "ingredient": {
     "item": "minecraft:diamond_ore"
   },
+  "resultitem": {
+    "id": "minecraft:diamond"
+  },
+  "hit_amount": 10,
   "resultblock": {
-    "id": "realisticforging:carved_diamond_ore"
+    "id": "minecraft:stone"
   }
 }

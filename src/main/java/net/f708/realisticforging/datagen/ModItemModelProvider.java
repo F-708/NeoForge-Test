@@ -28,18 +28,19 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.BARSHAPEDMOLD.get());
         basicItem(ModItems.PAN.get());
         basicItem(ModItems.BIGPAN.get());
+        basicItem(ModItems.TONGS.get());
+        basicItem(ModItems.TWOSTICKS.get());
 
 
         handheldItem(ModItems.SMITHINGHAMMER.get());
         handheldItem(ModItems.STONESMITHINGHAMMER.get());
         handheldItem(ModItems.WOODSMITHINGHAMMER.get());
-        handheldItem(ModItems.TWOSTICKS.get());
-        handheldItem(ModItems.TONGS.get());
         handheldItem(ModItems.CARVINGHAMMER.get());
         handheldItem(ModItems.POINTCHISEL.get());
         handheldItem(ModItems.IRON_SLEDGEHAMMER.get());
         handheldItem(ModItems.DIAMOND_SLEDGEHAMMER.get());
         handheldItem(ModItems.NETHERITE_SLEDGEHAMMER.get());
+
 
     }
 }

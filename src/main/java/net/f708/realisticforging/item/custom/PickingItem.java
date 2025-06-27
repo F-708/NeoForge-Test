@@ -1,6 +1,5 @@
 package net.f708.realisticforging.item.custom;
 
-import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.component.ItemStackRecord;
 import net.f708.realisticforging.network.packets.PacketPPPAnimation;
 import net.f708.realisticforging.utils.Animation;
@@ -92,11 +91,7 @@ public class PickingItem extends Item {
         } else if (ConditionsHelper.isHoldingHammer(player)) {
             return InteractionResult.PASS;
         }
-//        else if (ConditionsHelper.isHoldingForgeableItem(player, level) && ConditionsHelper.isOtherHandIsFree(player) && PickingItem.isHoldingTongs(player) && ConditionsHelper.isForgeableBlock(level, context.getClickedPos())) {
-//            RealisticForging.LOGGER.debug("CONDITIONS IN PICKING CLASS ARE MET");
-//
-//                return InteractionResult.CONSUME;
-//        }
+
         else {
             if (ConditionsHelper.isWaterCauldron(level.getBlockState(pos).getBlock()) || ConditionsHelper.isPlayerInWater(player)) {
                 return InteractionResult.PASS;
@@ -170,6 +165,9 @@ public class PickingItem extends Item {
                 ItemStackRecord.clearItemStackFromDataComponent(tongs);
                 player.getCooldowns().addCooldown(this, 10);
                 player.swing(hand);
+                if (stack.is(ModTags.Items.VERY_HOT_ITEM)){
+                    tongs.hurtAndBreak(1, player, tongs.getEquipmentSlot());
+                }
             }
         }
         return InteractionResultHolder.fail(tongs);
@@ -177,6 +175,9 @@ public class PickingItem extends Item {
 
     private InteractionResultHolder<ItemStack> handleItemPickup(ItemStack item, ItemStack tongs, Player player, InteractionHand hand) {
         if (isTongsAreFree(tongs)) {
+            if (item.getItem() instanceof PickingItem){
+                return InteractionResultHolder.pass(player.getItemInHand(hand));
+            }
             ItemStackRecord.setItemStackIntoDataComponent(item, tongs);
             item.shrink(1);
             player.getCooldowns().addCooldown(this, 10);

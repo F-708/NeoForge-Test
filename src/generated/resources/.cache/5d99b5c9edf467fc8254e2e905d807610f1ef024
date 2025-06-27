@@ -1,4 +1,4 @@
-// 1.21.1	2025-06-12T20:48:31.4155702	Item Models: realisticforging
+// 1.21.1	2025-06-24T21:52:24.6722362	Item Models: realisticforging
 2416b5d71f5324a56d24a4579027faab01a99ae7 assets/realisticforging/models/item/bar_shaped_mold.json
 18628251ad7b3e550242905ee817277a87aab3c6 assets/realisticforging/models/item/big_pan.json
 ede2613cd4c70df84de5d82a64b4a5b067513cb3 assets/realisticforging/models/item/carving_hammer.json
@@ -21,6 +21,6 @@ d28ddb119972303ac16b1bfe8500874c1b962218 assets/realisticforging/models/item/pan
 779b57cb6773f51f93b6f536ecd42f4680b4dab2 assets/realisticforging/models/item/rough_emerald.json
 a9786fc3f62236163c8a1116d556b154d28998ce assets/realisticforging/models/item/smithing_hammer.json
 9b78b33068efd29db05b654cfa237922cdc9dfa5 assets/realisticforging/models/item/stone_smithing_hammer.json
-daf1b722a56afd5141db3860322d936c496ade0c assets/realisticforging/models/item/tongs.json
-ca15871826efd4db071b4be18c47f4c0915e9359 assets/realisticforging/models/item/two_sticks.json
+c59461ce8b774a633bd3b43dba49c248be8b245f assets/realisticforging/models/item/tongs.json
+068669afb306cc7b29369e67abed8d6502bc3530 assets/realisticforging/models/item/two_sticks.json
 111dfa1cfbb7b32cd9cdc60c9bbc55ae25ae7dd0 assets/realisticforging/models/item/wood_smithing_hammer.json

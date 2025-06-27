@@ -105,6 +105,18 @@ public class RealisticForging
             event.register(ModelResourceLocation.standalone(
                     ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "item/tongs_right")
             ));
+            event.register(ModelResourceLocation.standalone(
+                    ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "item/twosticks_left")
+            ));
+            event.register(ModelResourceLocation.standalone(
+                    ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "item/twosticks_right")
+            ));
+            event.register(ModelResourceLocation.standalone(
+                    ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "item/left_stick")
+            ));
+            event.register(ModelResourceLocation.standalone(
+                    ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "item/right_stick")
+            ));
 
         }
 

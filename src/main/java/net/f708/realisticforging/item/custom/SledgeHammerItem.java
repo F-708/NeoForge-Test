@@ -148,7 +148,6 @@ public class SledgeHammerItem extends DiggerItem {
             if (!player.getCooldowns().isOnCooldown(this)) {
                 player.startUsingItem(usedHand);
                 player.awardStat(Stats.ITEM_USED.get(this));
-//                player.getCooldowns().addCooldown(this, 2);
             } else {
                 return InteractionResultHolder.consume(player.getItemInHand(usedHand));
             }

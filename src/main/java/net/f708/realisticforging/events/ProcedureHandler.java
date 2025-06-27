@@ -10,7 +10,6 @@ import net.f708.realisticforging.recipe.*;
 import net.f708.realisticforging.utils.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundBlockDestructionPacket;
-import net.minecraft.server.level.BlockDestructionProgress;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -31,7 +30,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ProcedureHandler {
 
@@ -286,7 +284,6 @@ public class ProcedureHandler {
         Inventory inventory = player.getInventory();
         RecipeManager recipeManager = level.getRecipeManager();
 
-        // Определение инструментов и руки
         InteractionHand handType = PickingItem.getHandWithTongs(player);
         boolean RH = handType == InteractionHand.MAIN_HAND;
         ItemStack tongs = switch (handType) {
@@ -296,7 +293,6 @@ public class ProcedureHandler {
         };
         boolean isInTongs = !tongs.isEmpty();
 
-        // Определение рецепта
         Optional<RecipeHolder<CoolingRecipe>> recipeOptional = Optional.empty();
         ItemStack handItem = ItemStack.EMPTY;
         int slot;
@@ -321,11 +317,9 @@ public class ProcedureHandler {
 
         if (recipeOptional.isEmpty()) return;
 
-        // Проверка этапа ковки
         ItemStack finalStack = isInTongs ? ItemStackRecord.getStackFromDataComponent(tongs) : handItem;
         if (!checkForgingStage(finalStack, recipeManager, level, player)) return;
 
-        // Применение рецепта
         Utils.setBusy(player);
         ItemStack itemToCheck = isInTongs ? ItemStackRecord.getStackFromDataComponent(tongs) : handItem;
         if (player.getCooldowns().isOnCooldown(itemToCheck.getItem())) return;
@@ -343,6 +337,7 @@ public class ProcedureHandler {
         }, 10);
 
         TickScheduler.schedule(() -> {
+
             if (ConditionsHelper.isMetCoolingConditions(player, level)) {
                 if (isInTongs) {
                     ItemStack tongs2 = switch (PickingItem.getHandWithTongs(player)) {
@@ -352,7 +347,14 @@ public class ProcedureHandler {
                     };
                     recipeManager.getRecipeFor(ModRecipes.FORGING_TYPE.get(), new ForgingRecipeInput(ItemStackRecord.getStackFromDataComponent(tongs2)), level)
                             .filter(recipe -> recipe.value().getMaxStage() == ItemStackRecord.getStackFromDataComponent(tongs2).getOrDefault(ModDataComponents.FORGE_STATE, 1))
-                            .ifPresent(recipe -> ItemStackRecord.setItemStackIntoDataComponent(result, tongs2));
+                            .ifPresent(recipe -> {
+                                if (tongs2.is(ModItems.TWOSTICKS)){
+                                    inventory.add(result);
+                                    tongs2.shrink(1);
+                                } else if (tongs2.is(ModItems.TONGS)){
+                                    ItemStackRecord.setItemStackIntoDataComponent(result, tongs2);
+                                }
+                            });
                 } else {
                     inventory.setItem(slot, result);
                 }

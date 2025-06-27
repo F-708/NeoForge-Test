@@ -29,6 +29,8 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.lighting.LevelLightEngine;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -49,6 +51,7 @@ public class SmithingHammerItem extends Item {
     public UseAnim getUseAnimation(ItemStack stack) {
         return UseAnim.CUSTOM;
     }
+
 
 
 //    @Override
@@ -81,7 +84,7 @@ public class SmithingHammerItem extends Item {
                                 RH = true;
                             }
                             if (player instanceof ServerPlayer serverPlayer) {
-                                PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.FORGINGUPSWING, RH, 8));
+                                PacketDistributor.sendToPlayer(serverPlayer, new PacketPPPAnimation(player.getId(), Animation.FORGINGUPSWING, RH, 10));
                             }
                         }
                     }
@@ -170,8 +173,7 @@ public class SmithingHammerItem extends Item {
                                         Utils.sendForgingParticles((ServerLevel) level, hitresult.getBlockPos());
                                         Utils.playForgingSound(level, hitresult.getBlockPos());
                                     }
-
-                                    Utils.setLight(level, hitresult.getBlockPos(), 2);
+                                    Utils.setLight(level, hitresult.getBlockPos());
 
                                     hammerFinal.hurtAndBreak(1, player, hammerFinal.getEquipmentSlot());
                                     player.causeFoodExhaustion(0.005f);
@@ -197,8 +199,12 @@ public class SmithingHammerItem extends Item {
                             player.getData(ModData.SMITHING_HAMMER_COMBO).increaseCombo();
                         }
                         player.getData(ModData.SMITHING_HAMMER_COMBO).syncData(player);
+                        if (player.getData(ModData.SMITHING_HAMMER_COMBO).getCombo() > 9){
+                            player.getCooldowns().addCooldown(stack.getItem(), 8);
+                        } else {
+                            player.getCooldowns().addCooldown(stack.getItem(), 8);
+                        }
 
-                        player.getCooldowns().addCooldown(stack.getItem(), 10);
 
                         player.stopUsingItem();
 
@@ -222,7 +228,7 @@ public class SmithingHammerItem extends Item {
 
 
                         player.stopUsingItem();
-                        player.getCooldowns().addCooldown(stack.getItem(), 40);
+                        player.getCooldowns().addCooldown(stack.getItem(), 20);
                     }
                 }
             }

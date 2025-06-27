@@ -115,6 +115,16 @@ public class AnimationHelper {
         AnimationHelper.playAnimation(player, "forging_helper_downswing", RH, fadeInTicks);
     }
 
+    public static void playCarvingStartAnimation(Boolean RH, int fadeInTicks){
+        Player player = Minecraft.getInstance().player;
+        AnimationHelper.playAnimation(player, "carving_start", RH, fadeInTicks);
+    }
+
+    public static void playCarvingHitAnimation(Boolean RH, int fadeInTicks){
+        Player player = Minecraft.getInstance().player;
+        AnimationHelper.playAnimation(player, "carving_hit", RH, fadeInTicks);
+    }
+
 
 
 

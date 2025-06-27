@@ -1,5 +1,6 @@
 package net.f708.realisticforging.utils;
 
+import com.mojang.blaze3d.platform.Lighting;
 import net.f708.realisticforging.attributes.ModModifiers;
 import net.f708.realisticforging.recipe.CleaningRecipe;
 import net.f708.realisticforging.recipe.CleaningRecipeInput;
@@ -130,7 +131,7 @@ public class Utils {
     }
 
     public static void playFailedForgingSound(Level level, BlockPos pos){
-        level.playSound(null, pos, ModSounds.FORGING_SOUND.get(), SoundSource.BLOCKS, 1, 0.5f);
+        level.playSound(null, pos, ModSounds.FORGING_SOUND.get(), SoundSource.BLOCKS, 0.8f, 0.8f);
 
     }
 
@@ -139,24 +140,13 @@ public class Utils {
 
     }
 
-    public static void setLight(Level level, BlockPos pos, int duration){
+    public static void setLight(Level level, BlockPos pos){
         BlockPos targetPos = pos.above();
-        if (duration > 1){
-            level.setBlock(targetPos, Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, 6), 2);
-            for (int i = 0; i < duration / 3; i++){
-                int finalI = i;
-                TickScheduler.schedule(() -> {
-                    level.setBlock(targetPos, Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, 10 - finalI *2), 2);
-                }, i);
+
+        level.setBlock(targetPos, Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, 10), 2);
                 TickScheduler.schedule(()->{
-                    level.removeBlock(targetPos, true);
-                }, duration/ 3);
-            }
-        }
-        level.setBlock(targetPos, Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, 6), 2);
-        TickScheduler.schedule(() -> {
-            level.destroyBlock(targetPos, false, null, 2);
-        }, duration);
+                    level.removeBlock(targetPos, false);
+                }, 1);
     }
 
     public static void sendCoolingParticles(ServerLevel level, BlockPos pos){
@@ -267,30 +257,24 @@ public class Utils {
     }
 
     public static void playCarvingSound(ServerLevel level, Player player){
-        TickScheduler.schedule(() -> {
             level.playSound(null, player, ModSounds.CARVING_SOUND.get(), SoundSource.PLAYERS, 1f, 1f );
-        }, 16);
-        TickScheduler.schedule(() -> {
-            level.playSound(null, player, ModSounds.CARVING_SOUND.get(), SoundSource.PLAYERS, 1f, 1f );
-        }, 30);
-        TickScheduler.schedule(() -> {
-            level.playSound(null, player, ModSounds.CARVING_SOUND.get(), SoundSource.PLAYERS, 1f, 1f );
-        }, 44);
 
+    }
+    public static void playWarningCarvingSound(ServerLevel level, Player player){
+        level.playSound(null, player, ModSounds.CARVING_SOUND.get(), SoundSource.PLAYERS, 1f, 1.3f );
+        level.playSound(null, player, SoundEvents.BONE_BLOCK_BREAK, SoundSource.PLAYERS, 1f, 1.3f );
     }
 
     public static void sendCarvingParticles(ServerLevel level, BlockPos pos, Block block){
         Random random = new Random();
         ParticleOptions particleOptions = new BlockParticleOption(ParticleTypes.BLOCK, block.defaultBlockState());
-        TickScheduler.schedule(() -> {
             level.sendParticles(particleOptions, pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, random.nextInt(10, 20), 0.2, 0, 0.2, 0.15);
-        }, 17);
-        TickScheduler.schedule(() -> {
-            level.sendParticles(particleOptions, pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, random.nextInt(10, 20), 0.2, 0, 0.2, 0.15);
-        }, 30);
-        TickScheduler.schedule(() -> {
-            level.sendParticles(particleOptions, pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, random.nextInt(10, 20), 0.2, 0, 0.2, 0.15);
-        }, 44);
+    }
+
+    public static void sendWarningCarvingParticles(ServerLevel level, BlockPos pos, Block block){
+        Random random = new Random();
+        ParticleOptions particleOptions = new BlockParticleOption(ParticleTypes.BLOCK, block.defaultBlockState());
+        level.sendParticles(particleOptions, pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, random.nextInt(20, 40), 0.2, 0, 0.2, 0.15);
     }
 
     public static void playSmashSound(ServerLevel level, Player player, float volume){
@@ -303,37 +287,17 @@ public class Utils {
     }
 
 
-
-
-
-
-
-
     public static void sendCracksToPlayers(List<Player> nearbyPlayers, Player player, BlockPos pos) {
         for (Player p : nearbyPlayers) {
             if (p instanceof ServerPlayer serverPlayer) {
                 if (player instanceof ServerPlayer serverPlayerNearby) {
-                    TickScheduler.schedule(() -> {
-                        serverPlayerNearby.connection.send(new ClientboundBlockDestructionPacket(serverPlayerNearby.getId(), pos, 2));
-
-                    }, 19);
-                    TickScheduler.schedule(() -> {
-                        serverPlayerNearby.connection.send(new ClientboundBlockDestructionPacket(serverPlayerNearby.getId(), pos, 5));
-
-                    }, 32);
+                        serverPlayerNearby.connection.send(new ClientboundBlockDestructionPacket(serverPlayerNearby.getId(), pos, 3));
                 }
 
             }
         }
         if (player instanceof ServerPlayer serverPlayerMain) {
-            TickScheduler.schedule(() -> {
-                serverPlayerMain.connection.send(new ClientboundBlockDestructionPacket(serverPlayerMain.getId(), pos, 2));
-
-            }, 19);
-            TickScheduler.schedule(() -> {
                 serverPlayerMain.connection.send(new ClientboundBlockDestructionPacket(serverPlayerMain.getId(), pos, 5));
-
-            }, 32);
         }
     }
 

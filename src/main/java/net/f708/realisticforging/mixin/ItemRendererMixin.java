@@ -37,38 +37,67 @@ public abstract class ItemRendererMixin {
     private List<BakedModel> addAdditionalModel(BakedModel instance, ItemStack itemStack, boolean fabulous, Operation<List<BakedModel>> original) {
         List<BakedModel> list = original.call(instance, itemStack, fabulous);
 
-        if (!(itemStack.getItem() instanceof PickingItem)) return list;
+        if (itemStack.is(ModItems.TWOSTICKS)) {
+            list = new ArrayList<>(list);
 
-        list = new ArrayList<>(list);
+            ItemStack item = ItemStackRecord.getStackFromDataComponent(itemStack);
 
-        ItemStack item = ItemStackRecord.getStackFromDataComponent(itemStack);
+            if (item.isEmpty()) {
+                list.add(getModel(ModItems.TWOSTICKS.get().getDefaultInstance(), null, null, 0));
+            } else {
+                list.clear();
 
-//        ItemStack item = itemStack.getOrDefault(ModDataComponents.ITEM_IN_TONGS, ItemStack.EMPTY);
-        if (item.isEmpty()) {
-            list.add(getModel(ModItems.TONGS.get().getDefaultInstance(), null, null, 0));
-        } else {
-            list.clear();
+                BakedModel leftModel = Minecraft.getInstance().getModelManager().getModel(
+                        ModelResourceLocation.standalone(
+                                ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "item/left_stick")
+                        )
+                );
+                BakedModel rightModel = Minecraft.getInstance().getModelManager().getModel(
+                        ModelResourceLocation.standalone(
+                                ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "item/right_stick")
+                        )
+                );
+                list.add(leftModel);
 
-            BakedModel leftModel = Minecraft.getInstance().getModelManager().getModel(
-                    ModelResourceLocation.standalone(
-                            ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "item/tongs_left")
-                    )
-            );
-            BakedModel rightModel = Minecraft.getInstance().getModelManager().getModel(
-                    ModelResourceLocation.standalone(
-                            ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "item/tongs_right")
-                    )
-            );
+                list.add(getModel(item, null, null, 0));
 
-            list.add(leftModel);
 
-            list.add(getModel(item, null, null, 0));
+                list.add(rightModel);
+            }
+            return list;
+        } else if (itemStack.is(ModItems.TONGS)) {
 
-//            list.add(getModel(itemStack.getOrDefault(ModDataComponents.ITEM_IN_TONGS, ItemStack.EMPTY), null, null, 0));
 
-            list.add(rightModel);
-        }
+            list = new ArrayList<>(list);
 
+            ItemStack item = ItemStackRecord.getStackFromDataComponent(itemStack);
+
+            if (item.isEmpty()) {
+                list.add(getModel(ModItems.TONGS.toStack(), null, null, 0));
+            } else {
+                list.clear();
+
+                BakedModel leftModel = Minecraft.getInstance().getModelManager().getModel(
+                        ModelResourceLocation.standalone(
+                                ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "item/tongs_left")
+                        )
+                );
+                BakedModel rightModel = Minecraft.getInstance().getModelManager().getModel(
+                        ModelResourceLocation.standalone(
+                                ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "item/tongs_right")
+                        )
+                );
+
+                list.add(leftModel);
+
+                list.add(getModel(item, null, null, 0));
+
+
+                list.add(rightModel);
+            }
+
+            return list;
+        } else if (!(itemStack.getItem() instanceof PickingItem)) return list;
         return list;
     }
 }

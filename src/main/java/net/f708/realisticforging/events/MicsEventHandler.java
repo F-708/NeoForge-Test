@@ -12,6 +12,7 @@ import net.f708.realisticforging.utils.ModTags;
 import net.f708.realisticforging.utils.TickScheduler;
 import net.f708.realisticforging.utils.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.network.chat.Component;
@@ -43,8 +44,7 @@ public class MicsEventHandler {
     public static void playerRangeModified(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
         AttributeMap attributeMap = player.getAttributes();
-        if (ConditionsHelper.forgingRangeConditions(player)
-                || ConditionsHelper.carvingRangeConditions(player)
+        if (ConditionsHelper.carvingRangeConditions(player)
         || (ConditionsHelper.isHoldingHammer(player) && !ConditionsHelper.isOtherHandIsFree(player))) {
             Utils.descreaseInteractionRange(attributeMap, player);
         } else {
@@ -70,13 +70,14 @@ public class MicsEventHandler {
             if (player.getData(ModData.IS_SWINGING).isSwinging()){
                 event.setCinematicCameraEnabled(true);
                 event.setMouseSensitivity(event.getMouseSensitivity() * 0.8);
+            } else if (player.getData(ModData.IS_CARVING).isCarving()) {
+                event.setCinematicCameraEnabled(true);
+                event.setMouseSensitivity(event.getMouseSensitivity() * 1.5);
             } else {
                 event.setCinematicCameraEnabled(false);
                 event.setMouseSensitivity(mouseSent);
             }
-        } else {
         }
-
     }
 
 
@@ -103,20 +104,7 @@ public class MicsEventHandler {
         GuiGraphics guiGraphics =event.getGuiGraphics();
         int width = event.getGuiGraphics().guiWidth();
         int height = event.getGuiGraphics().guiHeight();
-//            float opacity = 0.0f;
-//            switch (Minecraft.getInstance().player != null ? Minecraft.getInstance().player.getData(ModData.SMITHING_HAMMER_COMBO).getCombo() : 0){
-//                case 1: opacity = 0.1f;
-//                case 2: opacity = 0.2f;
-//                case 3: opacity = 0.3f;
-//                case 4: opacity = 0.4f;
-//                case 5: opacity = 0.5f;
-//                case 6: opacity = 0.6f;
-//                case 7: opacity = 0.7f;
-//                case 8: opacity = 0.8f;
-//                case 9: opacity = 0.9f;
-//                case 10: opacity = 1.0f;
-//                default: opacity = 0.0f;
-//            };
+
         float opacity = switch (Minecraft.getInstance().player.getData(ModData.SMITHING_HAMMER_COMBO).getCombo()){
             case 1 -> 0.1f;
             case 2 -> 0.2f;
@@ -131,6 +119,7 @@ public class MicsEventHandler {
             default -> 0.0f;
         };
             try {
+                Gui gui = new Gui(Minecraft.getInstance());
                 RenderSystem.enableBlend();
                 RenderSystem.defaultBlendFunc();
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, opacity);

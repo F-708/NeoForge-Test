@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "realisticforging:item/two_sticks"
+    "layer0": "realisticforging:item/left_stick"
   }
 }

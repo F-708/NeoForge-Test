@@ -4,7 +4,6 @@ import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.component.ItemStackRecord;
 import net.f708.realisticforging.component.ModDataComponents;
 import net.f708.realisticforging.item.ModItems;
-import net.f708.realisticforging.item.custom.PickedItem;
 import net.f708.realisticforging.item.custom.SmithingHammerItem;
 import net.f708.realisticforging.recipe.*;
 import net.minecraft.core.BlockPos;
@@ -286,7 +285,7 @@ public class ConditionsHelper {
         return result;
     }
 
-    private static boolean isCarvingRecipeBlock(Level level, BlockPos pos){
+    public static boolean isCarvingRecipeBlock(Level level, BlockPos pos){
         boolean result = true;
         RecipeManager recipeManager = level.getRecipeManager();
         Optional<RecipeHolder<CarvingRecipe>> recipeBlock = recipeManager.getRecipeFor(
@@ -351,9 +350,6 @@ public class ConditionsHelper {
         return !player.isSprinting();
     }
 
-    public static boolean forgingRangeConditions(Player player){
-        return (player.getMainHandItem().getItem() instanceof PickedItem || player.getOffhandItem().getItem() instanceof PickedItem) && ConditionsHelper.isHoldingHammer(player);
-    }
 
     public static boolean carvingRangeConditions(Player player){
         return (isHoldingChisel(player) && isHoldingCarvingHammer(player));

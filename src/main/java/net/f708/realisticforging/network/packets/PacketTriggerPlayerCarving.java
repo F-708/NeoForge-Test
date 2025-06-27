@@ -1,6 +1,7 @@
 package net.f708.realisticforging.network.packets;
 
 import net.f708.realisticforging.RealisticForging;
+import net.f708.realisticforging.data.IsCarvingData;
 import net.f708.realisticforging.data.IsSwingingData;
 import net.f708.realisticforging.data.ModData;
 import net.f708.realisticforging.network.NetworkHandler;
@@ -22,22 +23,22 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 @EventBusSubscriber(modid = RealisticForging.MODID, bus = EventBusSubscriber.Bus.MOD)
-public record PacketTriggerPlayerSwing (IsSwingingData data) implements CustomPacketPayload {
+public record PacketTriggerPlayerCarving(IsCarvingData data) implements CustomPacketPayload {
 
 
-    public static final Type<PacketTriggerPlayerSwing> TYPE =
-            new Type<>(ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "is_swinging"));
+    public static final Type<PacketTriggerPlayerCarving> TYPE =
+            new Type<>(ResourceLocation.fromNamespaceAndPath(RealisticForging.MODID, "is_carving"));
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, PacketTriggerPlayerSwing> STREAM_CODEC = StreamCodec
-            .of((RegistryFriendlyByteBuf buffer, PacketTriggerPlayerSwing packet) -> {
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketTriggerPlayerCarving> STREAM_CODEC = StreamCodec
+            .of((RegistryFriendlyByteBuf buffer, PacketTriggerPlayerCarving packet) -> {
                 buffer.writeNbt(packet.data().serializeNBT(buffer.registryAccess()));
             }, (RegistryFriendlyByteBuf buffer) -> {
-                IsSwingingData data = new IsSwingingData();
+                IsCarvingData data = new IsCarvingData();
                 data.deserializeNBT(buffer.registryAccess(), Objects.requireNonNull(buffer.readNbt()));
-                return new PacketTriggerPlayerSwing(data);
+                return new PacketTriggerPlayerCarving(data);
             });
 
-    public static void handleData(final PacketTriggerPlayerSwing message, final IPayloadContext context) {
+    public static void handleData(final PacketTriggerPlayerCarving message, final IPayloadContext context) {
         if (context.flow().isServerbound() && message.data() != null) {
             context.enqueueWork(() -> {
 
@@ -58,21 +59,21 @@ public record PacketTriggerPlayerSwing (IsSwingingData data) implements CustomPa
     }
 
     @OnlyIn(Dist.CLIENT)
-    private static void handleClientData(PacketTriggerPlayerSwing message) {
+    private static void handleClientData(PacketTriggerPlayerCarving message) {
         Player player = Minecraft.getInstance().player;
         if (player != null) {
-            var swingingData = player.getData(ModData.IS_SWINGING);
-            swingingData.deserializeNBT(player.registryAccess(), message.data().serializeNBT(player.registryAccess()));
-            player.setData(ModData.IS_SWINGING, swingingData);
+            var carvingData = player.getData(ModData.IS_CARVING);
+            carvingData.deserializeNBT(player.registryAccess(), message.data().serializeNBT(player.registryAccess()));
+            player.setData(ModData.IS_CARVING, carvingData);
         }
     }
 
     @SubscribeEvent
     public static void registerMessage(FMLCommonSetupEvent event) {
         NetworkHandler.addNetworkMessage(
-                PacketTriggerPlayerSwing.TYPE,
-                PacketTriggerPlayerSwing.STREAM_CODEC,
-                PacketTriggerPlayerSwing::handleData
+                PacketTriggerPlayerCarving.TYPE,
+                PacketTriggerPlayerCarving.STREAM_CODEC,
+                PacketTriggerPlayerCarving::handleData
         );
     }
 
