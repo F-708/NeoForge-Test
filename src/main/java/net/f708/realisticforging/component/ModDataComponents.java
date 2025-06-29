@@ -8,18 +8,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -40,6 +33,7 @@ public class ModDataComponents {
             builder -> builder.persistent(ItemStackRecord.BASIC_CODEC)
                     .networkSynchronized(ItemStackRecord.BASIC_STREAM_CODEC)
     );
+
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> CARVING_STATE = register("carving_state",
             integerBuilder -> integerBuilder.persistent(Codec.INT));

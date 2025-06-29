@@ -48,14 +48,14 @@ public class ConditionsHelper {
             RecipeManager recipeManager = level.getRecipeManager();
                 Optional<RecipeHolder<ForgingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
                         ModRecipes.FORGING_TYPE.get(),
-                        new ForgingRecipeInput(ItemStackRecord.getStackFromDataComponent(player.getOffhandItem())),
+                        new ForgingRecipeInput(player.getOffhandItem()),
                         level);
                 if (recipeOptionalOff.isPresent()) {
                     result = true;
                 }
                 Optional<RecipeHolder<ForgingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
                         ModRecipes.FORGING_TYPE.get(),
-                        new ForgingRecipeInput(ItemStackRecord.getStackFromDataComponent(player.getMainHandItem())),
+                        new ForgingRecipeInput(player.getMainHandItem()),
                         level);
                 if (recipeOptionalMain.isPresent()) {
                     result = true;

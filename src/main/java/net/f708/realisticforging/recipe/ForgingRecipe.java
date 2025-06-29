@@ -30,6 +30,7 @@ public class ForgingRecipe implements Recipe<ForgingRecipeInput> {
     public Ingredient getInputItem() {
         return inputItem;
     }
+
     public ItemStack getOutput() {
         return output;
     }
