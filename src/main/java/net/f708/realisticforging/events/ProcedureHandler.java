@@ -299,7 +299,7 @@ public class ProcedureHandler {
 
         if (isInTongs) {
             slot = inventory.selected;
-            ItemStack contained = ItemStackRecord.getStackFromDataComponent(tongs);
+            ItemStack contained = ItemStackRecord.getStackFromTongs(tongs);
             recipeOptional = recipeManager.getRecipeFor(ModRecipes.COOLING_TYPE.get(), new CoolingRecipeInput(contained), level);
         } else {
             ItemStack mainHand = player.getMainHandItem();
@@ -317,11 +317,11 @@ public class ProcedureHandler {
 
         if (recipeOptional.isEmpty()) return;
 
-        ItemStack finalStack = isInTongs ? ItemStackRecord.getStackFromDataComponent(tongs) : handItem;
+        ItemStack finalStack = isInTongs ? ItemStackRecord.getStackFromTongs(tongs) : handItem;
         if (!checkForgingStage(finalStack, recipeManager, level, player)) return;
 
         Utils.setBusy(player);
-        ItemStack itemToCheck = isInTongs ? ItemStackRecord.getStackFromDataComponent(tongs) : handItem;
+        ItemStack itemToCheck = isInTongs ? ItemStackRecord.getStackFromTongs(tongs) : handItem;
         if (player.getCooldowns().isOnCooldown(itemToCheck.getItem())) return;
 
         if (player instanceof ServerPlayer serverPlayer) {
@@ -345,14 +345,14 @@ public class ProcedureHandler {
                         case OFF_HAND -> player.getOffhandItem();
                         default -> ItemStack.EMPTY;
                     };
-                    recipeManager.getRecipeFor(ModRecipes.FORGING_TYPE.get(), new ForgingRecipeInput(ItemStackRecord.getStackFromDataComponent(tongs2)), level)
-                            .filter(recipe -> recipe.value().getMaxStage() == ItemStackRecord.getStackFromDataComponent(tongs2).getOrDefault(ModDataComponents.FORGE_STATE, 1))
+                    recipeManager.getRecipeFor(ModRecipes.FORGING_TYPE.get(), new ForgingRecipeInput(ItemStackRecord.getStackFromTongs(tongs2)), level)
+                            .filter(recipe -> recipe.value().getMaxStage() == ItemStackRecord.getStackFromTongs(tongs2).getOrDefault(ModDataComponents.FORGE_STATE, 1))
                             .ifPresent(recipe -> {
                                 if (tongs2.is(ModItems.TWOSTICKS)){
                                     inventory.add(result);
                                     tongs2.shrink(1);
                                 } else if (tongs2.is(ModItems.TONGS)){
-                                    ItemStackRecord.setItemStackIntoDataComponent(result, tongs2);
+                                    ItemStackRecord.setItemStackInTongs(result, tongs2);
                                 }
                             });
                 } else {

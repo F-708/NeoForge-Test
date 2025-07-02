@@ -4,21 +4,16 @@ import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.component.ItemStackRecord;
 import net.f708.realisticforging.component.ModDataComponents;
 import net.f708.realisticforging.data.ModData;
-import net.f708.realisticforging.data.SmithingHammerComboData;
 import net.f708.realisticforging.network.packets.PacketPPPAnimation;
 import net.f708.realisticforging.recipe.ForgingRecipe;
 import net.f708.realisticforging.recipe.ForgingRecipeInput;
 import net.f708.realisticforging.recipe.ModRecipes;
 import net.f708.realisticforging.utils.*;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
@@ -29,8 +24,6 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.lighting.LevelLightEngine;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -141,7 +134,7 @@ public class SmithingHammerItem extends Item {
                                 RecipeManager recipeManager = level.getRecipeManager();
 
 
-                                ItemStack inputStack = ItemStackRecord.getStackFromDataComponent(tongsWithForgeableFinal);
+                                ItemStack inputStack = ItemStackRecord.getStackFromTongs(tongsWithForgeableFinal);
                                 ItemStack result;
 
                                 int currentForgingStage = inputStack.getOrDefault(ModDataComponents.FORGE_STATE.get(), 1);
@@ -183,11 +176,11 @@ public class SmithingHammerItem extends Item {
                                         if (currentForgingStage < finalForgingStage){
                                             RealisticForging.LOGGER.debug("INCREASING STAGE");
                                             ItemStackRecord.increaseForgingState(tongsWithForgeableFinal, stageamount);
-                                            RealisticForging.LOGGER.debug(ItemStackRecord.getStackFromDataComponent(tongsWithForgeableFinal).getOrDefault(ModDataComponents.FORGE_STATE, 1).toString());
+                                            RealisticForging.LOGGER.debug(ItemStackRecord.getStackFromTongs(tongsWithForgeableFinal).getOrDefault(ModDataComponents.FORGE_STATE, 1).toString());
 //                                            inputStack.set(ModDataComponents.FORGE_STATE.get(), currentForgingStage + stageamount);
 //                                            ItemStackRecord.setItemStackIntoDataComponent(inputStack, finalTongsWithForgeable1);
                                         } else if (!result.isEmpty()){
-                                        ItemStackRecord.setItemStackIntoDataComponent(result, tongsWithForgeableFinal);
+                                        ItemStackRecord.setItemStackInTongs(result, tongsWithForgeableFinal);
                                     }
 //                                    }
 

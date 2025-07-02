@@ -58,7 +58,7 @@ public class PickingItem extends Item {
 
                     if (hotItem.isPresent()) {
                         ItemStack hotStack = hotItem.get();
-                        ItemStackRecord.setItemStackIntoDataComponent(hotStack, tongs);
+                        ItemStackRecord.setItemStackInTongs(hotStack, tongs);
                         hotStack.shrink(1);
                         player.getCooldowns().addCooldown(this, 10);
                         player.swing(getHandWithTongs(player));
@@ -159,10 +159,10 @@ public class PickingItem extends Item {
 
     private InteractionResultHolder<ItemStack> handleHammerUsage(ItemStack tongs, Player player, InteractionHand hand) {
         if (!isTongsAreFree(tongs)) {
-            ItemStack stack = ItemStackRecord.getStackFromDataComponent(tongs);
+            ItemStack stack = ItemStackRecord.getStackFromTongs(tongs);
             if (!stack.is(ModTags.Items.PICKABLE_WITH_TONGS)) {
                 player.addItem(stack);
-                ItemStackRecord.clearItemStackFromDataComponent(tongs);
+                ItemStackRecord.clearItemStackTongs(tongs);
                 player.getCooldowns().addCooldown(this, 10);
                 player.swing(hand);
                 if (stack.is(ModTags.Items.VERY_HOT_ITEM)){
@@ -178,7 +178,7 @@ public class PickingItem extends Item {
             if (item.getItem() instanceof PickingItem){
                 return InteractionResultHolder.pass(player.getItemInHand(hand));
             }
-            ItemStackRecord.setItemStackIntoDataComponent(item, tongs);
+            ItemStackRecord.setItemStackInTongs(item, tongs);
             item.shrink(1);
             player.getCooldowns().addCooldown(this, 10);
             player.swing(hand);
@@ -198,11 +198,11 @@ public class PickingItem extends Item {
     }
 
     private boolean veryHotItemInTongs(ItemStack tongs, Player player, InteractionHand hand) {
-        if (ItemStackRecord.getStackFromDataComponent(tongs).is(ModTags.Items.VERY_HOT_ITEM)) {
+        if (ItemStackRecord.getStackFromTongs(tongs).is(ModTags.Items.VERY_HOT_ITEM)) {
             return true;
         }
-        player.addItem(ItemStackRecord.getStackFromDataComponent(tongs));
-        ItemStackRecord.clearItemStackFromDataComponent(tongs);
+        player.addItem(ItemStackRecord.getStackFromTongs(tongs));
+        ItemStackRecord.clearItemStackTongs(tongs);
         player.getCooldowns().addCooldown(this, 10);
         player.swing(hand);
         return false;
@@ -230,7 +230,7 @@ public class PickingItem extends Item {
 
 
     public static boolean isTongsAreFree(ItemStack tongs){
-        return ItemStackRecord.getStackFromDataComponent(tongs).isEmpty();
+        return ItemStackRecord.getStackFromTongs(tongs).isEmpty();
     }
 
     public static boolean isHoldingTongs(Player player){
@@ -264,16 +264,16 @@ public class PickingItem extends Item {
 
         if (blockEntity instanceof AbstractFurnaceBlockEntity furnaceBlock){
             if (isItemPickable(furnaceBlock.getItem(2), player, level)) {
-                ItemStackRecord.setItemStackIntoDataComponent(furnaceBlock.getItem(2), tongs);
+                ItemStackRecord.setItemStackInTongs(furnaceBlock.getItem(2), tongs);
                 furnaceBlock.getItem(2).shrink(1);
             }
         } else if (blockEntity instanceof ChestBlockEntity chestBlock && isTongsAreFree(tongs)) {
             for (int i = 0; i < chestBlock.getContainerSize(); i++) {
-                if(chestBlock.canPlaceItem(i, ItemStackRecord.getStackFromDataComponent(tongs))){
+                if(chestBlock.canPlaceItem(i, ItemStackRecord.getStackFromTongs(tongs))){
                     if (chestBlock.hasAnyMatching(stack -> stack.getItem().builtInRegistryHolder().is(ModTags.Items.PICKABLE_WITH_TONGS))) {
                         ItemStack stack = chestBlock.getItem(i);
                         if (!stack.isEmpty() && stack.getItem().builtInRegistryHolder().is(ModTags.Items.PICKABLE_WITH_TONGS)) {
-                            ItemStackRecord.setItemStackIntoDataComponent(stack, tongs);
+                            ItemStackRecord.setItemStackInTongs(stack, tongs);
                             chestBlock.removeItem(i, 1);
                             chestBlock.setChanged();
                             break;
@@ -299,13 +299,13 @@ public class PickingItem extends Item {
 
             Optional<RecipeHolder<SmeltingRecipe>> recipe = level.getRecipeManager().getRecipeFor(
                     RecipeType.SMELTING,
-                    new SingleRecipeInput(ItemStackRecord.getStackFromDataComponent(tongsItem)),
+                    new SingleRecipeInput(ItemStackRecord.getStackFromTongs(tongsItem)),
                     level
             );
 
             if (recipe.isPresent()) {
-                furnaceBlock.setItem(0, ItemStackRecord.getStackFromDataComponent(tongsItem));
-                ItemStackRecord.clearItemStackFromDataComponent(tongsItem);
+                furnaceBlock.setItem(0, ItemStackRecord.getStackFromTongs(tongsItem));
+                ItemStackRecord.clearItemStackTongs(tongsItem);
             }
 
         }

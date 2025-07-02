@@ -1,18 +1,14 @@
 package net.f708.realisticforging.utils;
 
-import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.component.ItemStackRecord;
-import net.f708.realisticforging.component.ModDataComponents;
 import net.f708.realisticforging.item.ModItems;
 import net.f708.realisticforging.item.custom.SmithingHammerItem;
 import net.f708.realisticforging.recipe.*;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.GameType;
@@ -26,8 +22,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Optional;
-
-import static net.minecraft.world.item.ItemStack.EMPTY;
 
 public class ConditionsHelper {
 
@@ -48,14 +42,14 @@ public class ConditionsHelper {
             RecipeManager recipeManager = level.getRecipeManager();
                 Optional<RecipeHolder<ForgingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
                         ModRecipes.FORGING_TYPE.get(),
-                        new ForgingRecipeInput(ItemStackRecord.getStackFromDataComponent(player.getOffhandItem())),
+                        new ForgingRecipeInput(ItemStackRecord.getStackFromTongs(player.getOffhandItem())),
                         level);
                 if (recipeOptionalOff.isPresent()) {
                     result = true;
                 }
                 Optional<RecipeHolder<ForgingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
                         ModRecipes.FORGING_TYPE.get(),
-                        new ForgingRecipeInput(ItemStackRecord.getStackFromDataComponent(player.getMainHandItem())),
+                        new ForgingRecipeInput(ItemStackRecord.getStackFromTongs(player.getMainHandItem())),
                         level);
                 if (recipeOptionalMain.isPresent()) {
                     result = true;
@@ -75,7 +69,7 @@ public class ConditionsHelper {
 
         Optional<RecipeHolder<ForgingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
                 ModRecipes.FORGING_TYPE.get(),
-                new ForgingRecipeInput(ItemStackRecord.getStackFromDataComponent(player.getMainHandItem())),
+                new ForgingRecipeInput(ItemStackRecord.getStackFromTongs(player.getMainHandItem())),
 //                    new ForgingRecipeInput(player.getMainHandItem().getOrDefault(ModDataComponents.ITEM_IN_TONGS, ItemStack.EMPTY)),
                 level);
             if (recipeOptionalMain.isPresent()) {
@@ -84,7 +78,7 @@ public class ConditionsHelper {
 
         Optional<RecipeHolder<ForgingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
                 ModRecipes.FORGING_TYPE.get(),
-                new ForgingRecipeInput(ItemStackRecord.getStackFromDataComponent(player.getOffhandItem())),
+                new ForgingRecipeInput(ItemStackRecord.getStackFromTongs(player.getOffhandItem())),
 //                    new ForgingRecipeInput(player.getMainHandItem().getOrDefault(ModDataComponents.ITEM_IN_TONGS, ItemStack.EMPTY)),
                 level);
         if (recipeOptionalOff.isPresent()) {
@@ -152,11 +146,11 @@ public class ConditionsHelper {
                 level);
         Optional<RecipeHolder<CoolingRecipe>> recipeOptionalOffPickable = recipeManager.getRecipeFor(
                 ModRecipes.COOLING_TYPE.get(),
-                new CoolingRecipeInput(ItemStackRecord.getStackFromDataComponent(player.getOffhandItem())),
+                new CoolingRecipeInput(ItemStackRecord.getStackFromTongs(player.getOffhandItem())),
                 level);
         Optional<RecipeHolder<CoolingRecipe>> recipeOptionalMainPickable = recipeManager.getRecipeFor(
                 ModRecipes.COOLING_TYPE.get(),
-                new CoolingRecipeInput(ItemStackRecord.getStackFromDataComponent(player.getMainHandItem())),
+                new CoolingRecipeInput(ItemStackRecord.getStackFromTongs(player.getMainHandItem())),
                 level);
         if (recipeOptionalOff.isPresent() || recipeOptionalMain.isPresent() || recipeOptionalOffPickable.isPresent() || recipeOptionalMainPickable.isPresent()) {
             result = true;

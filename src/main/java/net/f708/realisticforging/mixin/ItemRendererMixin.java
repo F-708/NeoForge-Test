@@ -40,7 +40,7 @@ public abstract class ItemRendererMixin {
         if (itemStack.is(ModItems.TWOSTICKS)) {
             list = new ArrayList<>(list);
 
-            ItemStack item = ItemStackRecord.getStackFromDataComponent(itemStack);
+            ItemStack item = ItemStackRecord.getStackFromTongs(itemStack);
 
             if (item.isEmpty()) {
                 list.add(getModel(ModItems.TWOSTICKS.get().getDefaultInstance(), null, null, 0));
@@ -70,7 +70,7 @@ public abstract class ItemRendererMixin {
 
             list = new ArrayList<>(list);
 
-            ItemStack item = ItemStackRecord.getStackFromDataComponent(itemStack);
+            ItemStack item = ItemStackRecord.getStackFromTongs(itemStack);
 
             if (item.isEmpty()) {
                 list.add(getModel(ModItems.TONGS.toStack(), null, null, 0));

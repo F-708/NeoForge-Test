@@ -2,8 +2,6 @@ package net.f708.realisticforging.component;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.netty.handler.codec.DecoderException;
-import io.netty.handler.codec.EncoderException;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.PatchedDataComponentMap;
@@ -13,7 +11,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Objects;
 
@@ -21,17 +19,21 @@ import java.util.Objects;
 public record ItemStackRecord(ItemStack itemStack) {
 
 
-    public static void clearItemStackFromDataComponent(ItemStack stack){
+//    public static void clearItemStackSmallPan(ItemStack pan){
+//        pan.set(ModDataComponents.SMALL_PLATE_DATA, new ItemStackRecord(ItemStack.EMPTY), pan.getOrDefault(ModDataComponents.SMALL_PLATE_DATA, new ItemStackRecord(ItemStack.EMPTY), FluidStack.EMPTY));
+//    }
+
+
+    public static void clearItemStackTongs(ItemStack stack){
         stack.remove(ModDataComponents.ITEM_IN_TONGS);
     }
 
-    public static void setItemStackIntoDataComponent(ItemStack thisItem, ItemStack intoThisItem){
+    public static void setItemStackInTongs(ItemStack thisItem, ItemStack intoThisItem){
             ItemStackRecord record = new ItemStackRecord(thisItem.copy());
             intoThisItem.set(ModDataComponents.ITEM_IN_TONGS, record);
     }
 
-
-    public static ItemStack getStackFromDataComponent(ItemStack stack){
+    public static ItemStack getStackFromTongs(ItemStack stack){
         ItemStack itemStack = ItemStack.EMPTY;
         ItemStackRecord record = stack.getOrDefault(ModDataComponents.ITEM_IN_TONGS, new ItemStackRecord(ItemStack.EMPTY));
         if (record.itemStack() instanceof ItemStack anotherStack){
@@ -40,29 +42,11 @@ public record ItemStackRecord(ItemStack itemStack) {
         return itemStack;
     }
 
-    public static void setForgingStateDefault(ItemStack stack){
-        ItemStack gotStack = getStackFromDataComponent(stack);
-        gotStack.set(ModDataComponents.FORGE_STATE, 1);
-        setItemStackIntoDataComponent(gotStack, stack);
-    }
-
     public static void increaseForgingState(ItemStack stack, int amount){
-        ItemStack gotStack = getStackFromDataComponent(stack);
+        ItemStack gotStack = getStackFromTongs(stack);
         gotStack.set(ModDataComponents.FORGE_STATE, gotStack.getOrDefault(ModDataComponents.FORGE_STATE, 1) + amount);
-        setItemStackIntoDataComponent(gotStack, stack);
+        setItemStackInTongs(gotStack, stack);
     }
-
-    public static void descreaseForgingState(ItemStack stack, int amount){
-        ItemStack gotStack = getStackFromDataComponent(stack);
-        if (!(gotStack.getOrDefault(ModDataComponents.FORGE_STATE, 1) - amount < 1)){
-            gotStack.set(ModDataComponents.FORGE_STATE, gotStack.getOrDefault(ModDataComponents.FORGE_STATE, 1) - amount);
-        } else {
-            gotStack.set(ModDataComponents.FORGE_STATE, 1);
-        }
-        setItemStackIntoDataComponent(gotStack, stack);
-    }
-
-
 
     @Override
     public ItemStack itemStack() {

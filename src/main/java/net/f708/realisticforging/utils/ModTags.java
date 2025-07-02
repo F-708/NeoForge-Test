@@ -26,11 +26,12 @@ public class ModTags {
     public static class Items{
         // If one in inventory - damage
         public static final TagKey<Item> VERY_HOT_ITEM = createTag("very_hot_item");
-        // If more than 2 in inventory - damage
-        public static final TagKey<Item> HOT_ITEM = createTag("hot_item");
 
 
         public static final TagKey<Item> PICKABLE_WITH_TONGS = createTag("pickable_with_tongs");
+
+
+        public static final TagKey<Item> PICKABLE_IN_PAN = createTag("pickable_in_pan");
 
 
         private static TagKey<Item> createTag (String name){

@@ -6,7 +6,7 @@
   "resultitem": {
     "id": "minecraft:diamond"
   },
-  "hit_amount": 10,
+  "hit_amount": 20,
   "resultblock": {
     "id": "minecraft:stone"
   }
