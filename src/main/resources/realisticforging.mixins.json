@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "realisticforging.refmap.json",
   "mixins": [
+    "AbstractCookingRecipeMixin",
     "ItemRendererMixin"
   ],
   "client": [

@@ -109,6 +109,9 @@ public class ModRecipes {
                 }
             });
 
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<PlateSmeltingRecipe>> PLATE_SMELTING =
+            SERIALIZERS.register("plate_smelting", PlateSmeltingRecipe.Serializer::new);
+
 
     public static void register(IEventBus eventBus) {
         SERIALIZERS.register(eventBus);

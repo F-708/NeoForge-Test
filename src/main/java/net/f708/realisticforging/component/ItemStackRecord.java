@@ -80,23 +80,6 @@ public record ItemStackRecord(ItemStack itemStack) {
     );
 
 
-    public static final Codec<Holder<Item>> ITEM_AIR_CODEC = BuiltInRegistries.ITEM.holderByNameCodec();
-    public static final Codec<ItemStack> CODEC = Codec.lazyInitialized(
-            () -> RecordCodecBuilder.create(
-                    p_347288_ -> p_347288_.group(
-                                    ITEM_AIR_CODEC.fieldOf("id").forGetter(ItemStack::getItemHolder),
-                                    ExtraCodecs.intRange(1, 99).fieldOf("count").orElse(1).forGetter(ItemStack::getCount),
-                                    DataComponentPatch.CODEC
-                                            .optionalFieldOf("components", DataComponentPatch.EMPTY)
-                                            .forGetter(p_330103_ -> {
-                                                if (p_330103_.getComponents() instanceof PatchedDataComponentMap map) {
-                                                    return map.asPatch();
-                                                }
-                                                return DataComponentPatch.EMPTY;
-                                            })
-                            )
-                            .apply(p_347288_, ItemStack::new)
-            )
-    );
+
 
 }
