@@ -9,6 +9,7 @@ import net.f708.realisticforging.recipe.ForgingRecipe;
 import net.f708.realisticforging.recipe.ForgingRecipeInput;
 import net.f708.realisticforging.recipe.ModRecipes;
 import net.f708.realisticforging.utils.*;
+import net.f708.realisticforging.utils.enums.Animation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -134,7 +135,7 @@ public class SmithingHammerItem extends Item {
                                 RecipeManager recipeManager = level.getRecipeManager();
 
 
-                                ItemStack inputStack = ItemStackRecord.getStackFromTongs(tongsWithForgeableFinal);
+                                ItemStack inputStack = ItemStackRecord.getStack(tongsWithForgeableFinal);
                                 ItemStack result;
 
                                 int currentForgingStage = inputStack.getOrDefault(ModDataComponents.FORGE_STATE.get(), 1);
@@ -170,17 +171,20 @@ public class SmithingHammerItem extends Item {
 
                                     hammerFinal.hurtAndBreak(1, player, hammerFinal.getEquipmentSlot());
                                     player.causeFoodExhaustion(0.005f);
-                                    CameraUtils.triggerCameraShake(4, 2, 3,4 , RHFinal);
+                                    if (level.isClientSide){
+                                        CameraUtils.triggerCameraShake(4, 2, 3,4 , RHFinal);
+
+                                    }
 //                                    if (ConditionsHelper.isMetForgingConditions(level, player, hitresult.getBlockPos())) {
 
                                         if (currentForgingStage < finalForgingStage){
                                             RealisticForging.LOGGER.debug("INCREASING STAGE");
                                             ItemStackRecord.increaseForgingState(tongsWithForgeableFinal, stageamount);
-                                            RealisticForging.LOGGER.debug(ItemStackRecord.getStackFromTongs(tongsWithForgeableFinal).getOrDefault(ModDataComponents.FORGE_STATE, 1).toString());
+                                            RealisticForging.LOGGER.debug(ItemStackRecord.getStack(tongsWithForgeableFinal).getOrDefault(ModDataComponents.FORGE_STATE, 1).toString());
 //                                            inputStack.set(ModDataComponents.FORGE_STATE.get(), currentForgingStage + stageamount);
 //                                            ItemStackRecord.setItemStackIntoDataComponent(inputStack, finalTongsWithForgeable1);
                                         } else if (!result.isEmpty()){
-                                        ItemStackRecord.setItemStackInTongs(result, tongsWithForgeableFinal);
+                                        ItemStackRecord.setItemStack(result, tongsWithForgeableFinal);
                                     }
 //                                    }
 
@@ -191,12 +195,13 @@ public class SmithingHammerItem extends Item {
                         if (player.getData(ModData.SMITHING_HAMMER_COMBO).getCombo() < 10){
                             player.getData(ModData.SMITHING_HAMMER_COMBO).increaseCombo();
                         }
-                        player.getData(ModData.SMITHING_HAMMER_COMBO).syncData(player);
                         if (player.getData(ModData.SMITHING_HAMMER_COMBO).getCombo() > 9){
                             player.getCooldowns().addCooldown(stack.getItem(), 8);
                         } else {
-                            player.getCooldowns().addCooldown(stack.getItem(), 8);
+                            player.getCooldowns().addCooldown(stack.getItem(), 10);
                         }
+                        player.getData(ModData.SMITHING_HAMMER_COMBO).syncData(player);
+
 
 
                         player.stopUsingItem();

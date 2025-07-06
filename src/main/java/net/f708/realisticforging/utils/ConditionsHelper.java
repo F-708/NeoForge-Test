@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.GameType;
@@ -42,14 +43,14 @@ public class ConditionsHelper {
             RecipeManager recipeManager = level.getRecipeManager();
                 Optional<RecipeHolder<ForgingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
                         ModRecipes.FORGING_TYPE.get(),
-                        new ForgingRecipeInput(ItemStackRecord.getStackFromTongs(player.getOffhandItem())),
+                        new ForgingRecipeInput(ItemStackRecord.getStack(player.getOffhandItem())),
                         level);
                 if (recipeOptionalOff.isPresent()) {
                     result = true;
                 }
                 Optional<RecipeHolder<ForgingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
                         ModRecipes.FORGING_TYPE.get(),
-                        new ForgingRecipeInput(ItemStackRecord.getStackFromTongs(player.getMainHandItem())),
+                        new ForgingRecipeInput(ItemStackRecord.getStack(player.getMainHandItem())),
                         level);
                 if (recipeOptionalMain.isPresent()) {
                     result = true;
@@ -69,7 +70,7 @@ public class ConditionsHelper {
 
         Optional<RecipeHolder<ForgingRecipe>> recipeOptionalMain = recipeManager.getRecipeFor(
                 ModRecipes.FORGING_TYPE.get(),
-                new ForgingRecipeInput(ItemStackRecord.getStackFromTongs(player.getMainHandItem())),
+                new ForgingRecipeInput(ItemStackRecord.getStack(player.getMainHandItem())),
 //                    new ForgingRecipeInput(player.getMainHandItem().getOrDefault(ModDataComponents.ITEM_IN_TONGS, ItemStack.EMPTY)),
                 level);
             if (recipeOptionalMain.isPresent()) {
@@ -78,7 +79,7 @@ public class ConditionsHelper {
 
         Optional<RecipeHolder<ForgingRecipe>> recipeOptionalOff = recipeManager.getRecipeFor(
                 ModRecipes.FORGING_TYPE.get(),
-                new ForgingRecipeInput(ItemStackRecord.getStackFromTongs(player.getOffhandItem())),
+                new ForgingRecipeInput(ItemStackRecord.getStack(player.getOffhandItem())),
 //                    new ForgingRecipeInput(player.getMainHandItem().getOrDefault(ModDataComponents.ITEM_IN_TONGS, ItemStack.EMPTY)),
                 level);
         if (recipeOptionalOff.isPresent()) {
@@ -146,11 +147,11 @@ public class ConditionsHelper {
                 level);
         Optional<RecipeHolder<CoolingRecipe>> recipeOptionalOffPickable = recipeManager.getRecipeFor(
                 ModRecipes.COOLING_TYPE.get(),
-                new CoolingRecipeInput(ItemStackRecord.getStackFromTongs(player.getOffhandItem())),
+                new CoolingRecipeInput(ItemStackRecord.getStack(player.getOffhandItem())),
                 level);
         Optional<RecipeHolder<CoolingRecipe>> recipeOptionalMainPickable = recipeManager.getRecipeFor(
                 ModRecipes.COOLING_TYPE.get(),
-                new CoolingRecipeInput(ItemStackRecord.getStackFromTongs(player.getMainHandItem())),
+                new CoolingRecipeInput(ItemStackRecord.getStack(player.getMainHandItem())),
                 level);
         if (recipeOptionalOff.isPresent() || recipeOptionalMain.isPresent() || recipeOptionalOffPickable.isPresent() || recipeOptionalMainPickable.isPresent()) {
             result = true;
@@ -385,6 +386,10 @@ public class ConditionsHelper {
     public static boolean isMetCarvingConditions(Level level, Player player, BlockPos pos){
         return isHoldingChisel(player) && isHoldingCarvingHammer(player) && isCarvingRecipeBlock(level, pos) && isMetMicsConditions(player);
     }
+
+//    public static boolean canPlace(Player player, ItemStack stack){
+//        for (int i = 0; i < player.getInventory().si)
+//    }
 
 
 

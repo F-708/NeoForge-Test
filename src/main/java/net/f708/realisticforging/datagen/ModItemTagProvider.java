@@ -7,6 +7,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
@@ -27,6 +28,8 @@ public class ModItemTagProvider extends ItemTagsProvider {
                 .add(ModItems.RAWCLEANEDIRONORE.get());
         tag(ModTags.Items.VERY_HOT_ITEM)
                 .add(ModItems.HOTRAWIRONORE.get());
+        tag(ModTags.Items.PICKABLE_WITH_TONGS)
+                .add(Items.DIAMOND);
     }
 
     private @NotNull IntrinsicTagAppender<Item> getTag() {

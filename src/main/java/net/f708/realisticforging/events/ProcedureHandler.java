@@ -8,6 +8,7 @@ import net.f708.realisticforging.item.custom.PickingItem;
 import net.f708.realisticforging.network.packets.PacketPPPAnimation;
 import net.f708.realisticforging.recipe.*;
 import net.f708.realisticforging.utils.*;
+import net.f708.realisticforging.utils.enums.Animation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundBlockDestructionPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -299,7 +300,7 @@ public class ProcedureHandler {
 
         if (isInTongs) {
             slot = inventory.selected;
-            ItemStack contained = ItemStackRecord.getStackFromTongs(tongs);
+            ItemStack contained = ItemStackRecord.getStack(tongs);
             recipeOptional = recipeManager.getRecipeFor(ModRecipes.COOLING_TYPE.get(), new CoolingRecipeInput(contained), level);
         } else {
             ItemStack mainHand = player.getMainHandItem();
@@ -317,11 +318,11 @@ public class ProcedureHandler {
 
         if (recipeOptional.isEmpty()) return;
 
-        ItemStack finalStack = isInTongs ? ItemStackRecord.getStackFromTongs(tongs) : handItem;
+        ItemStack finalStack = isInTongs ? ItemStackRecord.getStack(tongs) : handItem;
         if (!checkForgingStage(finalStack, recipeManager, level, player)) return;
 
         Utils.setBusy(player);
-        ItemStack itemToCheck = isInTongs ? ItemStackRecord.getStackFromTongs(tongs) : handItem;
+        ItemStack itemToCheck = isInTongs ? ItemStackRecord.getStack(tongs) : handItem;
         if (player.getCooldowns().isOnCooldown(itemToCheck.getItem())) return;
 
         if (player instanceof ServerPlayer serverPlayer) {
@@ -345,14 +346,14 @@ public class ProcedureHandler {
                         case OFF_HAND -> player.getOffhandItem();
                         default -> ItemStack.EMPTY;
                     };
-                    recipeManager.getRecipeFor(ModRecipes.FORGING_TYPE.get(), new ForgingRecipeInput(ItemStackRecord.getStackFromTongs(tongs2)), level)
-                            .filter(recipe -> recipe.value().getMaxStage() == ItemStackRecord.getStackFromTongs(tongs2).getOrDefault(ModDataComponents.FORGE_STATE, 1))
+                    recipeManager.getRecipeFor(ModRecipes.FORGING_TYPE.get(), new ForgingRecipeInput(ItemStackRecord.getStack(tongs2)), level)
+                            .filter(recipe -> recipe.value().getMaxStage() == ItemStackRecord.getStack(tongs2).getOrDefault(ModDataComponents.FORGE_STATE, 1))
                             .ifPresent(recipe -> {
                                 if (tongs2.is(ModItems.TWOSTICKS)){
                                     inventory.add(result);
                                     tongs2.shrink(1);
                                 } else if (tongs2.is(ModItems.TONGS)){
-                                    ItemStackRecord.setItemStackInTongs(result, tongs2);
+                                    ItemStackRecord.setItemStack(result, tongs2);
                                 }
                             });
                 } else {

@@ -89,7 +89,6 @@ public class MicsEventHandler {
         if (event.isAttack()){
             if (player != null){
                 if (SledgeHammerItem.isHoldingSledgeHammer(player)){
-                    player.getData(ModData.SMITHING_HAMMER_COMBO).increaseCombo();
                     event.setCanceled(true);
                     event.setSwingHand(false);
                 }

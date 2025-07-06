@@ -49,6 +49,5 @@ public class SmithingHammerComboData implements INBTSerializable<CompoundTag> {
         if (entity instanceof ServerPlayer serverPlayer){
             PacketDistributor.sendToPlayer(serverPlayer, new PacketSmithingCombo(this));
         }
-        RealisticForging.LOGGER.debug("CLient: " + Minecraft.getInstance().player.getData(ModData.SMITHING_HAMMER_COMBO).getCombo());
     }
 }

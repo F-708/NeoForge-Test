@@ -5,12 +5,10 @@ import net.f708.realisticforging.component.ModDataComponents;
 import net.f708.realisticforging.data.ModData;
 import net.f708.realisticforging.item.ModItems;
 import net.f708.realisticforging.network.packets.PacketPPPAnimation;
-import net.f708.realisticforging.network.packets.PacketTriggerPlayerSwing;
 import net.f708.realisticforging.recipe.CarvingRecipe;
 import net.f708.realisticforging.recipe.CarvingRecipeInput;
 import net.f708.realisticforging.recipe.ModRecipes;
-import net.f708.realisticforging.utils.Animation;
-import net.f708.realisticforging.utils.ConditionsHelper;
+import net.f708.realisticforging.utils.enums.Animation;
 import net.f708.realisticforging.utils.TickScheduler;
 import net.f708.realisticforging.utils.Utils;
 import net.minecraft.core.BlockPos;
@@ -21,19 +19,15 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUtils;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.ClipContext;
@@ -42,12 +36,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 
@@ -210,7 +202,6 @@ public class CarvingHammer extends Item {
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity livingEntity, int timeCharged) {
         if (livingEntity instanceof Player player){
-            RealisticForging.LOGGER.debug("releaseUsing called");
             player.getData(ModData.IS_CARVING).setCarving(false);
             player.getData(ModData.IS_CARVING).syncData(player);
             player.stopUsingItem();

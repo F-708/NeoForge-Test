@@ -8,7 +8,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-public record SmallPlateRecord(ItemStack item, FluidStack fluid) implements FluidContainer {
+public record   SmallPlateRecord(ItemStack item, FluidStack fluid) implements FluidContainer {
     public static final int CAPACITY = 250;
 
     public static SmallPlateRecord empty() {

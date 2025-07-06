@@ -3,12 +3,8 @@ package net.f708.realisticforging.network.packets;
 
 import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.network.NetworkHandler;
-import net.f708.realisticforging.utils.Animation;
-import net.f708.realisticforging.utils.TickScheduler;
-import net.f708.realisticforging.utils.animations.AnimationHelper;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
@@ -21,7 +17,6 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 // Packet Please Play Player Animation

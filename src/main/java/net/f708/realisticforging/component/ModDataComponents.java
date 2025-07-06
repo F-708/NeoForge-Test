@@ -34,6 +34,16 @@ public class ModDataComponents {
                     .networkSynchronized(ItemStackRecord.BASIC_STREAM_CODEC)
     );
 
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemStackRecord>> ITEM_IN_MOLD = register("item_in_mold",
+            builder -> builder.persistent(ItemStackRecord.BASIC_CODEC)
+                    .networkSynchronized(ItemStackRecord.BASIC_STREAM_CODEC)
+    );
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemsInPan>> ITEMS_IN_PAN = register("items_in_pan",
+            builder -> builder.persistent(ItemsInPan.CODEC)
+                    .networkSynchronized(ItemsInPan.STREAM_CODEC)
+    );
+
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> CARVING_STATE = register("carving_state",
             integerBuilder -> integerBuilder.persistent(Codec.INT));
@@ -47,13 +57,9 @@ public class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> BREAK_AMOUNT = register("break_amount",
             integerBuilder -> integerBuilder.persistent(Codec.INT));
 
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<SmallPlateRecord>> SMALL_PLATE_DATA = register("small_plate_data",
-            builder -> builder.persistent(SmallPlateRecord.CODEC)
-                    .networkSynchronized(SmallPlateRecord.STREAM_CODEC));
-
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<LargePlateRecord>> LARGE_PLATE_DATA = register("large_plate_data",
-            builder -> builder.persistent(LargePlateRecord.CODEC)
-                    .networkSynchronized(LargePlateRecord.STREAM_CODEC));
+//    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemStackListRecord>> ITEM_STACK_LIST = register("item_stack_list",
+//            itemStackListRecordBuilder -> itemStackListRecordBuilder.persistent(ItemStackListRecord.CODEC)
+//                    .networkSynchronized(ItemStackListRecord.STREAM_CODEC));
 
 
 

@@ -1,50 +1,32 @@
 
 package net.f708.realisticforging.item.custom;
 
-import net.f708.realisticforging.RealisticForging;
 import net.f708.realisticforging.data.ModData;
 import net.f708.realisticforging.item.ModItems;
+import net.f708.realisticforging.mixin.utils.PlayerSafeAddAccessor;
 import net.f708.realisticforging.network.packets.PacketPPPAnimation;
 import net.f708.realisticforging.network.packets.PacketPlayCameraShake;
 import net.f708.realisticforging.network.packets.PacketTriggerPlayerSwing;
-import net.f708.realisticforging.utils.Animation;
+import net.f708.realisticforging.utils.enums.Animation;
 import net.f708.realisticforging.utils.ConditionsHelper;
 import net.f708.realisticforging.utils.TickScheduler;
 import net.f708.realisticforging.utils.Utils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.protocol.game.ClientboundBlockDestructionPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageSources;
-import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.SimpleExplosionDamageCalculator;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -55,7 +37,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 public class SledgeHammerItem extends DiggerItem {
@@ -163,6 +144,7 @@ public class SledgeHammerItem extends DiggerItem {
         attackBox = attackBox.expandTowards(right.scale(1.5D));
         attackBox = attackBox.expandTowards(right.scale(-1.5D));
         List<Entity> targets = level.getEntities(player, attackBox);
+        
 
 
 
@@ -170,6 +152,7 @@ public class SledgeHammerItem extends DiggerItem {
             if (target.isAttackable() && target != player) {
                 Utils.playEntitySmashSound((ServerLevel) level, player, 1);
                 player.attack(target);
+                target.hurt(target.damageSources().playerAttack(player), 2);
 
                 Vec3 horizontalDirection = !isRight ? right : right.scale(-1);
 

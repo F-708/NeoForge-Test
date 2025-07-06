@@ -1,4 +1,4 @@
-package net.f708.realisticforging.utils;
+package net.f708.realisticforging.utils.enums;
 
 public enum Animation {
     CANCEL,

@@ -6,7 +6,8 @@
   "refmap": "realisticforging.refmap.json",
   "mixins": [
     "AbstractCookingRecipeMixin",
-    "ItemRendererMixin"
+    "ItemRendererMixin",
+    "SafeAddMixin"
   ],
   "client": [
   ],
