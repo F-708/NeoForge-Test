@@ -316,6 +316,12 @@ public class Utils {
 
     }
 
+    public static void safeAdd(ItemStack stack, Player player){
+        if (!player.addItem(stack)){
+            player.drop(stack, false);
+        }
+    }
+
 
 
 }

@@ -21,9 +21,9 @@ public record ItemsInPan(ItemStackListRecord record, boolean melt) {
     }
 
 
-//    public void setResultAsDataComponent(ItemStack stack, ItemsInPan record){
-//        stack.set(ModDataComponents.ITEMS_IN_PAN, record);
-//    }
+    public void setResultAsDataComponent(ItemStack stack, ItemsInPan record){
+        stack.set(ModDataComponents.ITEMS_IN_PAN, record);
+    }
 
     public static final Codec<ItemsInPan> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(

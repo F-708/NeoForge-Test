@@ -64,10 +64,10 @@ public class ModItems {
     public static final DeferredItem<Item> BARSHAPEDMOLD = ITEMS.register("bar_shaped_mold",
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> PAN = ITEMS.register("pan",
-            () -> new Item(new Item.Properties()
+            () -> new SmallPanItem(new Item.Properties()
                     .stacksTo(1)));
     public static final DeferredItem<Item> BIGPAN = ITEMS.register("big_pan",
-            () -> new Item(new Item.Properties()
+            () -> new BigPanItem(new Item.Properties()
                     .stacksTo(1)));
     public static final DeferredItem<Item> WOODPESTLE = ITEMS.register("wood_pestle",
             () -> new Item(new Item.Properties()

@@ -2,6 +2,7 @@ package net.f708.realisticforging.item.custom;
 
 import net.f708.realisticforging.component.ItemStackRecord;
 import net.f708.realisticforging.network.packets.PacketPPPAnimation;
+import net.f708.realisticforging.utils.Utils;
 import net.f708.realisticforging.utils.enums.Animation;
 import net.f708.realisticforging.utils.ConditionsHelper;
 import net.f708.realisticforging.utils.ModTags;
@@ -163,9 +164,7 @@ public class PickingItem extends Item {
         if (!isTongsAreFree(tongs)) {
             ItemStack stack = ItemStackRecord.getStack(tongs);
             if (!stack.is(ModTags.Items.PICKABLE_WITH_TONGS)) {
-//                player.addItem(stack);
-                player.addRe
-                ItemStackRecord.clearItemStack(tongs);
+                Utils.safeAdd(stack, player);
                 player.getCooldowns().addCooldown(this, 10);
                 player.swing(hand);
                 if (stack.is(ModTags.Items.VERY_HOT_ITEM)){
